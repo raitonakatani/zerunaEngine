@@ -73,6 +73,7 @@ using namespace Microsoft::WRL;
 
 #include "graphics/Sprite.h"
 #include "graphics/Model.h"
+#include "ModelRender.h"
 #include "HID/GamePad.h"
 
 #include "graphics/GaussianBlur.h"
