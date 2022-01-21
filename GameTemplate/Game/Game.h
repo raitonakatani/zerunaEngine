@@ -11,6 +11,9 @@ public:
 	bool Start();
 	void Update();
 private:
+
+	//DirectionalLight directionalLight;
+
 	Player* m_player = nullptr;	// ƒvƒŒƒCƒ„[
 	Background* m_background = nullptr; // ”wŒi
 };

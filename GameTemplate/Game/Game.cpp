@@ -6,8 +6,8 @@
 
 Game::~Game()
 {
-	DeleteGO(m_player);
-	DeleteGO(m_background);
+//	DeleteGO(m_player);
+//	DeleteGO(m_background);
 }
 bool Game::Start()
 {
