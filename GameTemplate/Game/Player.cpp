@@ -20,7 +20,7 @@ bool Player::Start()
 
 	m_charaCon.Init(40.0f, 100.0f, g_vec3Zero);
 
-	m_rotation.SetRotationDegY(180.0f);
+	//m_rotation.SetRotationDegY(180.0f);
 
 	return true;
 }
@@ -29,14 +29,14 @@ bool Player::Start()
 void Player::Update()
 {
 	Vector3 moveSpeed;
-	moveSpeed.x = g_pad[0]->GetLStickXF() * 120.0f;
-	moveSpeed.z = g_pad[0]->GetLStickYF() * 120.0f;
+	moveSpeed.x = g_pad[0]->GetLStickXF() * -120.0f;
+	moveSpeed.z = g_pad[0]->GetLStickYF() * -120.0f;
 
 	// 右スティック(キーボード：上下左右)で回転。
 	m_rotation.AddRotationY(g_pad[0]->GetRStickXF() * 0.05f);
 //	m_rotation.AddRotationX(g_pad[0]->GetRStickYF() * 0.05f);
 
-	// 上下左右キー(キーボード：2, 4, 6, 8)で拡大
+/*	// 上下左右キー(キーボード：2, 4, 6, 8)で拡大
 	if (g_pad[0]->IsPress(enButtonUp)) {
 		m_scale.y += 0.02f;
 	}
@@ -49,7 +49,7 @@ void Player::Update()
 	if (g_pad[0]->IsPress(enButtonLeft)) {
 		m_scale.x -= 0.02f;
 	}
-
+*/
 	// アニメーションの切り替え。
 	if (g_pad[0]->IsPress(enButtonA)) {
 		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.2f);

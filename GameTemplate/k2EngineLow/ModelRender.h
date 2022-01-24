@@ -137,11 +137,7 @@ namespace nsK2EngineLow {
 		void InitSkeleton(const char* filePath);
 
 	private:
-	
-		Model						m_model;
-		Model						m_bgmodel;
-		ModelInitData				m_bgInitData;
-		ModelInitData				m_InitData;
+		Model						m_model;	
 		Skeleton					m_skeleton;							// スケルトン
 		float						m_animationSpeed = 1.0f;
 		AnimationClip*				m_animationClips = nullptr;			// アニメーションクリップ。
@@ -155,8 +151,5 @@ namespace nsK2EngineLow {
 		bool						m_isEnableInstancingDraw = false;	// インスタンシング描画が有効？
 		std::unique_ptr<Matrix[]>	m_worldMatrixArray;					// ワールド行列の配列。
 		StructuredBuffer			m_worldMatrixArraySB;				// ワールド行列の配列のストラクチャードバッファ。
-	//	CharacterController			m_charaCon;
 	};
-
-
 }

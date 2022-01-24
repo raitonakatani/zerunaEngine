@@ -13,10 +13,10 @@ bool Background::Start()
 	m_physicsStaticObject.CreateFromModel(m_model, m_model.GetWorldMatrix());
 */
 
-	m_modelRender.InitModel("Assets/modelData/bg/bg.tkm");
+	m_modelRender.Init("Assets/modelData/bg/bg.tkm");
 	
 	// 静的物理オブジェクトを作成。
-//	m_physicsStaticObject.CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
+	m_physicsStaticObject.CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
 
 //	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
@@ -24,7 +24,7 @@ bool Background::Start()
 }
 void Background::Update()
 {
-	m_modelRender.Update();
+	//m_modelRender.Update();
 }
 void Background::Render(RenderContext& rc)
 {

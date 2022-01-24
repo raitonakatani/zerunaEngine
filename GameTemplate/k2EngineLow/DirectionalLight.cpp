@@ -7,56 +7,64 @@ namespace nsK2EngineLow {
 
 	DirectionalLight::DirectionalLight()
 	{
+		// ディレクションライトのデータを設定する
+	 // ライトは右側から当たっている
+		m_light.directionLight.dirDirection.x = 1.0f;
+		m_light.directionLight.dirDirection.y = -1.0f;
+		m_light.directionLight.dirDirection.z = -1.0f;
+		m_light.directionLight.dirDirection.Normalize();
 
-		//ライトは右側から当たっている。
-		m_light.directionLight.ligDirection.x = 1.0f;
-		m_light.directionLight.ligDirection.y = -1.0f;
-		m_light.directionLight.ligDirection.z = 1.0f;
-		m_light.directionLight.ligDirection.Normalize();
-		//ライトのカラーは白。
-		m_light.directionLight.ligColor.x = .5f;
-		m_light.directionLight.ligColor.y = .5f;
-		m_light.directionLight.ligColor.z = .5f;
-
-
-		//環境光
-		//ライトのカラーは白。
-		m_light.ambientlight.ambientColor.x = 2.0f;
-		m_light.ambientlight.ambientColor.y = 2.0f;
-		m_light.ambientlight.ambientColor.z = 2.0f;
-		///
+		// ライトのカラーは白
+		m_light.directionLight.dirColor.x = 0.5f;//R 赤
+		m_light.directionLight.dirColor.y = 0.5f;//G 緑
+		m_light.directionLight.dirColor.z = 0.5f;//B 青
 
 		//視点の位置を設定する。
-		m_light.eyePos = (Vector3{ 0.0f, 0.0f, 1.0f });//g_camera3D->GetPosition();
+		m_light.ambientlight.eyePos = (Vector3{ 0.0f, 0.0f, 1.0f });//g_camera3D->GetPosition();
 
-	//	m_light.eyePos = g_camera3D->GetPosition();
-	//	m_light.numPointLight = 0;
-
-
-//		m_InitData.m_tkmFilePath = "Assets/modelData/unityChan.tkm";
-		//
-//		m_InitData.m_fxFilePath = "Assets/shader/model.fx";
-		//
-		//
-//		m_InitData.m_expandConstantBuffer = &directionLig;
-//		m_InitData.m_expandConstantBufferSize = sizeof(directionLig);
-
+		// 環境光
+		m_light.ambientlight.ambientColor.x = 0.3f;
+		m_light.ambientlight.ambientColor.y = 0.3f;
+		m_light.ambientlight.ambientColor.z = 0.3f;
 		
-//		model.Init(m_InitData);
+		// step-2 ポイントライトの初期座標を設定する
+		m_light.pointlight.ptPosition.x = 0.0f;
+		m_light.pointlight.ptPosition.y = 50.0f;
+		m_light.pointlight.ptPosition.z = 50.0f;
+		// step-3 ポイントライトの初期カラーを設定する
+		m_light.pointlight.ptColor.x = 0.0f;
+		m_light.pointlight.ptColor.y = 0.0f;
+		m_light.pointlight.ptColor.z = 0.0f;
+		// step-4 ポイントライトの影響範囲を設定する
+		m_light.pointlight.ptRange = 100.0f;
+
+
+
+		m_light.spotlight.spPosition.x = 0.0f;
+		m_light.spotlight.spPosition.y = 0.0f;
+		m_light.spotlight.spPosition.y = 50.0f;
+		//ライトのカラーを設定。R = 10、G = 10、B = 10にする。
+		m_light.spotlight.spColor.x = 10.0f;
+		m_light.spotlight.spColor.y = 10.0f;
+		m_light.spotlight.spColor.z = 10.0f;
 		
-//		auto& renderContext = g_graphicsEngine->GetRenderContext();
+		//初期方向は斜め下にする。
+		m_light.spotlight.spDirection.x = 1.0f;
+		m_light.spotlight.spDirection.y = -1.0f;
+		m_light.spotlight.spDirection.z = 1.0f;
+		//方向データなので、大きさを１にする必要があるので正規化する。
+		m_light.spotlight.spDirection.Normalize();
+		
+		//射出範囲は300
+		m_light.spotlight.spRange = 300.0f;
+		//射出角度は25度。
+		m_light.spotlight.spAngle = Math::DegToRad(25.0f);
+
 	}
 
 
 	DirectionalLight::~DirectionalLight()
 	{
-
-	}
-
-	void DirectionalLight::Render(RenderContext& rc)
-	{
-		//モデルをドロー
-		model.Draw(rc);
-	}
-	
+		
+	}	
 }
