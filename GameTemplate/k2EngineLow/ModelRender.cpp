@@ -67,8 +67,8 @@ namespace nsK2EngineLow {
 			m_InitData.m_vsEntryPointFunc = "VSMain";
 		}
 
-		m_InitData.m_expandConstantBuffer = &g_directionalLight.GetDirectionalLight();
-		m_InitData.m_expandConstantBufferSize = sizeof(g_directionalLight.GetDirectionalLight());
+		m_InitData.m_expandConstantBuffer = &g_Light.GetDirectionalLight();
+		m_InitData.m_expandConstantBufferSize = sizeof(g_Light.GetDirectionalLight());
 
 		// アニメーションを初期化。
 		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);

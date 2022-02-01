@@ -18,7 +18,7 @@ namespace nsK2EngineLow {
 
 		
 
-		void InitModel(const char* filePath);
+	//	void InitModel(const char* filePath);
 
 	//	void InitRendering(ModelInitData& initData);
 

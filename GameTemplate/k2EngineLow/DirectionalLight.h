@@ -8,7 +8,9 @@ namespace nsK2EngineLow {
         /// <summary>
         /// ライト構造体。
         /// </summary>
-       /* struct Light {
+       
+         
+        struct Light {
 
             // ディレクションライト用のメンバ
             Vector3 dirDirection;   // ライトの方向
@@ -22,22 +24,26 @@ namespace nsK2EngineLow {
             Vector3 ptColor;			//カラー。
             float ptRange;				//影響範囲。
 
+               // step-1 ライト構造体にスポットライト用のメンバ変数を追加
+            Vector3 spPosition;		//位置。
+            float pad3;					//パディング。
+            Vector3 spColor;			//カラー。
+            float spRange;				//影響範囲。
+            Vector3 spDirection;	//射出方向。
+            float spAngle;				//射出角度。
+
             Vector3 eyePos;         // 視点の位置
-            float pad3;
+
             Vector3 ambientLight;   // アンビエントライト
         };
-        */
         
+        
+       /*
         struct Directionlight {
             Vector3 dirDirection;	//ライトの方向。
             float pad0;
             Vector3 dirColor;
             float pad1;
-        };
-        struct Ambientlight {
-            Vector3 eyePos;			//視点の位置。
-            float pad3;
-            Vector3 ambientColor;
         };
         struct Pointlight { 
             Vector3 ptPosition;		//位置。
@@ -53,21 +59,30 @@ namespace nsK2EngineLow {
             Vector3 spDirection;	//射出方向。
             float spAngle;			//射出角度。
         };
+        struct Ambientlight {
+        //    float pad3;
+            Vector3 ambientLight;
+        };
         /// <summary>
         /// ライト構造体。
         /// </summary>
         struct Light {
-           // g_PointLight.pointlight;
-            Pointlight pointlight;               //ポイントライト。
-            Ambientlight ambientlight;           //アンビエントライト。(環境光)
-            Directionlight directionLight;		//ディレクションライト。
-            Spotlight spotlight;                //スポットライト。
+            Pointlight pointlight; //ポイントライト。
+            Ambientlight ambientlight; //アンビエントライト。(環境光)
+            Directionlight directionLight; //ディレクションライト。
+            Spotlight spotlight; //スポットライト。
+            Vector3 eyePos;			//視点の位置。
         };
-        /**/
+       */
 
     public:
         DirectionalLight();
         ~DirectionalLight();
+
+ //       void InitDirectionLight(Light& m_light);
+//        void InitPointLight(Light& m_light);
+ //       void InitAmbientLight(Light& m_light);
+
 
         /// <summary>
         /// ライトの方向。
@@ -75,7 +90,7 @@ namespace nsK2EngineLow {
         /// <param name="light">方向</param>
         void SetLigDirection(const Vector3& light)
         {
-            m_light.directionLight.dirDirection = light;
+            m_light.dirDirection = light;
         }
         /// <summary>
         /// ライトのカラー。
@@ -83,12 +98,12 @@ namespace nsK2EngineLow {
         /// <param name="light">カラー</param>
         void SetLigColor(const Vector3& color)
         {
-            m_light.directionLight.dirColor = color;
+            m_light.dirColor = color;
         }
 
         void SetLigSpot(const Vector3& posi)
         {
-            m_light.spotlight.spPosition = posi;
+            m_light.spPosition = posi;
         }
 
 
@@ -98,7 +113,7 @@ namespace nsK2EngineLow {
          /// <param name="light">場所</param>
         void SetLigPoint(const Vector3& lightposi)
         {
-            m_light.pointlight.ptPosition = lightposi;
+            m_light.ptPosition = lightposi;
         }
 
         Light& GetDirectionalLight()
@@ -111,9 +126,9 @@ namespace nsK2EngineLow {
             return m_light;
         }
 
+
     private:
         Light               m_light;  //シーンライト。
-        Light               m_pointlight;  //シーンライト。
         ModelRender         m_modelRender;
         ModelInitData       m_InitData;
     };

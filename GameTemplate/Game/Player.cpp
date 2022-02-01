@@ -34,22 +34,7 @@ void Player::Update()
 
 	// 右スティック(キーボード：上下左右)で回転。
 	m_rotation.AddRotationY(g_pad[0]->GetRStickXF() * 0.05f);
-//	m_rotation.AddRotationX(g_pad[0]->GetRStickYF() * 0.05f);
 
-/*	// 上下左右キー(キーボード：2, 4, 6, 8)で拡大
-	if (g_pad[0]->IsPress(enButtonUp)) {
-		m_scale.y += 0.02f;
-	}
-	if (g_pad[0]->IsPress(enButtonDown)) {
-		m_scale.y -= 0.02f;
-	}
-	if (g_pad[0]->IsPress(enButtonRight)) {
-		m_scale.x += 0.02f;
-	}
-	if (g_pad[0]->IsPress(enButtonLeft)) {
-		m_scale.x -= 0.02f;
-	}
-*/
 	// アニメーションの切り替え。
 	if (g_pad[0]->IsPress(enButtonA)) {
 		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.2f);

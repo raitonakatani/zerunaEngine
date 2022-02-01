@@ -3,15 +3,6 @@
 
 bool Background::Start()
 {
-/*	initData.m_tkmFilePath = "Assets/modelData/bg/bg.tkm";
-	// シェーダーファイルのファイルパスを指定する。
-	initData.m_fxFilePath = "Assets/shader/model.fx";
-	// 頂点シェーダーのエントリーポイント
-	initData.m_vsEntryPointFunc = "VSMain";
-	m_model.Init(initData);
-
-	m_physicsStaticObject.CreateFromModel(m_model, m_model.GetWorldMatrix());
-*/
 
 	m_modelRender.Init("Assets/modelData/bg/bg.tkm");
 	
@@ -24,7 +15,7 @@ bool Background::Start()
 }
 void Background::Update()
 {
-	//m_modelRender.Update();
+
 }
 void Background::Render(RenderContext& rc)
 {

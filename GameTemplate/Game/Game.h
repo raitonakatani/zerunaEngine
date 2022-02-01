@@ -15,6 +15,8 @@ private:
 	//DirectionalLight directionalLight;
 
 	float posi = 0.0f;
+	float posi2 = 0.0f;
+	float posi3 = 1.0f;
 
 	Player* m_player = nullptr;	// ÉvÉåÉCÉÑÅ[
 	Background* m_background = nullptr; // îwåi

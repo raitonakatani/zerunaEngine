@@ -76,8 +76,9 @@ using namespace Microsoft::WRL;
 #include "ModelRender.h"
 #include "HID/GamePad.h"
 
-#include "DirectionalLight.h"
-#include "PointLight.h"
+#include "LightALL.h"
+//#include "DirectionalLight.h"
+//#include "PointLight.h"
 
 #include "graphics/GaussianBlur.h"
 

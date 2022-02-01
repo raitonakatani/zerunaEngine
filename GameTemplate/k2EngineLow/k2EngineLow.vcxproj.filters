@@ -228,6 +228,7 @@
     <ClCompile Include="ModelRender.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="LightALL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -505,6 +506,7 @@
     <ClInclude Include="ModelRender.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="LightALL.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">
