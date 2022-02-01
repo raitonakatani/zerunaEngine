@@ -280,7 +280,7 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     
     
     // step-14 スポットライトの反射光を最終的な反射光に足し算する
- //   finalLig += diffSpotLight + specSpotLight;
+    finalLig += diffSpotLight + specSpotLight;
     
         // step-6 最終的な反射光にリムライトの反射光を合算する
     float3 limColor = limPower * directionlight.dirColor;

@@ -46,7 +46,7 @@ void Game::Update()
 		posi = -1.0f;
 	}
 
-	g_Light.SetLigDirection({ posi, -1.0f, 1.0f });
+	//g_Light.SetLigDirection({ posi, -1.0f, 1.0f });
 
 
 
