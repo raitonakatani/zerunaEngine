@@ -30,23 +30,16 @@ void Game::Update()
 
 	if (g_pad[0]->IsPress(enButtonX))
 	{
-		posi -= 0.01f;
+		posi--;
 	}
 	if (g_pad[0]->IsPress(enButtonY))
 	{
-		posi += 0.01f;
+		posi++;
 	}
 
-	if (posi >= 1.0f)
-	{
-		posi = 1.0f;
-	}
-	if (posi <= -1.0f)
-	{
-		posi = -1.0f;
-	}
+	
 
-	//g_Light.SetLigDirection({ posi, -1.0f, 1.0f });
+	g_Light.SetLigPointColor({ posi, 10.0f, 3.0f });
 
 
 

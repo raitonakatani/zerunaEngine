@@ -263,7 +263,7 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     specSpotLight *= affect;
     // ディレクションライト+ポイントライト+環境光を求める
     float3 finalLig = directionLig
-                 //   + pointLig
+                    + pointLig
                     + ambientlight.ambientLight;
 
     

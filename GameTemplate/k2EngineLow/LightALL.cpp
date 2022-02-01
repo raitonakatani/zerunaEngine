@@ -36,9 +36,9 @@ namespace nsK2EngineLow {
 		m_light.pointlight.ptPosition.z = 50.0f;
 
 		// ポイントライトのカラーを設定する
-		m_light.pointlight.ptColor.x = 0.5f;
-		m_light.pointlight.ptColor.y = 0.5f;
-		m_light.pointlight.ptColor.z = 0.5f;
+		m_light.pointlight.ptColor.x = 4.0f;
+		m_light.pointlight.ptColor.y = 10.0f;
+		m_light.pointlight.ptColor.z = 7.0f;
 
 		// ポイントライトの影響範囲を設定する
 		m_light.pointlight.ptRange = 100.0f;
