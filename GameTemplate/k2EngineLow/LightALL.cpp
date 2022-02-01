@@ -59,8 +59,8 @@ namespace nsK2EngineLow {
 		m_light.spotlight.spPosition.z = 50.0f;
 		//ライトのカラーを設定。R = 10、G = 10、B = 10にする。
 		m_light.spotlight.spColor.x = 10.0f;
-		m_light.spotlight.spColor.y = 1.0f;
-		m_light.spotlight.spColor.z = 1.0f;
+		m_light.spotlight.spColor.y = 5.0f;
+		m_light.spotlight.spColor.z = 15.0f;
 
 		//初期方向は斜め下にする。
 		m_light.spotlight.spDirection.x = 0.0f;
