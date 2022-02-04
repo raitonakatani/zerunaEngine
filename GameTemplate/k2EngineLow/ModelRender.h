@@ -129,6 +129,10 @@ namespace nsK2EngineLow {
 			return m_model.GetWorldMatrix();
 		}
 
+
+
+		const char* a;
+
 	private:
 		/// <summary>
 		/// スケルトンの初期化。
@@ -151,5 +155,6 @@ namespace nsK2EngineLow {
 		bool						m_isEnableInstancingDraw = false;	// インスタンシング描画が有効？
 		std::unique_ptr<Matrix[]>	m_worldMatrixArray;					// ワールド行列の配列。
 		StructuredBuffer			m_worldMatrixArraySB;				// ワールド行列の配列のストラクチャードバッファ。
+		
 	};
 }

@@ -36,9 +36,9 @@ namespace nsK2EngineLow {
 		m_light.pointlight.ptPosition.z = 50.0f;
 
 		// ポイントライトのカラーを設定する
-		m_light.pointlight.ptColor.x = 4.0f;
-		m_light.pointlight.ptColor.y = 10.0f;
-		m_light.pointlight.ptColor.z = 7.0f;
+		m_light.pointlight.ptColor.x = 0.5f;
+		m_light.pointlight.ptColor.y = 10.5f;
+		m_light.pointlight.ptColor.z = 0.5f;
 
 		// ポイントライトの影響範囲を設定する
 		m_light.pointlight.ptRange = 100.0f;
@@ -50,7 +50,7 @@ namespace nsK2EngineLow {
 
 
 		// 視点の位置を設定する
-		m_light.eyePos = (Vector3{ 0.0f, 0.0f, 1.0f });
+		m_light.eyePos = g_camera3D->GetPosition();
 
 		// step-2 スポットライトのデータを初期化する
 	  //初期座標はX = 0、Y = 50、Z = 0にする。
@@ -59,8 +59,8 @@ namespace nsK2EngineLow {
 		m_light.spotlight.spPosition.z = 50.0f;
 		//ライトのカラーを設定。R = 10、G = 10、B = 10にする。
 		m_light.spotlight.spColor.x = 10.0f;
-		m_light.spotlight.spColor.y = 5.0f;
-		m_light.spotlight.spColor.z = 15.0f;
+		m_light.spotlight.spColor.y = 1.0f;
+		m_light.spotlight.spColor.z = 1.0f;
 
 		//初期方向は斜め下にする。
 		m_light.spotlight.spDirection.x = 0.0f;
@@ -84,7 +84,8 @@ namespace nsK2EngineLow {
 
 	void LightALL::Update()
 	{
-
+		// 視点の位置を設定する
+		m_light.eyePos = g_camera3D->GetPosition();
 
 	}
 

@@ -77,6 +77,7 @@ using namespace Microsoft::WRL;
 #include "HID/GamePad.h"
 
 #include "LightALL.h"
+#include "PostEffect.h"
 //#include "DirectionalLight.h"
 //#include "PointLight.h"
 

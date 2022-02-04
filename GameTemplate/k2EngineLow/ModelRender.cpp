@@ -43,10 +43,10 @@ namespace nsK2EngineLow {
 		//tkmファイルのファイルパスを指定する。
 		m_InitData.m_tkmFilePath = filePath;
 
+		a = filePath;
+
 		//シェーダーファイルのファイルパスを指定する。
 		m_InitData.m_fxFilePath = "Assets/shader/model.fx";
-
-
 
 		m_animationClips = animationClips;
 		
@@ -92,6 +92,7 @@ namespace nsK2EngineLow {
 
 	void ModelRender::Draw(RenderContext& rc)
 	{
+
 		m_model.Draw(rc);
 	}
 	
