@@ -1,24 +1,28 @@
+/*!
+ * @brief ブルーム
+ */
+
 cbuffer cb : register(b0)
 {
-    float4x4 mvp;       // MVP行列
-    float4 mulColor;    // 乗算カラー
+    float4x4 mvp; // MVP行列
+    float4 mulColor; // 乗算カラー
 };
 
 struct VSInput
 {
     float4 pos : POSITION;
-    float2 uv  : TEXCOORD0;
+    float2 uv : TEXCOORD0;
 };
 
 struct PSInput
 {
     float4 pos : SV_POSITION;
-    float2 uv  : TEXCOORD0;
+    float2 uv : TEXCOORD0;
 };
 
-Texture2D<float4> sceneTexture : register(t0);  // シーンテクスチャ
-sampler Sampler : register(s0);
-
+/*!
+ * @brief 頂点シェーダー
+ */
 PSInput VSMain(VSInput In)
 {
     PSInput psIn;
@@ -27,14 +31,28 @@ PSInput VSMain(VSInput In)
     return psIn;
 }
 
-float4 PSMain(PSInput In) : SV_Target0
-{
-    float4 color = sceneTexture.Sample(Sampler, In.uv);
+Texture2D<float4> mainRenderTargetTexture : register(t0); // メインレンダリングターゲットのテクスチャ
+sampler Sampler : register(s0);
 
-    // step-7 ピクセルカラーをモノクロ化する
-    float Y = 0.299f * color.r + 0.587f * color.b + 0.114f * color.b;
-    color.r = Y;
-    color.g = Y;
-    color.b = Y;
+/////////////////////////////////////////////////////////
+// 輝度抽出用
+/////////////////////////////////////////////////////////
+/*!
+ * @brief 輝度抽出用のピクセルシェーダー
+ */
+float4 PSSamplingLuminance(PSInput In) : SV_Target0
+{
+    // step-14 輝度を抽出するピクセルシェーダーを実装
+    // メインレンダリングターゲットからカラーをサンプリング
+    float4 color = mainRenderTargetTexture.Sample(Sampler, In.uv);
+
+    // サンプリングしたカラーの明るさを計算
+    float t = dot(color.xyz, float3(0.2125f, 0.7154f, 0.0721f));
+
+    // clip()関数は引数の値がマイナスになると、以降の処理をスキップする
+    // なので、マイナスになるとピクセルカラーは出力されない
+    // 今回の実装はカラーの明るさが1以下ならピクセルキルする
+    clip(t - 1.0f);
+
     return color;
 }

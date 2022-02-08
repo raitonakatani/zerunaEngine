@@ -6,12 +6,9 @@ namespace nsK2EngineLow {
 	{
 	public:
 
-		PostEffect() {}
-		~PostEffect() {}
-
-		bool Start();
-
+		void Init();
+		RenderTarget mainRenderTarget;
 
 	};
-
+	extern PostEffect g_posteffect;
 }

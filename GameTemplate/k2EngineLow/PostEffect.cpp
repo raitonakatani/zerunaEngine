@@ -3,27 +3,18 @@
 
 namespace nsK2EngineLow {
 
-	bool PostEffect::Start()
+	PostEffect g_posteffect;
+
+	void PostEffect::Init()
 	{
-		ModelRender m;
-
-		// 各種モデルを初期化する
-		// 背景モデルを初期化
-		ModelInitData bgModelInitData;
-		bgModelInitData.m_tkmFilePath = m.a;
-		bgModelInitData.m_fxFilePath = "Assets/shader/3D.fx";
-
-		// 背景モデルを初期化
-		Model bgModel;
-		bgModel.Init(bgModelInitData);
-
-		// プレイヤーモデルを初期化
-		ModelInitData plModelInitData;
-		plModelInitData.m_tkmFilePath = m.a;
-		plModelInitData.m_fxFilePath = "Assets/shader/3D.fx";
-		Model plModel;
-		plModel.Init(plModelInitData);
-
-		return true;
+	mainRenderTarget.Create(
+		1600,
+		900,
+		1,
+		1,
+		//【注目】カラーバッファのフォーマットを32bit浮動小数点にしている。
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_D32_FLOAT
+	);
 	}
 }

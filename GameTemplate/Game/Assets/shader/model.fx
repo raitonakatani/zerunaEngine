@@ -54,39 +54,7 @@ struct Ambientlight
 {
     float3 ambientLight; // アンビエントライト
 };
-/*
-struct Light
-{
-           // g_PointLight.pointlight;
-    Pointlight pointlight; //ポイントライト。
-    Ambientlight ambientlight; //アンビエントライト。(環境光)
-    Directionlight directionlight; //ディレクションライト。
-    Spotlight spotlight; //スポットライト。
-    
-    float3 eyePos; // 視点の位置
-   
-     // ディレクションライト用のデータ
-    float3 dirDirection; // ライトの方向
-    float3 dirColor; // ライトのカラー
 
-    // 定数バッファーにポイントライト用の変数を追加
-    float3 ptPosition; //ポイントライトの位置。
-    float3 ptColor; //ポイントライトのカラー。
-    float ptRange; //ポイントライトの影響範囲。
-
-    // step-5 スポットライトのデータにアクセスするための変数を追加する
-    float3 spPosition; //スポットライトの位置。
-    float3 spColor; //スポットライトのカラー。
-    float spRange; //スポットライトの射出範囲。
-    float3 spDirection; //スポットライトの射出方向。
-    float spAngle; //スポットライトの射出角度。
-    
-    float3 eyePos; // 視点の位置
-    
-    float3 ambientLight; // アンビエントライト
-        
-};
-*/
 
 ///////////////////////////////////////////
 // 定数バッファ
@@ -263,7 +231,7 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     specSpotLight *= affect;
     // ディレクションライト+ポイントライト+環境光を求める
     float3 finalLig = directionLig
-                 //   + pointLig
+                    + pointLig
                     + ambientlight.ambientLight;
 
     
