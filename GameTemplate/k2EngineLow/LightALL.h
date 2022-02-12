@@ -123,6 +123,8 @@ namespace nsK2EngineLow {
     private:
         Light               m_light;  //シーンライト。
    
+        float posi = 0.0f;
+
         ModelRender         m_modelRender;
         ModelInitData       m_InitData;
     };

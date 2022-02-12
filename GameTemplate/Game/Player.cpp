@@ -33,7 +33,7 @@ void Player::Update()
 	moveSpeed.z = g_pad[0]->GetLStickYF() * -120.0f;
 
 	// 右スティック(キーボード：上下左右)で回転。
-	m_rotation.AddRotationY(g_pad[0]->GetRStickXF() * 0.05f);
+//	m_rotation.AddRotationY(g_pad[0]->GetRStickXF() * 0.05f);
 
 	// アニメーションの切り替え。
 	if (g_pad[0]->IsPress(enButtonA)) {
