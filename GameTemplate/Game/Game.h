@@ -2,6 +2,9 @@
 
 // ‘O•ûéŒ¾B
 class Player;
+class GameCamera;
+class TankEnemy;
+class Enemy3;
 class Background;
 
 class Game : public IGameObject
@@ -12,12 +15,10 @@ public:
 	void Update();
 private:
 
-	//DirectionalLight directionalLight;
 
-	float posi = 0.0f;
-	float posi2 = 0.0f;
-	float posi3 = 1.0f;
-
-	Player* m_player = nullptr;	// ƒvƒŒƒCƒ„[
-	Background* m_background = nullptr; // ”wŒi
+	Player* m_player = nullptr;				// ƒvƒŒƒCƒ„[
+	GameCamera* m_gameCamera = nullptr;		// ƒJƒƒ‰
+	TankEnemy* m_tank = nullptr;			// “G
+	Enemy3* m_enemy3 = nullptr;				// “G
+	Background* m_background = nullptr;		// ”wŒi
 };

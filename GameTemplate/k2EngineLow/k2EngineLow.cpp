@@ -5,13 +5,16 @@
 namespace nsK2EngineLow {
 	K2EngineLow* g_engine = nullptr;
 	GameTime* g_gameTime = nullptr;
+//	CollisionObjectManager* g_collisionObjectManager = nullptr;
 
 	K2EngineLow::~K2EngineLow()
 	{
 		// グローバルなアクセスポイントにnullptrを代入。
 		g_graphicsEngine = nullptr;
 		g_gameTime = nullptr;
-		
+
+//		g_collisionObjectManager = &m_collisionObjectManager;
+
 		delete m_graphicsEngine;
 		
 		//ゲームオブジェクトマネージャーを削除。
@@ -21,6 +24,7 @@ namespace nsK2EngineLow {
 
 		delete g_soundEngine;
 	}
+
 	void K2EngineLow::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeight)
 	{
 		if (hwnd) {
@@ -33,7 +37,7 @@ namespace nsK2EngineLow {
 		for (int i = 0; i < GamePad::CONNECT_PAD_MAX; i++) {
 			g_pad[i] = &m_pad[i];
 		}
-
+		
 		GameObjectManager::CreateInstance();
 		PhysicsWorld::CreateInstance();
 		g_soundEngine = new SoundEngine();
@@ -48,6 +52,7 @@ namespace nsK2EngineLow {
 		}
 #endif
 		g_engine = this;
+//		g_collisionObjectManager = nullptr;
 	}
 	void K2EngineLow::BeginFrame()
 	{

@@ -59,7 +59,7 @@ namespace nsK2EngineLow {
 			//スキンメッシュ用の頂点シェーダーのエントリーポイントを指定。
 			m_InitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 
-			m_InitData.m_modelUpAxis = enModelUpAxisY;
+			m_InitData.m_modelUpAxis = enModelUpAxis;
 		}
 		else
 		{
@@ -92,7 +92,6 @@ namespace nsK2EngineLow {
 
 	void ModelRender::Draw(RenderContext& rc)
 	{
-
 		m_model.Draw(rc);
 	}
 	

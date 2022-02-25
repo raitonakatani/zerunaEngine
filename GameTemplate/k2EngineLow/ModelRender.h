@@ -129,7 +129,21 @@ namespace nsK2EngineLow {
 			return m_model.GetWorldMatrix();
 		}
 
-
+		/// <summary>
+		/// アニメーションの再生中？
+		/// </summary>
+		bool IsPlayingAnimation() const
+		{
+			return m_animation.IsPlaying();
+		}
+		/// <summary>
+		/// アニメーション再生の速度を設定する。
+		/// </summary>
+		/// <param name="animationSpeed">数値の分だけ倍にする。</param>
+		void SetAnimationSpeed(const float animationSpeed)
+		{
+			m_animationSpeed = animationSpeed;
+		}
 
 		const char* a;
 

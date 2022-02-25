@@ -54,7 +54,6 @@ namespace nsK2EngineLow {
 		/// フレームの終了時に呼ばれる処理。
 		/// </summary>
 		void EndFrame();
-
 		/// <summary>
 		/// ゲームエンジンの初期化。
 		/// </summary>
@@ -201,6 +200,7 @@ namespace nsK2EngineLow {
 			m_frameRateInfo.maxFPS = maxFPS;
 		}
 		
+		
 	private:
 #ifdef K2_DEBUG
 		std::unique_ptr<Font> m_fpsFont;
@@ -217,6 +217,7 @@ namespace nsK2EngineLow {
 		GameTime m_gameTime;
 		FPSLimitter m_fpsLimitter;						// FPSに制限をかける処理。
 		FrameRateInfo m_frameRateInfo = { enFrameRateMode_Variable , 60};
+//		CollisionObjectManager m_collisionObjectManager;	// 
 	};
 
 	extern K2EngineLow* g_engine;	// 低レベルK2エンジン。

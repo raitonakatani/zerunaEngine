@@ -229,7 +229,7 @@
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="LightALL.cpp" />
-    <ClCompile Include="PostEffect.cpp" />
+    <ClCompile Include="CollisionObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -508,7 +508,7 @@
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="LightALL.h" />
-    <ClInclude Include="PostEffect.h" />
+    <ClInclude Include="CollisionObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">

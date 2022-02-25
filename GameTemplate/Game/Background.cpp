@@ -4,8 +4,12 @@
 bool Background::Start()
 {
 
-	m_modelRender.Init("Assets/modelData/bg/bg.tkm");
+	m_modelRender.Init("Assets/modelData/stage/RPG.stage.tkm");
 	
+	m_modelRender.SetPosition({ 0.0f,-900.0f,0.0f });
+	m_modelRender.SetScale({ 0.5f,0.5f,0.5 });
+	m_modelRender.Update();
+
 	// 静的物理オブジェクトを作成。
 	m_physicsStaticObject.CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
 

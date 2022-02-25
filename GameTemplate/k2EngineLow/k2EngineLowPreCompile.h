@@ -77,7 +77,7 @@ using namespace Microsoft::WRL;
 #include "HID/GamePad.h"
 
 #include "LightALL.h"
-#include "PostEffect.h"
+//#include "CollisionObject.h"
 //#include "DirectionalLight.h"
 //#include "PointLight.h"
 
@@ -115,3 +115,6 @@ static const int MAX_BONE = 512;	// É{Å[ÉìÇÃç≈ëÂêîÅB
 #include "graphics/effect/EffectEngine.h"
 #include "sound/SoundSource.h"
 #include "graphics/effect/EffectEmitter.h"
+
+using namespace nsK2EngineLow;
+#include "CollisionObject.h"
