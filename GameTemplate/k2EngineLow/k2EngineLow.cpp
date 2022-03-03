@@ -5,15 +5,21 @@
 namespace nsK2EngineLow {
 	K2EngineLow* g_engine = nullptr;
 	GameTime* g_gameTime = nullptr;
-//	CollisionObjectManager* g_collisionObjectManager = nullptr;
+//	LightALL* g_sceneLight = nullptr;
+//	RenderingEngine* g_renderingEngine = nullptr;
+	CollisionObjectManager* g_collisionObjectManager = nullptr;
 
 	K2EngineLow::~K2EngineLow()
 	{
 		// グローバルなアクセスポイントにnullptrを代入。
 		g_graphicsEngine = nullptr;
 		g_gameTime = nullptr;
+		g_collisionObjectManager = nullptr;
+		//const InitData& initData;
 
-//		g_collisionObjectManager = &m_collisionObjectManager;
+//		g_renderingEngine = &m_renderingEngine;
+	//	m_renderingEngine.Init(initData.isSoftShadow);
+		
 
 		delete m_graphicsEngine;
 		
@@ -37,6 +43,8 @@ namespace nsK2EngineLow {
 		for (int i = 0; i < GamePad::CONNECT_PAD_MAX; i++) {
 			g_pad[i] = &m_pad[i];
 		}
+
+		g_collisionObjectManager = &m_collisionObjectManager;
 		
 		GameObjectManager::CreateInstance();
 		PhysicsWorld::CreateInstance();
@@ -52,7 +60,8 @@ namespace nsK2EngineLow {
 		}
 #endif
 		g_engine = this;
-//		g_collisionObjectManager = nullptr;
+//		g_renderingEngine = nullptr;
+	
 	}
 	void K2EngineLow::BeginFrame()
 	{
@@ -100,6 +109,12 @@ namespace nsK2EngineLow {
 	void K2EngineLow::ExecuteRender()
 	{
 		auto& renderContext = g_graphicsEngine->GetRenderContext();
+
+		// レンダリングエンジンの更新。
+//		m_renderingEngine.Update();
+		//レンダリングエンジンを実行。		
+//		m_renderingEngine.Execute(renderContext);
+
 		// ゲームオブジェクトマネージャーの描画処理を実行。
 		GameObjectManager::GetInstance()->ExecuteRender(renderContext);
 		

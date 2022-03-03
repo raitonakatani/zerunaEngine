@@ -13,9 +13,12 @@ public:
 	~Game();
 	bool Start();
 	void Update();
+	void Render(RenderContext& rc);
+
 private:
 
-
+	SpriteRender m_spriteRender;
+	SpriteRender m_pressButton;
 	Player* m_player = nullptr;				// プレイヤー
 	GameCamera* m_gameCamera = nullptr;		// カメラ
 	TankEnemy* m_tank = nullptr;			// 敵

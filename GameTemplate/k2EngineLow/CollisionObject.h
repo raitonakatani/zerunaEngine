@@ -334,4 +334,6 @@ namespace nsK2EngineLow {
 		std::vector<CollisionObject*>		m_findMatchForwardNameCollisionObjectVector;
 	};
 
+	extern CollisionObjectManager* g_collisionObjectManager;
+
 }

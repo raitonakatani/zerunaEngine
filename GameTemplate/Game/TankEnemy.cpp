@@ -26,26 +26,27 @@ TankEnemy::~TankEnemy()
 bool TankEnemy::Start()
 {
 	//アニメーションを読み込む。
-	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/enemy3/idle.tka");
+	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/enemy/idle.tka");
 	m_animationClips[enAnimationClip_Idle].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Walk].Load("Assets/animData/enemy3/walk.tka");
+	m_animationClips[enAnimationClip_Walk].Load("Assets/animData/enemy/walk.tka");
 	m_animationClips[enAnimationClip_Walk].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Attack].Load("Assets/animData/enemy3/attack.tka");
+	m_animationClips[enAnimationClip_Attack].Load("Assets/animData/enemy/attack.tka");
 	m_animationClips[enAnimationClip_Attack].SetLoopFlag(false);
-	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy3/damage.tka");
-	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
-	m_animationClips[enAnimationClip_Down].Load("Assets/animData/enemy3/sibou.tka");
-	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
+//	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy3/damage.tka");
+//	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
+//	m_animationClips[enAnimationClip_Down].Load("Assets/animData/enemy3/sibou.tka");
+//	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
 	//モデルを読み込む。
-	m_modelRender.Init("Assets/modelData/Enemy/enemy2.tkm", m_animationClips, enAnimationClip_Num);
+	m_modelRender.Init("Assets/modelData/Enemy/enemy.tkm", m_animationClips, enAnimationClip_Num);
 
 	//座標を設定する。
 	m_modelRender.SetPosition(m_position);
 	//回転を設定する。
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
-	m_modelRender.SetScale(m_scale);
-
+	//m_modelRender.SetScale(m_scale);
+	m_modelRender.SetScale({ 1.5f,1.5f,1.5 });
+	m_modelRender.Update();
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
@@ -132,14 +133,14 @@ void TankEnemy::Chase()
 
 void TankEnemy::Collision()
 {
-	//被ダメージ、あるいはダウンステートの時は。
+/*	//被ダメージ、あるいはダウンステートの時は。
 	//当たり判定処理はしない。
 	if (m_EnemyState == enEnemyState_ReceiveDamage ||
 		m_EnemyState == enEnemyState_Down)
 	{
 		return;
 	}
-
+*/
 	/* {
 			//プレイヤーの攻撃用のコリジョンを取得する。
 			const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
@@ -387,7 +388,7 @@ void TankEnemy::ManageState()
 		//攻撃ステートのステート遷移処理。
 		ProcessAttackStateTransition();
 		break;
-		//被ダメージステートの時。
+/*		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:
 		//被ダメージステートのステート遷移処理。
 		ProcessReceiveDamageStateTransition();
@@ -397,7 +398,7 @@ void TankEnemy::ManageState()
 		//ダウンステートのステート遷移処理。
 		ProcessDownStateTransition();
 		break;
-	}
+*/	}
 }
 
 void TankEnemy::PlayAnimation()
@@ -422,7 +423,7 @@ void TankEnemy::PlayAnimation()
 		//攻撃アニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Attack, 0.1f);
 		break;
-		//被ダメージステートの時。
+/*		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:
 		m_modelRender.SetAnimationSpeed(1.1f);
 		//被ダメージアニメーションを再生。
@@ -433,7 +434,7 @@ void TankEnemy::PlayAnimation()
 		//ダウンアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.1f);
 		break;
-	default:
+*/	default:
 		break;
 	}
 }

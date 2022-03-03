@@ -15,9 +15,8 @@ public:
 		enEnemyState_Idle,					//待機。
 		enEnemyState_Chase,				//追跡。
 		enEnemyState_Attack,				//攻撃。
-		enEnemyState_MagicAttack,			//魔法攻撃。
-		enEnemyState_ReceiveDamage,		//被ダメージ。
-		enEnemyState_Down,					//ダウン。
+//		enEnemyState_ReceiveDamage,		//被ダメージ。
+//		enEnemyState_Down,					//ダウン。
 		enEnemyState_model
 	};
 public:
@@ -137,8 +136,8 @@ private:
 		enAnimationClip_Idle,					//待機アニメーション。
 		enAnimationClip_Walk,					//歩きアニメーション。
 		enAnimationClip_Attack,					//攻撃アニメーション。
-		enAnimationClip_Damage,					//被ダメージアニメーション。
-		enAnimationClip_Down,					//ダウンアニメーション。
+//		enAnimationClip_Damage,					//被ダメージアニメーション。
+//		enAnimationClip_Down,					//ダウンアニメーション。
 		enAnimationClip_Num,					//アニメーションの数。
 	};
 	AnimationClip				m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。

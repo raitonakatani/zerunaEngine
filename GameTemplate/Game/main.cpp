@@ -42,43 +42,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	//ゲームシーンを描画するレンダリングターゲットを作成
 	g_posteffect.Init();
+	g_posteffect.SpriteInit();
 
-	
-	// step-3 輝度抽出用のレンダリングターゲットを作成
-	RenderTarget luminnceRenderTarget;
-	//解像度、ミップマップレベル
-	luminnceRenderTarget.Create(
-		1600,		//解像度はメインレンダリングターゲットと同じ。
-		900,		//解像度はメインレンダリングターゲットと同じ。
-		1,
-		1,
-		//【注目】カラーバッファのフォーマットを32bit浮動小数点にしている。
-		DXGI_FORMAT_R32G32B32A32_FLOAT,
-		DXGI_FORMAT_D32_FLOAT
-	);
-	// step-4 輝度抽出用のスプライトを初期化
-	//初期化情報を作成する。
-	SpriteInitData luminanceSpriteInitData;
-	//輝度抽出用のシェーダーのファイルパスを指定する。
-	luminanceSpriteInitData.m_fxFilePath = "Assets/shader/PostEffect.fx";
-	//頂点シェーダーのエントリーポイントを指定する。
-	luminanceSpriteInitData.m_vsEntryPointFunc = "VSMain";
-	//ピクセルシェーダーのエントリーポイントを指定する。
-	luminanceSpriteInitData.m_psEntryPoinFunc = "PSSamplingLuminance";
-	//スプライトの幅と高さはluminnceRenderTargetと同じ。
-	luminanceSpriteInitData.m_width = 1600;
-	luminanceSpriteInitData.m_height = 900;
-	//テクスチャはメインレンダリングターゲットのカラーバッファ。
-	luminanceSpriteInitData.m_textures[0] = &g_posteffect.mainRenderTarget.GetRenderTargetTexture();
-	//描き込むレンダリングターゲットのフォーマットを指定する。
-	luminanceSpriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-
-	//作成した初期化情報をもとにスプライトを初期化する。
-	Sprite luminanceSprite;
-	luminanceSprite.Init(luminanceSpriteInitData);
 	// step-5 ガウシアンブラーを初期化
 	GaussianBlur gaussianBlur;
-	gaussianBlur.Init(&luminnceRenderTarget.GetRenderTargetTexture());
+	gaussianBlur.Init(&g_posteffect.luminnceRenderTarget.GetRenderTargetTexture());
 	// step-6 ボケ画像を加算合成するスプライトを初期化
 	//初期化情報を設定する。
 	SpriteInitData finalSpriteInitData;
@@ -144,15 +112,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		//輝度抽出
 		//輝度抽出用のレンダリングターゲットに変更。
-		renderContext.WaitUntilToPossibleSetRenderTarget(luminnceRenderTarget);
+		renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.luminnceRenderTarget);
 		//レンダリングターゲットを設定。
-		renderContext.SetRenderTargetAndViewport(luminnceRenderTarget);
+		renderContext.SetRenderTargetAndViewport(g_posteffect.luminnceRenderTarget);
 		//レンダリングターゲットをクリア。
-		renderContext.ClearRenderTargetView(luminnceRenderTarget);
+		renderContext.ClearRenderTargetView(g_posteffect.luminnceRenderTarget);
 		//輝度抽出を行う。
-		luminanceSprite.Draw(renderContext);
+		g_posteffect.luminanceSprite.Draw(renderContext);
 		//レンダリングターゲットへの書き込み終了待ち。
-		renderContext.WaitUntilFinishDrawingToRenderTarget(luminnceRenderTarget);
+		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.luminnceRenderTarget);
 
 		//ガウシアンブラーを実行する。
 		gaussianBlur.ExecuteOnGPU(renderContext, 20);
@@ -174,12 +142,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		);
 
 
-		if (g_pad[0]->IsPress(enButtonLB1))
+		if (g_pad[0]->IsPress(enButtonA))
 		{
-			copyToFrameBufferSprite.Draw(renderContext);
+		//	copyToFrameBufferSprite.Draw(renderContext);
 		}
 
-	
+		g_renderingEngine.SpriteRenderDraw(renderContext);
+
 		// デバッグ描画処理を実行する。
 		g_k2EngineLow->DebubDrawWorld();
 

@@ -2,6 +2,7 @@
 #include "CollisionObject.h"
 
 namespace nsK2EngineLow {
+	
 	CollisionObject::CollisionObject()
 	{
 
@@ -9,14 +10,14 @@ namespace nsK2EngineLow {
 
 	CollisionObject::~CollisionObject()
 	{
-	//	if (g_collisionObjectManager) {
-	//		g_collisionObjectManager->RemoveCollisionObject(this);
-	//	}
+		if (g_collisionObjectManager) {
+		g_collisionObjectManager->RemoveCollisionObject(this);
+		}
 	}
 
 	bool CollisionObject::Start()
 	{
-	//	g_collisionObjectManager->AddCollisionObject(this);
+		g_collisionObjectManager->AddCollisionObject(this);
 		return true;
 	}
 

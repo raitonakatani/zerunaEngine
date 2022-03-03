@@ -48,7 +48,7 @@ using namespace Microsoft::WRL;
 #include "math/Vector.h"
 #include "math/Matrix.h"
 
-#include "k2EngineLow.h"
+//#include "k2EngineLow.h"
 #include "graphics/VertexBuffer.h"
 #include "graphics/IndexBuffer.h"
 #include "graphics/IShaderResource.h"
@@ -75,13 +75,16 @@ using namespace Microsoft::WRL;
 #include "graphics/Model.h"
 #include "ModelRender.h"
 #include "HID/GamePad.h"
-
-#include "LightALL.h"
 //#include "CollisionObject.h"
 //#include "DirectionalLight.h"
 //#include "PointLight.h"
 
 #include "graphics/GaussianBlur.h"
+
+#include "LightALL.h"
+#include "PostEffect.h"
+#include "SpriteRender.h"
+#include "RenderingEngine.h"
 
 const UINT FRAME_BUFFER_W = 1600;	// フレームバッファの幅。
 const UINT FRAME_BUFFER_H = 900;	// フレームバッファの高さ。
@@ -118,3 +121,4 @@ static const int MAX_BONE = 512;	// ボーンの最大数。
 
 using namespace nsK2EngineLow;
 #include "CollisionObject.h"
+#include "k2EngineLow.h"

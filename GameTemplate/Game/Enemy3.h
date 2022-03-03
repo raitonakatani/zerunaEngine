@@ -15,7 +15,6 @@ public:
 		enEnemy3State_Idle,					//待機。
 		enEnemy3State_Chase,				//追跡。
 		enEnemy3State_Attack,				//攻撃。
-		enEnemy3State_MagicAttack,			//魔法攻撃。
 		enEnemy3State_ReceiveDamage,		//被ダメージ。
 		enEnemy3State_Down,					//ダウン。
 		enEnemy3State_model

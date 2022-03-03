@@ -26,26 +26,27 @@ Enemy3::~Enemy3()
 bool Enemy3::Start()
 {
 	//アニメーションを読み込む。
-	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/enemy3/idle.tka");
+	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/enemy/idle.tka");
 	m_animationClips[enAnimationClip_Idle].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Walk].Load("Assets/animData/enemy3/walk.tka");
+	m_animationClips[enAnimationClip_Walk].Load("Assets/animData/enemy/walk.tka");
 	m_animationClips[enAnimationClip_Walk].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Attack].Load("Assets/animData/enemy3/attack.tka");
+	m_animationClips[enAnimationClip_Attack].Load("Assets/animData/enemy/attack.tka");
 	m_animationClips[enAnimationClip_Attack].SetLoopFlag(false);
-m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy3/damage.tka");
+	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy/damage.tka");
 	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
-	m_animationClips[enAnimationClip_Down].Load("Assets/animData/enemy3/sibou.tka");
-	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
+//	m_animationClips[enAnimationClip_Down].Load("Assets/animData/enemy3/sibou.tka");
+//	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
 	//モデルを読み込む。
-	m_modelRender.Init("Assets/modelData/Enemy/enemy2.tkm", m_animationClips, enAnimationClip_Num);
+	m_modelRender.Init("Assets/modelData/Enemy/enemy.tkm", m_animationClips, enAnimationClip_Num);
 
 	//座標を設定する。
 	m_modelRender.SetPosition(m_position);
 	//回転を設定する。
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
-	m_modelRender.SetScale(m_scale);
-
+	//m_modelRender.SetScale(m_scale);
+	m_modelRender.SetScale({ 2.5f,2.5f,2.5 });
+	m_modelRender.Update();
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
@@ -68,6 +69,7 @@ m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy3/damage.tka
 
 void Enemy3::Update()
 {
+	g_Light.SetLigPoint({ m_position.x+100.0f,50.0f,m_position.z });
 	
 		//追跡処理。
 		Chase();
@@ -140,7 +142,7 @@ void Enemy3::Collision()
 		return;
 	}
 
-/* {
+ {
 		//プレイヤーの攻撃用のコリジョンを取得する。
 		const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
 		//コリジョンの配列をfor文で回す。
@@ -149,32 +151,13 @@ void Enemy3::Collision()
 			//コリジョンとキャラコンが衝突したら。
 			if (collision->IsHit(m_charaCon))
 			{
-				//HPを1減らす。
-				m_hp -= karyoku;
-
-				//音を読み込む。
-				g_soundEngine->ResistWaveFileBank(3, "Assets/sound/3damage.wav");
-				//効果音を再生する。
-				SoundSource* damagese = NewGO<SoundSource>(0);
-				damagese->Init(3);
-				damagese->Play(false);
-				damagese->SetVolume(1.5f);
-
-				//HPが0になったら。
-				if (m_hp <= 0)
-				{
-					//ダウンステートに遷移する。
-					m_Enemy3State = enEnemy3State_Down;
-				}
-				else {
 					//被ダメージステートに遷移する。
 					m_Enemy3State = enEnemy3State_ReceiveDamage;
-				}
 				return;
 			}
 		}
 	}
-*/
+
 }
 
 void Enemy3::Attack()
@@ -392,12 +375,12 @@ void Enemy3::ManageState()
 		//被ダメージステートのステート遷移処理。
 		ProcessReceiveDamageStateTransition();
 		break;
-		//ダウンステートの時。
+/*		//ダウンステートの時。
 	case enEnemy3State_Down:
 		//ダウンステートのステート遷移処理。
 		ProcessDownStateTransition();
 		break;
-	}
+*/	}
 }
 
 void Enemy3::PlayAnimation()
@@ -428,12 +411,12 @@ void Enemy3::PlayAnimation()
 		//被ダメージアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.1f);
 		break;
-		//ダウンステートの時。
+/*		//ダウンステートの時。
 	case enEnemy3State_Down:
 		//ダウンアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.1f);
 		break;
-	default:
+*/	default:
 		break;
 	}
 }

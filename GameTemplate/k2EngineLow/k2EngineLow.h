@@ -217,10 +217,12 @@ namespace nsK2EngineLow {
 		GameTime m_gameTime;
 		FPSLimitter m_fpsLimitter;						// FPSに制限をかける処理。
 		FrameRateInfo m_frameRateInfo = { enFrameRateMode_Variable , 60};
-//		CollisionObjectManager m_collisionObjectManager;	// 
+//		RenderingEngine m_renderingEngine;					// レンダリングエンジン。
+		CollisionObjectManager m_collisionObjectManager;	// 
 	};
 
 	extern K2EngineLow* g_engine;	// 低レベルK2エンジン。
 	extern GameTime* g_gameTime;
+//	extern CollisionObjectManager* g_collisionObjectManager;
 }
 

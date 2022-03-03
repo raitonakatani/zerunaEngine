@@ -96,7 +96,25 @@ namespace nsK2EngineLow {
 		{
 			m_animation.Play(animNo, interpolateTime);
 		}
-
+		/// <summary>
+		/// アニメーションの再生中？
+		/// </summary>
+		bool IsPlayingAnimation() const
+		{
+			return m_animation.IsPlaying();
+		}
+		/// <summary>
+		/// アニメーションの再生速度を設定する
+		/// </summary>
+		/// <param name="animationSpeed">数値の分だけ倍にする</param>
+		void SetAnimationSpeed(const float animationSpeed)
+		{
+			m_animationSpeed = animationSpeed;
+		}
+		void AddAnimationEvent(AnimationEventListener eventListener)
+		{
+			m_animation.AddAnimationEventListener(eventListener);
+		}
 		/// <summary>
 		/// モデルを取得。
 		/// </summary>
@@ -127,22 +145,6 @@ namespace nsK2EngineLow {
 				return m_worldMatrixArray[instanceId];
 			}
 			return m_model.GetWorldMatrix();
-		}
-
-		/// <summary>
-		/// アニメーションの再生中？
-		/// </summary>
-		bool IsPlayingAnimation() const
-		{
-			return m_animation.IsPlaying();
-		}
-		/// <summary>
-		/// アニメーション再生の速度を設定する。
-		/// </summary>
-		/// <param name="animationSpeed">数値の分だけ倍にする。</param>
-		void SetAnimationSpeed(const float animationSpeed)
-		{
-			m_animationSpeed = animationSpeed;
 		}
 
 		const char* a;

@@ -300,7 +300,7 @@ float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 worldP
     t = max(0.0f, t);
 
     // 鏡面反射の強さを絞る
-    t = pow(t, 5.0f);
+    t = pow(t, 500.0f);
 
     // 鏡面反射光を求める
     return lightColor * t;
@@ -347,7 +347,7 @@ float3 CalcLigFromPointLight(SPSIn psIn)
     }
 
     // 影響の仕方を指数関数的にする。今回のサンプルでは3乗している
-    affect = pow(affect, 3.0f);
+    affect = pow(affect, 1.0f);
 
     // 拡散反射光と鏡面反射光に減衰率を乗算して影響を弱める
     diffPoint *= affect;
