@@ -5,6 +5,7 @@
 #include "Background.h"
 #include "TankEnemy.h"
 #include "Enemy3.h"
+#include "SpeedEnemy.h"
 
 Game::~Game()
 {
@@ -22,9 +23,9 @@ bool Game::Start()
 //	m_tank = NewGO<TankEnemy>(0);
 //	m_tank->SetPosition({ 100.0f,0.0f,-100.0f });
 	m_enemy3 = NewGO<Enemy3>(0);
-	m_enemy3->SetPosition({ 0.0f,0.0f,-100.0f });
+	m_enemy3->SetPosition({ 0.0f,0.0f,-500.0f });
 	m_background = NewGO<Background>(0);
-
+	m_speed = NewGO<SpeedEnemy>(0, "speedenemy");
 
 	//‰æ‘œ‚ğ“Ç‚İ‚ŞB
 	m_spriteRender.Init("Assets/sprite/TENEBRIS.dds", 800, 450, AlphaBlendMode_None);

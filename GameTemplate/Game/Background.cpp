@@ -13,7 +13,7 @@ bool Background::Start()
 	// 静的物理オブジェクトを作成。
 	m_physicsStaticObject.CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
 
-	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 	return true;
 }

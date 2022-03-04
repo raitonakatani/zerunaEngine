@@ -6,6 +6,7 @@ class GameCamera;
 class TankEnemy;
 class Enemy3;
 class Background;
+class SpeedEnemy;
 
 class Game : public IGameObject
 {
@@ -24,4 +25,5 @@ private:
 	TankEnemy* m_tank = nullptr;			// “G
 	Enemy3* m_enemy3 = nullptr;				// “G
 	Background* m_background = nullptr;		// ”wŒi
+	SpeedEnemy* m_speed = nullptr;
 };

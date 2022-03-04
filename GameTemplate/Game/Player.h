@@ -12,15 +12,17 @@ public:
 		enPlayerState_Walk,                //歩きステート
 		enPlayerState_Run,                 //走りステート
 		enPlayerState_ReceiveDamage,       //被ダメージステート
+		enPlayerState_Down,                //ダウンステート
 		enPlayerState_Guard,               //ガードステート
 		enPlayerState_Avoidance,           //回避ステート
 		enPlayerState_FirstAttack,         //１撃目の攻撃ステート
 		enPlayerState_SecondAttack,        //２撃目の攻撃ステート
-		enPlayerState_ThirdAttack          //３撃目の攻撃ステート
+		enPlayerState_ThirdAttack,         //３撃目の攻撃ステート
+		enPlayerState_PokeAttack           //突き攻撃ステート
 	};
-public:
+
 	/// <summary>
-	/// 攻撃ステート
+	/// 段階攻撃ステート
 	/// </summary>
 	enum EnAttackState
 	{
@@ -28,6 +30,7 @@ public:
 		enAttackState_SecondAttack,       //２撃目
 		enAttackState_ThirdAttack         //３撃目
 	};
+
 public:
 	bool Start();
 	void Update();
@@ -41,6 +44,7 @@ public:
 	{
 		return m_position;
 	}
+
 private:
 	/// <summary>
 	/// アニメーションの初期化
@@ -124,6 +128,14 @@ private:
 	/// 攻撃ステートの遷移処理
 	/// </summary>
 	void ProcessAttackStateTransition();
+	/// <summary>
+	/// 被ダメージステートの遷移処理
+	/// </summary>
+	void ProcessReceiveDamageStateTransition();
+	/// <summary>
+	/// ダウンステートの遷移処理
+	/// </summary>
+	void ProcessDownStateTransition();
 
 private:
 	// アニメーションクリップの番号を表す列挙型。
@@ -136,25 +148,29 @@ private:
 		enAnimClip_FirstAttack,    //１撃目の攻撃アニメーション
 		enAnimClip_SecondAttack,   //２撃目の攻撃アニメーション
 		enAnimClip_ThirdAttack,    //３撃目の攻撃アニメーション
-		enAnimClip_ReceiveDamage,  //被ダメージステート
+		enAnimClip_PokeAttack,     //突き攻撃アニメーション
+		enAnimClip_ReceiveDamage,  //被ダメージアニメーション
+		enAnimClip_Down,           //ダウンアニメーション
 		enAnimClip_Num,		       //アニメーションの数
 	};
 
 	ModelRender				m_modelRender;                              //モデルレンダー
+	CharacterController     m_charaCon;	                                //キャラコン
 	EnPlayerState           m_playerState = enPlayerState_Idle;         //プレイヤーステート
 	EnAttackState           m_attackState = enAttackState_FirstAttack;  //攻撃ステート
-	Vector3					m_position;					                //座標
-	Vector3                 m_moveSpeed;                                //移動速度
-	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
-	Skeleton                m_skeleton;	                                //スケルトン
-	Quaternion				m_rotation;					                //回転
-	Vector3					m_scale = g_vec3One;		                //拡大率
 	Animation				m_animation;				                //アニメーション
 	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
-	CharacterController     m_charaCon;	                                //キャラコン
+	Vector3					m_position;					                //座標
+	Vector3					m_scale = g_vec3One;		                //拡大率
+	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
+	Vector3                 m_moveSpeed;                                //移動速度
+	Skeleton                m_skeleton;	                                //スケルトン
+	Quaternion				m_rotation;					                //回転
 	float                   m_secondAttackTimer = 0.0f;                 //２撃目の攻撃タイマー
 	float                   m_thirdAttackTimer = 0.0f;                  //３撃目の攻撃タイマー
 	bool                    m_secondAttackFlag = false;                 //２撃目の攻撃フラグ
 	bool                    m_thirdAttackFlag = false;                  //３撃目の攻撃フラグ
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
+	int                     m_swordBoneId = -1;                         //ソードボーンID
+	int                     m_hp = 1;
 };
