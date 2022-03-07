@@ -11,15 +11,16 @@ namespace
 	const float CHARACON_HEIGHT =45.0f;             //キャラコンの高さ
 	const float MODEL_POSITION_Y = 2.5f;            //モデルのY座標
 	const float MOVESPEED_MINIMUMVALUE = 0.001f;    //移動速度の最低値
-	const float MOVESPEED = 150.0f;                 //移動速度
+	const float MOVESPEED = 200.0f;                 //移動速度
+	const float GRAVITY = 1000.0f;                  //重力
 	const float IDLETIMER_MAX = 0.3f;               //待機タイマーの最大値
 	const float IDLETIMER_DEFAULT = 0.0f;           //待機タイマーの初期値
 	const float CHASETIMER_MAX = 1.0f;              //追跡タイマーの最大値
 	const float CHASETIMER_DEFAULT = 0.0f;          //追跡タイマーの初期値
 	const float SEARCH_RANGE = 300.0f;              //プレイヤーを発見できる距離
-	const float SEARCH_ANGLE = 150.0f;              //プレイヤーを発見できる角度
-	const float ATTACK_RANGE = 50.0f;               //攻撃できる距離
-	const int   ATTACK_PROBABILITY = 1;            //攻撃を行う確率
+	const float SEARCH_ANGLE = 130.0f;              //プレイヤーを発見できる角度
+	const float ATTACK_RANGE = 45;					//攻撃できる距離
+	const int   ATTACK_PROBABILITY = 1;             //攻撃を行う確率
 	const float RECEIVE_DAMAGE = 1;                 //プレイヤーから受けるダメージ
 }
 
@@ -40,7 +41,7 @@ void SpeedEnemy::InitAnimation()
 	m_animationClipArray[enAnimClip_Idle].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/speedenemy/run.tka");
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Attack].Load("Assets/animData/speedenemy/attack.tka");
+	m_animationClipArray[enAnimClip_Attack].Load("Assets/animData/speedenemy/attack2.tka");
 	m_animationClipArray[enAnimClip_Attack].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_Shout].Load("Assets/animData/speedenemy/shout.tka");
 	m_animationClipArray[enAnimClip_Shout].SetLoopFlag(false);
@@ -112,6 +113,13 @@ void SpeedEnemy::Chase()
 		//何もしない
 		return;
 	}
+
+	Vector3 diff = m_player->GetPosition() - m_position;
+	//正規化
+	diff.Normalize();
+	//移動速度
+	m_moveSpeed.x = diff.x * MOVESPEED;
+	m_moveSpeed.z = diff.z * MOVESPEED;
 
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
 	if (m_charaCon.IsOnGround()) {
@@ -212,7 +220,7 @@ void SpeedEnemy::MakeAttackCollision()
 	//ボックス状のコリジョンを作成する。
 	collisionObject->CreateBox(collisionPosition,				  //座標。
 		Quaternion::Identity,                                     //回転。
-		Vector3(25.0f, 25.0f, 25.0f)                              //大きさ。
+		Vector3(30.0f, 30.0f, 30.0f)                              //大きさ。
 	);
 
 	Matrix matrix = m_modelRender.GetBone(m_punchBoneId)->GetWorldMatrix();
@@ -227,8 +235,8 @@ void SpeedEnemy::PlayAnimation()
 	{
 		//待機ステートの時
 	case SpeedEnemy::enSpeedEnemyState_Idle:
-		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.5f);
-		m_modelRender.SetAnimationSpeed(1.3f);
+		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.3f);
+		m_modelRender.SetAnimationSpeed(1.6f);
 		break;
 		//追跡ステートの時
 	case SpeedEnemy::enSpeedEnemyState_Chase:
@@ -301,17 +309,9 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	m_idleTimer = IDLETIMER_DEFAULT;
 	m_chaseTimer = CHASETIMER_DEFAULT;
 
-	//プレイヤーに向かうベクトル
-	Vector3 diff = m_player->GetPosition() - m_position;
-	
 	//プレイヤーを発見したら
 	if (SearchPlayer() == true)
 	{
-		//ベクトルの正規化
-		diff.Normalize();
-		//プレイヤーに向かう移動速度
-		m_moveSpeed = diff * MOVESPEED;
-
 		//攻撃できるなら
 		if (IsCanAttack() == true)
 		{

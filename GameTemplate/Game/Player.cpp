@@ -8,10 +8,11 @@ namespace
 	const float CHARACON_RADIUS = 20.0f;            //キャラコンの半径
 	const float CHARACON_HEIGHT = 60.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
-	const float WALK_MOVE_SPEED = 60.0f;            //歩きステートの移動速度
-	const float RUN_MOVE_SPEED = 160.0f;            //走りステートの移動速度
+	const float WALK_MOVESPEED = 60.0f;            //歩きステートの移動速度
+	const float RUN_MOVESPEED = 160.0f;            //走りステートの移動速度
+	const float STEALTHYSTEP_MOVESPEED = 30.0f;     //忍び足ステートの移動速度
 	const float GRAVITY = 1000.0f;                  //重力
-	const float ATTACK_TIME = 1.5f;                //連続攻撃ができる時間
+	const float ATTACK_TIME = 1.5f;                 //連続攻撃ができる時間
 	const float AVOIDANCE_SPEED = 100.0f;           //回避ステートの移動速度
 }
 
@@ -24,8 +25,8 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_Walk].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/player2/run.tka");
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Guard].Load("Assets/animData/player2/guard.tka");
-	m_animationClipArray[enAnimClip_Guard].SetLoopFlag(true);
+	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player2/stealthysteps.tka");
+	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player2/rolling.tka");
 	m_animationClipArray[enAnimClip_Rolling].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/firstattack.tka");
@@ -34,7 +35,7 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_SecondAttack].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_ThirdAttack].Load("Assets/animData/player2/thirdattack.tka");
 	m_animationClipArray[enAnimClip_ThirdAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player/pokeattack.tka");
+	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player2/pokeattack.tka");
 	m_animationClipArray[enAnimClip_PokeAttack].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_ReceiveDamage].Load("Assets/animData/player2/damage.tka");
 	m_animationClipArray[enAnimClip_ReceiveDamage].SetLoopFlag(false);
@@ -81,8 +82,6 @@ void Player::Update()
 	Attack();
 	//連続攻撃処理
 	Hit();
-	//ガード処理
-	Guard();
 	//回避処理
 	Avoidance();
 
@@ -101,6 +100,7 @@ void Player::Move()
 	//待機ステート、歩きステート、走りステート以外だったら
 	if (m_playerState != enPlayerState_Run &&
 		m_playerState != enPlayerState_Walk &&
+		m_playerState != enPlayerState_StealthySteps &&
 		m_playerState != enPlayerState_Idle)
 	{
 		//なにもしない
@@ -124,13 +124,18 @@ void Player::Move()
 	//走りステートだったら
 	if (m_playerState == enPlayerState_Run)
 	{
-		m_moveSpeed += cameraForward * lStick_y * RUN_MOVE_SPEED;
-		m_moveSpeed += cameraRight * lStick_x * RUN_MOVE_SPEED;
+		m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
+		m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
+	}
+
+	else if(m_playerState == enPlayerState_StealthySteps){
+		m_moveSpeed += cameraForward * lStick_y * STEALTHYSTEP_MOVESPEED;
+		m_moveSpeed += cameraRight * lStick_x * STEALTHYSTEP_MOVESPEED;
 	}
 	//それ以外だったら
 	else {
-		m_moveSpeed += cameraForward * lStick_y * WALK_MOVE_SPEED;
-		m_moveSpeed += cameraRight * lStick_x * WALK_MOVE_SPEED;
+		m_moveSpeed += cameraForward * lStick_y * WALK_MOVESPEED;
+		m_moveSpeed += cameraRight * lStick_x * WALK_MOVESPEED;
 	}
 
 	//重力
@@ -296,16 +301,6 @@ void Player::MakeAttackCollision()
 	collisionObject->SetWorldMatrix(matrix);
 }
 
-void Player::Guard()
-{
-	//ガードステート以外だったら
-	if (m_playerState != enPlayerState_Guard)
-	{
-		//何もしない
-		return;
-	}
-}
-
 void Player::Avoidance()
 {
 	//回避ステート以外だったら
@@ -318,18 +313,13 @@ void Player::Avoidance()
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
 }
 
-void Player::MakeGuardCollision()
-{
-
-}
-
 void Player::PlayAnimation()
 {
 	switch (m_playerState)
 	{
 		//待機ステートの時
 	case Player::enPlayerState_Idle:
-		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.3f);
+		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.5f);
 		m_modelRender.SetAnimationSpeed(1.0f);
 		break;
 		//歩きステートの時
@@ -342,10 +332,10 @@ void Player::PlayAnimation()
 		m_modelRender.PlayAnimation(enAnimClip_Run, 0.1f);
 		m_modelRender.SetAnimationSpeed(1.3f);
 		break;
-		//ガードステートの時
-	case Player::enPlayerState_Guard:
-		m_modelRender.PlayAnimation(enAnimClip_Guard, 0.3f);
-		m_modelRender.SetAnimationSpeed(1.4f);
+		//忍び足ステートの時
+	case Player::enPlayerState_StealthySteps:
+		m_modelRender.PlayAnimation(enAnimClip_StealthySteps, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
@@ -372,10 +362,12 @@ void Player::PlayAnimation()
 		m_modelRender.PlayAnimation(enAnimClip_PokeAttack, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
+		//被ダメージステートの時
 	case Player::enPlayerState_ReceiveDamage:
 		m_modelRender.PlayAnimation(enAnimClip_ReceiveDamage, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
+		//ダウンステートの時
 	case Player::enPlayerState_Down:
 		m_modelRender.PlayAnimation(enAnimClip_Down, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
@@ -401,9 +393,9 @@ void Player::ManageState()
 	case Player::enPlayerState_Run:
 		ProcessRunStateTransition();
 		break;
-		//ガードステートの時
-	case Player::enPlayerState_Guard:
-		ProcessGuardStateTransition();
+		//忍び足ステートの時
+	case Player::enPlayerState_StealthySteps:
+		ProcessStealthyStepsStateTransition();
 		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
@@ -425,9 +417,11 @@ void Player::ManageState()
 	case Player::enPlayerState_PokeAttack:
 		ProcessAttackStateTransition();
 		break;
+		//被ダメージステートの時
 	case Player::enPlayerState_ReceiveDamage:
 		ProcessReceiveDamageStateTransition();
 		break;
+		//ダウンステートの時
 	case Player::enPlayerState_Down:
 		ProcessDownStateTransition();
 		break;
@@ -446,14 +440,6 @@ void Player::ProcessCommonStateTransition()
 		return;
 	}
 
-	//LB1ボタンが押されたら
-	if (g_pad[0]->IsPress(enButtonLB1))
-	{
-		//ガードステートへ移行する
-		m_playerState = enPlayerState_Guard;
-		return;
-	}
-
 	//RB1ボタンが押されたら＆攻撃ステート１だったら
 	if (g_pad[0]->IsTrigger(enButtonRB1) && m_attackState == enAttackState_FirstAttack)
 	{
@@ -462,14 +448,6 @@ void Player::ProcessCommonStateTransition()
 
 		return;
 	}
-
-	//if (g_pad[0]->IsPress(enButtonRB1))
-	//{
-	//	m_isUnderAttack = true;
-	//}
-	//else {
-	//	m_isUnderAttack = false;
-	//}
 
 	//RB1ボタンが押されたら＆攻撃ステート２だったら
 	if (g_pad[0]->IsTrigger(enButtonRB1) && m_attackState == enAttackState_SecondAttack)
@@ -496,19 +474,28 @@ void Player::ProcessCommonStateTransition()
 	}
 
 	//xかzの移動速度があったら
-	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
+	else if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
 	{
 		//Aボタンが押されたら
 		if (g_pad[0]->IsPress(enButtonA))
 		{
 			//走りステートへ移行する
 			m_playerState = enPlayerState_Run;
+			return;
 		}
-		//押されなかったら
+		//Xボタンが押されたら
+		if (g_pad[0]->IsPress(enButtonX))
+		{
+			//忍び足ステートへ移行する
+			m_playerState = enPlayerState_StealthySteps;
+			return;
+		}
+		//どのボタンも押されなかったら
 		else
 		{
 			//歩きステートへ移行する
 			m_playerState = enPlayerState_Walk;
+			return;
 		}
 	}
 
@@ -518,6 +505,7 @@ void Player::ProcessCommonStateTransition()
 		//待機ステートに移行する
 		m_playerState = enPlayerState_Idle;
 		return;
+
 	}
 }
 
@@ -539,7 +527,7 @@ void Player::ProcessRunStateTransition()
 	ProcessCommonStateTransition();
 }
 
-void Player::ProcessGuardStateTransition()
+void Player::ProcessStealthyStepsStateTransition()
 {
 	//他のステートに遷移する
 	ProcessCommonStateTransition();

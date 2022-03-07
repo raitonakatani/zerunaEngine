@@ -11,9 +11,9 @@ public:
 		enPlayerState_Idle,                //待機ステート
 		enPlayerState_Walk,                //歩きステート
 		enPlayerState_Run,                 //走りステート
+		enPlayerState_StealthySteps,       //忍び足ステート
 		enPlayerState_ReceiveDamage,       //被ダメージステート
 		enPlayerState_Down,                //ダウンステート
-		enPlayerState_Guard,               //ガードステート
 		enPlayerState_Avoidance,           //回避ステート
 		enPlayerState_FirstAttack,         //１撃目の攻撃ステート
 		enPlayerState_SecondAttack,        //２撃目の攻撃ステート
@@ -75,14 +75,6 @@ private:
 	/// </summary>
 	void MakeAttackCollision();
 	/// <summary>
-	/// ガード処理
-	/// </summary>
-	void Guard();
-	/// <summary>
-	/// 防御の当たり判定を作成する処理
-	/// </summary>
-	void MakeGuardCollision();
-	/// <summary>
 	/// 回避処理
 	/// </summary>
 	void Avoidance();
@@ -117,9 +109,9 @@ private:
 	/// </summary>
 	void ProcessRunStateTransition();
 	/// <summary>
-	/// ガードステートの遷移処理
+	/// 忍び足ステートの遷移処理
 	/// </summary>
-	void ProcessGuardStateTransition();
+	void ProcessStealthyStepsStateTransition();
 	/// <summary>
 	/// 回避ステートの遷移処理
 	/// </summary>
@@ -143,7 +135,7 @@ private:
 		enAnimClip_Idle,	       //待機アニメーション
 		enAnimClip_Walk,           //歩きアニメーション
 		enAnimClip_Run,		       //走りアニメーション
-		enAnimClip_Guard,          //ガード中のアニメーション
+		enAnimClip_StealthySteps,  //忍び足アニメーション
 		enAnimClip_Rolling,        //回転回避アニメーション
 		enAnimClip_FirstAttack,    //１撃目の攻撃アニメーション
 		enAnimClip_SecondAttack,   //２撃目の攻撃アニメーション

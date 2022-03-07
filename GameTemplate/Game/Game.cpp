@@ -25,7 +25,10 @@ bool Game::Start()
 	m_enemy3 = NewGO<Enemy3>(0);
 	m_enemy3->SetPosition({ 0.0f,0.0f,-500.0f });
 	m_background = NewGO<Background>(0);
+
 	m_speed = NewGO<SpeedEnemy>(0, "speedenemy");
+	m_speed->SetPosition({0.0f,0.0f,-300.0f});
+
 
 	//‰æ‘œ‚ğ“Ç‚İ‚ŞB
 	m_spriteRender.Init("Assets/sprite/TENEBRIS.dds", 800, 450, AlphaBlendMode_None);
