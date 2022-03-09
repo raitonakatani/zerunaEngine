@@ -233,6 +233,7 @@
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="SpriteRender.cpp" />
     <ClCompile Include="RenderingEngine.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -515,6 +516,7 @@
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="SpriteRender.h" />
     <ClInclude Include="RenderingEngine.h" />
+    <ClInclude Include="ShadowMap.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">

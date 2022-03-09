@@ -27,15 +27,18 @@ public:
 	/////////////////////////////////////
 	//メンバ変数
 	/////////////////////////////////////
+	
+	Vector3 m_toCameraPos;	//注視点から視点に向かうベクトル。
+
 private:
 	void DeathCamera();
 	void FightCamera();
 private:
-
+	Vector3 toCameraPosOld;
 	fastPlayer* m_fastplayer = nullptr;	//プレイヤー。
 	Player* m_player = nullptr;
 	WarpCounter* warpCounter = nullptr;
-	Vector3 m_toCameraPos;	//注視点から視点に向かうベクトル。
+//	Vector3 m_toCameraPos;	//注視点から視点に向かうベクトル。
 	Vector3 m_Pos;	//注視点から視点に向かうベクトル。
 //	SpringCamera m_springCamera;	//ばねカメラ。
 

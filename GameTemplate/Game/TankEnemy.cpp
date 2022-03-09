@@ -26,18 +26,18 @@ TankEnemy::~TankEnemy()
 bool TankEnemy::Start()
 {
 	//アニメーションを読み込む。
-	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/enemy/idle.tka");
+	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/tankenemy/idle.tka");
 	m_animationClips[enAnimationClip_Idle].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Walk].Load("Assets/animData/enemy/walk.tka");
+	m_animationClips[enAnimationClip_Walk].Load("Assets/animData/tankenemy/walk.tka");
 	m_animationClips[enAnimationClip_Walk].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Attack].Load("Assets/animData/enemy/attack.tka");
+	m_animationClips[enAnimationClip_Attack].Load("Assets/animData/tankenemy/attack.tka");
 	m_animationClips[enAnimationClip_Attack].SetLoopFlag(false);
-//	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy3/damage.tka");
-//	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
-//	m_animationClips[enAnimationClip_Down].Load("Assets/animData/enemy3/sibou.tka");
-//	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/tankenemy/damage.tka");
+	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Down].Load("Assets/animData/tankenemy/sibou.tka");
+	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
 	//モデルを読み込む。
-	m_modelRender.Init("Assets/modelData/Enemy/enemy.tkm", m_animationClips, enAnimationClip_Num);
+	m_modelRender.Init("Assets/modelData/tankEnemy/tank.tkm", m_animationClips, enAnimationClip_Num);
 
 	//座標を設定する。
 	m_modelRender.SetPosition(m_position);
@@ -45,17 +45,20 @@ bool TankEnemy::Start()
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
 	//m_modelRender.SetScale(m_scale);
-	m_modelRender.SetScale({ 1.5f,1.5f,1.5 });
+	m_modelRender.SetScale({ 2.0f,2.0f,2.0 });
 	m_modelRender.Update();
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
 		50.0f,			//半径。
-		200.0f,			//高さ。
+		70.0f,			//高さ。
 		m_position		//座標。
 	);
 
 
+	//「Sword」ボーンのID(番号)を取得する。
+	m_Hand = m_modelRender.FindBoneID(L"LeftHandMiddle2");
+	m_weakness = m_modelRender.FindBoneID(L"Spine");
 
 	m_player = FindGO<Player>("player");
 	m_game = FindGO<Game>("game");
@@ -69,6 +72,7 @@ bool TankEnemy::Start()
 
 void TankEnemy::Update()
 {
+	g_Light.SetLigPoint({ m_position.x + 100.0f,50.0f,m_position.z });
 
 	//追跡処理。
 	Chase();
@@ -133,49 +137,65 @@ void TankEnemy::Chase()
 
 void TankEnemy::Collision()
 {
-/*	//被ダメージ、あるいはダウンステートの時は。
+	//被ダメージ、あるいはダウンステートの時は。
 	//当たり判定処理はしない。
 	if (m_EnemyState == enEnemyState_ReceiveDamage ||
 		m_EnemyState == enEnemyState_Down)
 	{
 		return;
 	}
-*/
-	/* {
-			//プレイヤーの攻撃用のコリジョンを取得する。
-			const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
-			//コリジョンの配列をfor文で回す。
-			for (auto collision : collisions)
+
+	//攻撃当たり判定用のコリジョンオブジェクトを作成する。
+	auto collisionObject = NewGO<CollisionObject>(0);
+	//剣のボーンのワールド行列を取得する。
+	Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
+	//ボックス状のコリジョンを作成する。
+	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(50.0f, 50.0f, 50.0f));
+	collisionObject->SetWorldMatrix(matrix);
+	collisionObject->SetName("enemy_attack");
+
+
+	//プレイヤーの攻撃用のコリジョンを取得する。
+	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+	//コリジョンの配列をfor文で回す。
+	for (auto collision : collisions)
+	{
+		//コリジョンとキャラコンが衝突したら。
+		if (collision->IsHit(collisionObject))
+		{
+				//ダウンステートに遷移する。
+				m_EnemyState = enEnemyState_Down;
+			return;
+		}
+	}
+
+	{
+		//プレイヤーの攻撃用のコリジョンを取得する。
+		const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+		//コリジョンの配列をfor文で回す。
+		for (auto collision : collisions)
+		{
+			//コリジョンとキャラコンが衝突したら。
+			if (collision->IsHit(m_charaCon))
 			{
-				//コリジョンとキャラコンが衝突したら。
-				if (collision->IsHit(m_charaCon))
+
+			//	m_hp -= 1;
+
+				//HPが0になったら。
+				if (m_hp <= 0)
 				{
-					//HPを1減らす。
-					m_hp -= karyoku;
-
-					//音を読み込む。
-					g_soundEngine->ResistWaveFileBank(3, "Assets/sound/3damage.wav");
-					//効果音を再生する。
-					SoundSource* damagese = NewGO<SoundSource>(0);
-					damagese->Init(3);
-					damagese->Play(false);
-					damagese->SetVolume(1.5f);
-
-					//HPが0になったら。
-					if (m_hp <= 0)
-					{
-						//ダウンステートに遷移する。
-						m_EnemyState = enEnemy3State_Down;
-					}
-					else {
-						//被ダメージステートに遷移する。
-						m_Enemy3State = enEnemy3State_ReceiveDamage;
-					}
-					return;
+					//ダウンステートに遷移する。
+					m_EnemyState = enEnemyState_Down;
 				}
+				else {
+					//被ダメージステートに遷移する。
+					m_EnemyState = enEnemyState_ReceiveDamage;
+				}
+				return;
 			}
 		}
-	*/
+
+	}
 }
 
 void TankEnemy::Attack()
@@ -199,7 +219,7 @@ const bool TankEnemy::SearchPlayer() const
 	Vector3 diff = m_player->GetPosition() - m_position;
 
 	//プレイヤーにある程度近かったら.。
-	if (diff.LengthSq() <= 200.0 * 200.0f)
+	if (diff.LengthSq() <= 500.0 * 500.0f)
 	{
 		//エネミーからプレイヤーに向かうベクトルを正規化する。
 		diff.Normalize();
@@ -221,15 +241,15 @@ const bool TankEnemy::SearchPlayer() const
 
 void TankEnemy::MakeAttackCollision()
 {
-	/*	//攻撃当たり判定用のコリジョンオブジェクトを作成する。
-		auto collisionObject = NewGO<CollisionObject>(0);
-		//剣のボーンのワールド行列を取得する。
-		Matrix matrix = m_modelRender.GetBone(m_swordBoneId)->GetWorldMatrix();
-		//ボックス状のコリジョンを作成する。
-		collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(300.0f, 100.0f, 100.0f));
-		collisionObject->SetWorldMatrix(matrix);
-		collisionObject->SetName("TankEnemy_attack");
-		*/
+	//攻撃当たり判定用のコリジョンオブジェクトを作成する。
+	auto collisionObject = NewGO<CollisionObject>(0);
+	//剣のボーンのワールド行列を取得する。
+	Matrix matrix = m_modelRender.GetBone(m_Hand)->GetWorldMatrix();
+	//ボックス状のコリジョンを作成する。
+	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(50.0f, 50.0f, 50.0f));
+	collisionObject->SetWorldMatrix(matrix);
+	collisionObject->SetName("enemy_attack");
+
 }
 
 void TankEnemy::ProcessCommonStateTransition()
@@ -247,7 +267,7 @@ void TankEnemy::ProcessCommonStateTransition()
 		//ベクトルを正規化する。
 		diff.Normalize();
 		//移動速度を設定する。
-		m_moveSpeed = diff * 50.0f;
+		m_moveSpeed = diff * 150.0f;
 
 		Vector3 toPlayerDir = diff;
 		m_forward = toPlayerDir;
@@ -258,13 +278,14 @@ void TankEnemy::ProcessCommonStateTransition()
 		//攻撃できる距離なら。
 		if (IsCanAttack() == true)
 		{
+			m_isUnderAttack = true;
 			//乱数によって、攻撃するか待機させるかを決定する。	
 			int ram = rand() % 100;
 			if (ram >= 5)
 			{
 				//攻撃ステートに遷移する。
 				m_EnemyState = enEnemyState_Attack;
-				m_isUnderAttack = false;
+				//m_isUnderAttack = false;
 				return;
 			}
 			else
@@ -278,6 +299,7 @@ void TankEnemy::ProcessCommonStateTransition()
 		//攻撃できない距離なら。
 		else
 		{
+			m_isUnderAttack = false;
 			//追跡ステートに遷移する。
 			m_EnemyState = enEnemyState_Chase;
 			return;
@@ -349,7 +371,7 @@ void TankEnemy::ProcessReceiveDamageStateTransition()
 		Vector3 diff = m_player->GetPosition() - m_position;
 		diff.Normalize();
 		//移動速度を設定する。
-		m_moveSpeed = diff * 50.0f;
+		m_moveSpeed = diff * 150.0f;
 	}
 }
 
@@ -358,12 +380,6 @@ void TankEnemy::ProcessDownStateTransition()
 	//ダウンアニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		g_soundEngine->ResistWaveFileBank(1, "Assets/sound/1sibouzi.wav");
-		//効果音を再生する。
-		SoundSource* se = NewGO<SoundSource>(0);
-		se->Init(1);
-		se->Play(false);
-		se->SetVolume(1.5f);
 		//自身を削除する。
 		DeleteGO(this);
 	}
@@ -388,7 +404,7 @@ void TankEnemy::ManageState()
 		//攻撃ステートのステート遷移処理。
 		ProcessAttackStateTransition();
 		break;
-/*		//被ダメージステートの時。
+		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:
 		//被ダメージステートのステート遷移処理。
 		ProcessReceiveDamageStateTransition();
@@ -398,7 +414,7 @@ void TankEnemy::ManageState()
 		//ダウンステートのステート遷移処理。
 		ProcessDownStateTransition();
 		break;
-*/	}
+	}
 }
 
 void TankEnemy::PlayAnimation()
@@ -423,9 +439,9 @@ void TankEnemy::PlayAnimation()
 		//攻撃アニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Attack, 0.1f);
 		break;
-/*		//被ダメージステートの時。
+		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:
-		m_modelRender.SetAnimationSpeed(1.1f);
+		m_modelRender.SetAnimationSpeed(1.5f);
 		//被ダメージアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.1f);
 		break;
@@ -434,7 +450,7 @@ void TankEnemy::PlayAnimation()
 		//ダウンアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.1f);
 		break;
-*/	default:
+	default:
 		break;
 	}
 }

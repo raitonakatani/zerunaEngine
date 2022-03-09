@@ -46,18 +46,17 @@ namespace nsK2EngineLow {
         luminanceSpriteInitData.m_width = 1600;
         luminanceSpriteInitData.m_height = 900;
         //テクスチャはメインレンダリングターゲットのカラーバッファ。
-        luminanceSpriteInitData.m_textures[0] = &g_posteffect.mainRenderTarget.GetRenderTargetTexture();
+        luminanceSpriteInitData.m_textures[0] = &mainRenderTarget.GetRenderTargetTexture();
         //描き込むレンダリングターゲットのフォーマットを指定する。
         luminanceSpriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
     
-        luminanceSprite.Init(g_posteffect.luminanceSpriteInitData);
-    }
-  /*      //作成した初期化情報をもとにスプライトを初期化する。
+        luminanceSprite.Init(luminanceSpriteInitData);
+   
+        //作成した初期化情報をもとにスプライトを初期化する。
        
         luminanceSprite.Init(luminanceSpriteInitData);
         // step-5 ガウシアンブラーを初期化
-        GaussianBlur gaussianBlur;
-        gaussianBlur.Init(&g_posteffect.luminnceRenderTarget.GetRenderTargetTexture());
+        gaussianBlur.Init(&luminnceRenderTarget.GetRenderTargetTexture());
 
         // step-6 ボケ画像を加算合成するスプライトを初期化
         //初期化情報を設定する。
@@ -78,7 +77,7 @@ namespace nsK2EngineLow {
         // step-7 テクスチャを貼り付けるためのスプライトを初期化する
         //スプライトの初期化オブジェクトを作成する。
         //テクスチャはmainRenderTargetのカラーバッファ。
-        spriteInitData.m_textures[0] = &g_posteffect.mainRenderTarget.GetRenderTargetTexture();
+        spriteInitData.m_textures[0] = &mainRenderTarget.GetRenderTargetTexture();
         spriteInitData.m_width = 1600;
         spriteInitData.m_height = 900;
         //モノクロ用のシェーダーを指定する。
@@ -86,50 +85,51 @@ namespace nsK2EngineLow {
         //初期化オブジェクトを使って、スプライトを初期化する。
         copyToFrameBufferSprite.Init(spriteInitData);
     }
-    */
+    
     void PostEffect::maint()
     {
+
         //レンダリングターゲットをmainRenderTargetに変更する。
           //レンダリングターゲットとして利用できるまで待つ。
-        renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.mainRenderTarget);
+        renderContext.WaitUntilToPossibleSetRenderTarget(mainRenderTarget);
         //レンダリングターゲットを設定。
-        renderContext.SetRenderTargetAndViewport(g_posteffect.mainRenderTarget);
+        renderContext.SetRenderTargetAndViewport(mainRenderTarget);
         //レンダリングターゲットをクリア。
-        renderContext.ClearRenderTargetView(g_posteffect.mainRenderTarget);
+        renderContext.ClearRenderTargetView(mainRenderTarget);
     }
 
     void PostEffect::Render()
     {
 
-/*        //mainRenderTargetに各種モデルを描画する。
+        //mainRenderTargetに各種モデルを描画する。
         //plModel.Draw(renderContext);
         //レンダリングターゲットへの書き込み終了待ち。
-        renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.mainRenderTarget);
+        renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
 
         //輝度抽出
         //輝度抽出用のレンダリングターゲットに変更。
-        renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.luminnceRenderTarget);
+        renderContext.WaitUntilToPossibleSetRenderTarget(luminnceRenderTarget);
         //レンダリングターゲットを設定。
-        renderContext.SetRenderTargetAndViewport(g_posteffect.luminnceRenderTarget);
+        renderContext.SetRenderTargetAndViewport(luminnceRenderTarget);
         //レンダリングターゲットをクリア。
-        renderContext.ClearRenderTargetView(g_posteffect.luminnceRenderTarget);
+        renderContext.ClearRenderTargetView(luminnceRenderTarget);
         //輝度抽出を行う。
         luminanceSprite.Draw(renderContext);
         //レンダリングターゲットへの書き込み終了待ち。
-        renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.luminnceRenderTarget);
+        renderContext.WaitUntilFinishDrawingToRenderTarget(luminnceRenderTarget);
 
         //ガウシアンブラーを実行する。
-        //gaussianBlur.ExecuteOnGPU(renderContext, 20);
-*/
+        gaussianBlur.ExecuteOnGPU(renderContext, 20);
+
         //ボケ画像をメインレンダリングターゲットに加算合成。
         //レンダリングターゲットとして利用できるまで待つ。
-        renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.mainRenderTarget);
+        renderContext.WaitUntilToPossibleSetRenderTarget(mainRenderTarget);
         //レンダリングターゲットを設定。
-        renderContext.SetRenderTargetAndViewport(g_posteffect.mainRenderTarget);
+        renderContext.SetRenderTargetAndViewport(mainRenderTarget);
         //最終合成。
         finalSprite.Draw(renderContext);
         //レンダリングターゲットへの書き込み終了待ち。
-        renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.mainRenderTarget);
+        renderContext.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
 
         //メインレンダリングターゲットの絵をフレームバッファにコピー。
         renderContext.SetRenderTarget(

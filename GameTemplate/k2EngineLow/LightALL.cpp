@@ -23,9 +23,9 @@ namespace nsK2EngineLow {
 		m_light.directionlight.dirDirection.Normalize();
 
 		// ライトのカラーは(*･ω･)/ﾊｰｲ
-		m_light.directionlight.dirColor.x = 0.5f;
-		m_light.directionlight.dirColor.y = 0.5f;
-		m_light.directionlight.dirColor.z = 0.5f;
+		m_light.directionlight.dirColor.x = 0.2f;
+		m_light.directionlight.dirColor.y = 0.2f;
+		m_light.directionlight.dirColor.z = 0.2f;
 
 		// 視点の位置を設定する
 		m_light.eyePos =g_camera3D->GetPosition(); 
@@ -36,7 +36,7 @@ namespace nsK2EngineLow {
 		m_light.pointlight.ptPosition.z = 50.0f;
 
 		// ポイントライトのカラーを設定する
-		m_light.pointlight.ptColor.x = 15.1f;
+		m_light.pointlight.ptColor.x = 0.0f;
 		m_light.pointlight.ptColor.y = 0.0f;
 		m_light.pointlight.ptColor.z = 0.0f;
 

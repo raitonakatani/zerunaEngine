@@ -111,6 +111,10 @@ namespace nsK2EngineLow {
 		{
 			m_animationSpeed = animationSpeed;
 		}
+		void AddAnimationEvent(AnimationEventListener eventListener)
+		{
+			m_animation.AddAnimationEventListener(eventListener);
+		}
 		/// <summary>
 		/// ボーンの名前からボーン番号を検索。
 		/// </summary>
@@ -128,11 +132,6 @@ namespace nsK2EngineLow {
 		Bone* GetBone(int boneNo) const
 		{
 			return m_skeleton.GetBone(boneNo);
-		}
-
-		void AddAnimationEvent(AnimationEventListener eventListener)
-		{
-			m_animation.AddAnimationEventListener(eventListener);
 		}
 		/// <summary>
 		/// モデルを取得。

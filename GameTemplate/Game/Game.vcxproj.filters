@@ -17,7 +17,8 @@
     <ClCompile Include="Enemy3.cpp" />
     <ClCompile Include="TankEnemy.cpp" />
     <ClCompile Include="GameCamera.cpp" />
-    <ClCompile Include="SpeedEnemy.cpp" />
+    <ClCompile Include="Title.cpp" />
+    <ClCompile Include="Fade.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -30,6 +31,7 @@
     <ClInclude Include="Enemy3.h" />
     <ClInclude Include="TankEnemy.h" />
     <ClInclude Include="GameCamera.h" />
-    <ClInclude Include="SpeedEnemy.h" />
+    <ClInclude Include="Title.h" />
+    <ClInclude Include="Fade.h" />
   </ItemGroup>
 </Project>

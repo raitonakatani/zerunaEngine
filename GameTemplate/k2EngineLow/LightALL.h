@@ -92,6 +92,14 @@ namespace nsK2EngineLow {
         {
             m_light.pointlight.ptColor = lightcola;
         }
+        /// <summary>
+        /// 範囲を設定。
+        /// </summary>
+        /// <param name="range"></param>
+        void SetPointRange(float range)
+        {
+            m_light.pointlight.ptRange = range;
+        }
 
         /// <summary>
          /// スポットライトの回転。

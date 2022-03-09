@@ -80,7 +80,7 @@ private:
 	/// プレイヤーを探索する。
 	/// </summary>
 	/// <returns>プレイヤーが見つかったらtrue。</returns>
-	const bool SearchPlayer() const;
+	void SearchPlayer();
 	/// <summary>
 	/// 攻撃用の当たり判定コリジョンを作成する。
 	/// </summary>
@@ -151,7 +151,7 @@ private:
 	EnEnemy3State				m_Enemy3State = enEnemy3State_Idle;			//エネミーステート。
 	EffectEmitter* m_effectEmitter = nullptr;			//エフェクト。							//画像。
 	bool						m_isUnderAttack = false;					//攻撃中か？
-	float							m_hp = 20;									//HP。
+	float							m_hp = 5;									//HP。
 	Player* m_player = nullptr;												//プレイヤー。
 	Game* m_game = nullptr;
 	float						m_chaseTimer = 0.0f;						//追跡タイマー。
@@ -159,8 +159,11 @@ private:
 	float						a = 0.0f;			//拡大率
 	bool						m_isShowHPBar = false;
 	bool model = false;
+	bool					m_isSearchPlayer = false;
 	float modeltimer = 0.0f;
 	int m_model = 0;
+	int                     m_Hand= -1;                   //「Hand」ボーンのID。
+	SphereCollider			m_sphereCollider;
 };
 
 

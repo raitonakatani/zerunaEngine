@@ -1,46 +1,35 @@
 #include "stdafx.h"
 #include "Player.h"
 
-#include "CollisionObject.h"
 
 namespace
 {
 	const float CHARACON_RADIUS = 20.0f;            //キャラコンの半径
-	const float CHARACON_HEIGHT = 60.0f;            //キャラコンの高さ
+	const float CHARACON_HEIGHT = 70.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
-	const float WALK_MOVESPEED = 60.0f;            //歩きステートの移動速度
-	const float RUN_MOVESPEED = 160.0f;            //走りステートの移動速度
-	const float STEALTHYSTEP_MOVESPEED = 30.0f;     //忍び足ステートの移動速度
+	const float WALK_MOVE_SPEED = 100.0f;            //歩きステートの移動速度
+	const float RUN_MOVE_SPEED = 300.0f;            //走りステートの移動速度
 	const float GRAVITY = 1000.0f;                  //重力
-	const float ATTACK_TIME = 1.5f;                 //連続攻撃ができる時間
+	const float ATTACK_TIMER_SPEED = 50.0f;         //攻撃タイマーの加速速度
+	const float ATTACK_TIME = 12.0f;                //連続攻撃ができる時間
 	const float AVOIDANCE_SPEED = 100.0f;           //回避ステートの移動速度
 }
 
 void Player::InitAnimation()
 {
 	//アニメーションクリップをロードする。
-	m_animationClipArray[enAnimClip_Idle].Load("Assets/animData/player2/idle.tka");
+	m_animationClipArray[enAnimClip_Idle].Load("Assets/animData/player/idle.tka");
 	m_animationClipArray[enAnimClip_Idle].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Walk].Load("Assets/animData/player2/walk.tka");
+	m_animationClipArray[enAnimClip_Walk].Load("Assets/animData/player/walk.tka");
 	m_animationClipArray[enAnimClip_Walk].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/player2/run.tka");
+	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/player/run.tka");
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player2/stealthysteps.tka");
-	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player2/rolling.tka");
+	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player/rolling.tka");
 	m_animationClipArray[enAnimClip_Rolling].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/firstattack.tka");
+	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player/firstattack.tka");
 	m_animationClipArray[enAnimClip_FirstAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_SecondAttack].Load("Assets/animData/player2/secondattack.tka");
-	m_animationClipArray[enAnimClip_SecondAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_ThirdAttack].Load("Assets/animData/player2/thirdattack.tka");
-	m_animationClipArray[enAnimClip_ThirdAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player2/pokeattack.tka");
-	m_animationClipArray[enAnimClip_PokeAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_ReceiveDamage].Load("Assets/animData/player2/damage.tka");
+	m_animationClipArray[enAnimClip_ReceiveDamage].Load("Assets/animData/player/damage.tka");
 	m_animationClipArray[enAnimClip_ReceiveDamage].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_Down].Load("Assets/animData/player2/down.tka");
-	m_animationClipArray[enAnimClip_Down].SetLoopFlag(false);
 }
 
 bool Player::Start()
@@ -49,7 +38,7 @@ bool Player::Start()
 	InitAnimation();
 
 	//モデルの読み込み
-	m_modelRender.Init("Assets/modelData/player/player2.tkm"
+	m_modelRender.Init("Assets/modelData/player/player.tkm"
 		, m_animationClipArray, enAnimClip_Num
 	);
 
@@ -58,11 +47,12 @@ bool Player::Start()
 		OnAnimationEvent(clipName, eventName);
 		});
 
+	//「Sword」ボーンのID(番号)を取得する。
+	m_sword_jointBoneId = m_modelRender.FindBoneID(L"Sword_joint");
+
 	//キャラコン
 	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, g_vec3Zero);
 
-	//剣のボーン
-	m_swordBoneId = m_modelRender.FindBoneID(L"sword");
 	return true;
 }
 
@@ -80,8 +70,8 @@ void Player::Update()
 	ManageState();
 	//攻撃処理
 	Attack();
-	//連続攻撃処理
-	Hit();
+	//ガード処理
+	Guard();
 	//回避処理
 	Avoidance();
 
@@ -98,10 +88,8 @@ void Player::Update()
 void Player::Move()
 {
 	//待機ステート、歩きステート、走りステート以外だったら
-	if (m_playerState != enPlayerState_Run &&
-		m_playerState != enPlayerState_Walk &&
-		m_playerState != enPlayerState_StealthySteps &&
-		m_playerState != enPlayerState_Idle)
+	if (m_playerState == enPlayerState_ReceiveDamage ||
+		m_playerState == enPlayerState_FirstAttack)
 	{
 		//なにもしない
 		return;
@@ -124,22 +112,17 @@ void Player::Move()
 	//走りステートだったら
 	if (m_playerState == enPlayerState_Run)
 	{
-		m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
-		m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
-	}
-
-	else if(m_playerState == enPlayerState_StealthySteps){
-		m_moveSpeed += cameraForward * lStick_y * STEALTHYSTEP_MOVESPEED;
-		m_moveSpeed += cameraRight * lStick_x * STEALTHYSTEP_MOVESPEED;
+		m_moveSpeed += cameraForward * lStick_y * RUN_MOVE_SPEED;
+		m_moveSpeed += cameraRight * lStick_x * RUN_MOVE_SPEED;
 	}
 	//それ以外だったら
 	else {
-		m_moveSpeed += cameraForward * lStick_y * WALK_MOVESPEED;
-		m_moveSpeed += cameraRight * lStick_x * WALK_MOVESPEED;
+		m_moveSpeed += cameraForward * lStick_y * WALK_MOVE_SPEED;
+		m_moveSpeed += cameraRight * lStick_x * WALK_MOVE_SPEED;
 	}
 
 	//重力
-	//m_moveSpeed.y -= GRAVITY * g_gameTime->GetFrameDeltaTime();
+	m_moveSpeed.y -= GRAVITY * g_gameTime->GetFrameDeltaTime();
 
 	//キャラコンを使用して、座標を更新する
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
@@ -167,43 +150,46 @@ void Player::Rotation()
 void Player::Collision()
 {
 	//被ダメージステートだったら
-	if (m_playerState == enPlayerState_ReceiveDamage || m_playerState == enPlayerState_Down ||
-		m_playerState == enPlayerState_Avoidance)
+	if (m_playerState == enPlayerState_ReceiveDamage)
 	{
 		//何もしない
 		return;
 	}
 
-	//スピードエネミーの攻撃の当たり判定
-	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("speedenemy_attack");
+	//エネミー（ボス）の攻撃用のコリジョンを取得する。
+	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_attack");
+	//コリジョンの配列をfor文で回す。
 	for (auto collision : collisions)
 	{
-		//スピードエネミーの攻撃とキャラコンが衝突したら
+		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-			m_hp -= 1;
-			//HPが0だったら
-			if (m_hp == 0)
-			{
-				//ダウンステートに移行する
-				m_playerState = enPlayerState_Down;
-			}
-			//HPが0ではなかったら
-			else
-			{
-				//被ダメージステートに移行する
-				m_playerState = enPlayerState_ReceiveDamage;
-			}
+			//被ダメージステートに遷移する。
+			m_playerState = enPlayerState_ReceiveDamage;
+			return;
 		}
 	}
+
+	//エネミー（ボス）の攻撃用のコリジョンを取得する。
+	const auto& collisions3 = g_collisionObjectManager->FindCollisionObjects("enemy3_attack");
+	//コリジョンの配列をfor文で回す。
+	for (auto collision : collisions3)
+	{
+		//コリジョンとキャラコンが衝突したら。
+		if (collision->IsHit(m_charaCon))
+		{
+				//被ダメージステートに遷移する。
+				m_playerState = enPlayerState_ReceiveDamage;
+			return;
+		}
+	}
+
 }
 
 void Player::Attack()
 {
 	//攻撃ステートではないなら
-	if (m_playerState != enPlayerState_FirstAttack &&
-		m_playerState != enPlayerState_SecondAttack &&
-		m_playerState != enPlayerState_ThirdAttack)
+	if (m_playerState != enPlayerState_FirstAttack)
 	{
 		//攻撃処理をしない
 		return;
@@ -218,87 +204,26 @@ void Player::Attack()
 	}
 }
 
-void Player::Hit()
-{
-	//1撃目の攻撃ステートだったら
-	if (m_playerState == enPlayerState_FirstAttack)
-	{
-		//2撃目の攻撃フラグをtrueにする
-		m_secondAttackFlag = true;
-	}
-	//2撃目の攻撃ステートだったら
-	if (m_playerState == enPlayerState_SecondAttack)
-	{
-		//3撃目の攻撃フラグがtrueにする
-		m_thirdAttackFlag = true;
-	}
-
-	//２撃目の攻撃フラグがtrueだったら
-	if (m_secondAttackFlag == true)
-	{
-		//２撃目の攻撃タイマーを増加させる
-		m_secondAttackTimer += g_gameTime->GetFrameDeltaTime();
-		//２撃目の攻撃タイマーが開始されていたら
-		if (m_secondAttackTimer > 0.001f && m_secondAttackTimer < ATTACK_TIME)
-		{
-			//２撃目の攻撃ステートへ移行する
-			m_attackState = enAttackState_SecondAttack;
-
-		}
-		else
-		{
-			//１撃目の攻撃ステートへ移行する
-			m_attackState = enAttackState_FirstAttack();
-			//２撃目の攻撃タイマーを初期化する
-			m_secondAttackTimer = 0.0f;
-			//２撃目の攻撃フラグをfalseにする
-			m_secondAttackFlag = false;
-		}
-	}
-	//３撃目の攻撃フラグがtrueだったら
-	if (m_thirdAttackFlag == true)
-	{
-		//３撃目の攻撃タイマーを増加させる
-		m_thirdAttackTimer += g_gameTime->GetFrameDeltaTime();
-		//３撃目の攻撃タイマーが動いていたら
-		if (m_thirdAttackTimer > 0.001f && m_thirdAttackTimer < ATTACK_TIME)
-		{
-			//３撃目の攻撃ステートへ移行する
-			m_attackState = enAttackState_ThirdAttack;
-		}
-		else
-		{
-			//１撃目の攻撃ステートへ移行する
-			m_attackState = enAttackState_FirstAttack();
-			//２撃目の攻撃タイマーと３撃目の攻撃タイマーを初期化する
-			m_secondAttackTimer = 0.0f;
-			m_thirdAttackTimer = 0.0f;
-			//２撃目の攻撃フラグと３撃目の攻撃フラグをfalseにする
-			m_secondAttackFlag = false;
-			m_thirdAttackFlag = false;
-		}
-	}
-}
-
 void Player::MakeAttackCollision()
 {
 	//コリジョンオブジェクトを作成する。
 	auto collisionObject = NewGO<CollisionObject>(0);
 
 	Vector3 collisionPosition = m_position;
-	//座標をプレイヤーの少し前に設定する。
-	collisionPosition += m_forward * 100.0f;
-	collisionPosition.y += 100.0f;
 	//ボックス状のコリジョンを作成する。
 	collisionObject->CreateBox(collisionPosition,				   //座標。
 		Quaternion::Identity,                                      //回転。
-		Vector3(10.0f, 10.0f, 60.0f)                              //大きさ。
+		Vector3(20.0f, 20.0f, 100.0f)                              //大きさ。
 	);
-
-	Matrix matrix = m_modelRender.GetBone(m_swordBoneId)->GetWorldMatrix();
-	//剣のボーンのワールド行列をコリジョンに適用させる
 	collisionObject->SetName("player_attack");
+
+	Matrix matrix = m_modelRender.GetBone(m_sword_jointBoneId)->GetWorldMatrix();
 	collisionObject->SetWorldMatrix(matrix);
+}
+
+void Player::Guard()
+{
+
 }
 
 void Player::Avoidance()
@@ -313,63 +238,43 @@ void Player::Avoidance()
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
 }
 
+void Player::MakeGuardCollision()
+{
+
+}
+
 void Player::PlayAnimation()
 {
 	switch (m_playerState)
 	{
 		//待機ステートの時
 	case Player::enPlayerState_Idle:
-		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.5f);
+		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.1f);
 		m_modelRender.SetAnimationSpeed(1.0f);
 		break;
 		//歩きステートの時
 	case Player::enPlayerState_Walk:
 		m_modelRender.PlayAnimation(enAnimClip_Walk, 0.1f);
-		m_modelRender.SetAnimationSpeed(1.2f);
+		m_modelRender.SetAnimationSpeed(1.0f);
 		break;
 		//走りステートの時
 	case Player::enPlayerState_Run:
 		m_modelRender.PlayAnimation(enAnimClip_Run, 0.1f);
 		m_modelRender.SetAnimationSpeed(1.3f);
 		break;
-		//忍び足ステートの時
-	case Player::enPlayerState_StealthySteps:
-		m_modelRender.PlayAnimation(enAnimClip_StealthySteps, 0.2f);
+		//被ダメステートの時
+	case Player::enPlayerState_ReceiveDamage:
+		m_modelRender.PlayAnimation(enAnimClip_ReceiveDamage, 0.1f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
 		m_modelRender.PlayAnimation(enAnimClip_Rolling, 0.1f);
-		m_modelRender.SetAnimationSpeed(1.5f);
+		m_modelRender.SetAnimationSpeed(1.0f);
 		break;
 		//1撃目の攻撃ステートの時
 	case Player::enPlayerState_FirstAttack:
 		m_modelRender.PlayAnimation(enAnimClip_FirstAttack, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.3f);
-		break;
-		//２撃目の攻撃ステートの時
-	case Player::enPlayerState_SecondAttack:
-		m_modelRender.PlayAnimation(enAnimClip_SecondAttack, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.4f);
-		break;
-		//３撃目の攻撃ステートの時
-	case Player::enPlayerState_ThirdAttack:
-		m_modelRender.PlayAnimation(enAnimClip_ThirdAttack, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.6f);
-		break;
-		//突き攻撃ステートの時
-	case Player::enPlayerState_PokeAttack:
-		m_modelRender.PlayAnimation(enAnimClip_PokeAttack, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.2f);
-		break;
-		//被ダメージステートの時
-	case Player::enPlayerState_ReceiveDamage:
-		m_modelRender.PlayAnimation(enAnimClip_ReceiveDamage, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.2f);
-		break;
-		//ダウンステートの時
-	case Player::enPlayerState_Down:
-		m_modelRender.PlayAnimation(enAnimClip_Down, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
 	default:
@@ -393,9 +298,9 @@ void Player::ManageState()
 	case Player::enPlayerState_Run:
 		ProcessRunStateTransition();
 		break;
-		//忍び足ステートの時
-	case Player::enPlayerState_StealthySteps:
-		ProcessStealthyStepsStateTransition();
+		//被ダメステートの時
+	case Player::enPlayerState_ReceiveDamage:
+		ProcessDamageStateTransition();
 		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
@@ -404,26 +309,6 @@ void Player::ManageState()
 		//1撃の攻撃ステートの時
 	case Player::enPlayerState_FirstAttack:
 		ProcessAttackStateTransition();
-		break;
-		//2撃目の攻撃ステートの時
-	case Player::enPlayerState_SecondAttack:
-		ProcessAttackStateTransition();
-		break;
-		//3撃目の攻撃ステートの時
-	case Player::enPlayerState_ThirdAttack:
-		ProcessAttackStateTransition();
-		break;
-		//突き攻撃ステートの時
-	case Player::enPlayerState_PokeAttack:
-		ProcessAttackStateTransition();
-		break;
-		//被ダメージステートの時
-	case Player::enPlayerState_ReceiveDamage:
-		ProcessReceiveDamageStateTransition();
-		break;
-		//ダウンステートの時
-	case Player::enPlayerState_Down:
-		ProcessDownStateTransition();
 		break;
 	default:
 		break;
@@ -440,62 +325,33 @@ void Player::ProcessCommonStateTransition()
 		return;
 	}
 
-	//RB1ボタンが押されたら＆攻撃ステート１だったら
-	if (g_pad[0]->IsTrigger(enButtonRB1) && m_attackState == enAttackState_FirstAttack)
+
+	//Aボタンが押されたら＆攻撃ステート１だったら
+	if (g_pad[0]->IsPress(enButtonRB1))
 	{
 		//１撃目の攻撃ステートに移行する
 		m_playerState = enPlayerState_FirstAttack;
-
+		m_isUnderAttack = true;
 		return;
 	}
-
-	//RB1ボタンが押されたら＆攻撃ステート２だったら
-	if (g_pad[0]->IsTrigger(enButtonRB1) && m_attackState == enAttackState_SecondAttack)
-	{
-		//２撃目の攻撃ステートに移行する
-		m_playerState = enPlayerState_SecondAttack;
-		return;
-	}
-
-	//RB1ボタンが押されたら＆攻撃ステート３だったら
-	if (g_pad[0]->IsTrigger(enButtonRB1) && m_attackState == enAttackState_ThirdAttack)
-	{
-		//３撃目の攻撃ステートに移行する
-		m_playerState = enPlayerState_ThirdAttack;
-		return;
-	}
-
-	//RB2ボタンが押されたら
-	if (g_pad[0]->IsTrigger(enButtonRB2))
-	{
-		//突き攻撃ステートに移行する
-		m_playerState = enPlayerState_PokeAttack;
-		return;
+	else {
+		m_isUnderAttack = false;
 	}
 
 	//xかzの移動速度があったら
-	else if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
+	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
 	{
 		//Aボタンが押されたら
 		if (g_pad[0]->IsPress(enButtonA))
 		{
 			//走りステートへ移行する
 			m_playerState = enPlayerState_Run;
-			return;
 		}
-		//Xボタンが押されたら
-		if (g_pad[0]->IsPress(enButtonX))
-		{
-			//忍び足ステートへ移行する
-			m_playerState = enPlayerState_StealthySteps;
-			return;
-		}
-		//どのボタンも押されなかったら
+		//押されなかったら
 		else
 		{
 			//歩きステートへ移行する
 			m_playerState = enPlayerState_Walk;
-			return;
 		}
 	}
 
@@ -505,7 +361,6 @@ void Player::ProcessCommonStateTransition()
 		//待機ステートに移行する
 		m_playerState = enPlayerState_Idle;
 		return;
-
 	}
 }
 
@@ -527,7 +382,7 @@ void Player::ProcessRunStateTransition()
 	ProcessCommonStateTransition();
 }
 
-void Player::ProcessStealthyStepsStateTransition()
+void Player::ProcessDamageStateTransition()
 {
 	//他のステートに遷移する
 	ProcessCommonStateTransition();
@@ -553,28 +408,9 @@ void Player::ProcessAttackStateTransition()
 	}
 }
 
-void Player::ProcessReceiveDamageStateTransition()
-{
-	//アニメーションの再生が終わったら
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		//他のステートに遷移する
-		ProcessCommonStateTransition();
-	}
-}
-
-void Player::ProcessDownStateTransition()
-{
-	//アニメーションの再生が終わったら
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		DeleteGO(this);
-	}
-}
-
 void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 {
-(void)clipName;
+/*	(void)clipName;
 	if (wcscmp(eventName, L"attack_start") == 0)
 	{
 		//攻撃フラグをtrueにする
@@ -585,6 +421,7 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 		//攻撃フラグをfalseにする
 		m_isUnderAttack = false;
 	}
+	*/
 }
 
 void Player::Render(RenderContext& rc)

@@ -14,7 +14,7 @@ GameCamera::~GameCamera()
 bool GameCamera::Start()
 {
 	//注視点から視点までのベクトルを設定。
-	m_toCameraPos.Set(0.0f, 150.0f, -200.0f);
+	m_toCameraPos.Set(0.0f, 100.0f, -150.0f);
 	//プレイヤーのインスタンスを探す。
 	m_player = FindGO<Player>("player");
 
@@ -26,13 +26,33 @@ bool GameCamera::Start()
 }
 void GameCamera::Update()
 {
-	//カメラを更新。
-	//注視点を計算する。
-	Vector3 target = m_player->GetPosition();
-	//プレイヤの足元からちょっと上を注視点とする。
-	target.y += 120.0f;
+/*	if (g_pad[0]->IsPress(enButtonLB1))
+	{
+		//カメラを更新。
+		//注視点を計算する。
+		Vector3 target = m_player->GetPosition();
+		//プレイヤの足元からちょっと上を注視点とする。
+		target.y += 120.0f;
+		target.x += 300.0f;
+		//前方向のベクトル
+		Vector3 m_forward = g_camera3D->GetForward();;
 
-	Vector3 toCameraPosOld = m_toCameraPos;
+		target += m_forward * 500.0f;
+
+//		toCameraPosOld = m_player->GetPosition();
+//		toCameraPosOld.y += 120.0f;
+		m_toCameraPos.Set(m_player->GetPosition());
+		m_toCameraPos.y += 100.0f;
+
+	}
+	else {
+*/		//カメラを更新。
+		//注視点を計算する。
+		Vector3 target = m_player->GetPosition();
+		//プレイヤの足元からちょっと上を注視点とする。
+		target.y += 120.0f;
+		toCameraPosOld = m_toCameraPos;
+//	}
 	//パッドの入力を使ってカメラを回す。
 	float x = g_pad[0]->GetRStickXF();
 	float y = g_pad[0]->GetRStickYF();

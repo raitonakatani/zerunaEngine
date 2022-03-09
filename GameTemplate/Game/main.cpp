@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "system/system.h"
 #include "Game.h"
+#include "Title.h"
 
 const int NUM_WEIGHTS = 8;
 /// <summary>
@@ -36,6 +37,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	g_camera3D->SetTarget({ 0.0f, 100.0f, 0.0f });
 
 	auto game = NewGO<Game>(0);
+	//auto title = NewGO<Title>(0);
 
 	RootSignature rs;
 	InitRootSignature(rs);
@@ -44,41 +46,84 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	g_posteffect.Init();
 	g_posteffect.SpriteInit();
 
-	// step-5 ガウシアンブラーを初期化
-	GaussianBlur gaussianBlur;
-	gaussianBlur.Init(&g_posteffect.luminnceRenderTarget.GetRenderTargetTexture());
-	// step-6 ボケ画像を加算合成するスプライトを初期化
-	//初期化情報を設定する。
-	SpriteInitData finalSpriteInitData;
-	finalSpriteInitData.m_textures[0] = &gaussianBlur.GetBokeTexture();
-	//解像度はmainRenderTargetの幅と高さ。
-	finalSpriteInitData.m_width = 1600;
-	finalSpriteInitData.m_height = 900;
-	//ぼかした画像を、通常の2Dとしてメインレンダリングターゲットに描画するので、
-	//2D用のシェーダーを使用する。
-	finalSpriteInitData.m_fxFilePath = "Assets/shader/2D.fx";
-	//ただし、加算合成で描画するので、アルファブレンディングモードを加算にする。
-	finalSpriteInitData.m_alphaBlendMode = AlphaBlendMode_Add;
-	//カラーバッファのフォーマットは例によって、32ビット浮動小数点バッファ。
-	finalSpriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-
-	//初期化情報を元に加算合成用のスプライトを初期化する。
-	Sprite finalSprite;
-	finalSprite.Init(finalSpriteInitData);
-	// step-7 テクスチャを貼り付けるためのスプライトを初期化する
-	//スプライトの初期化オブジェクトを作成する。
-	SpriteInitData spriteInitData;
-	//テクスチャはmainRenderTargetのカラーバッファ。
-	spriteInitData.m_textures[0] = &g_posteffect.mainRenderTarget.GetRenderTargetTexture();
-	spriteInitData.m_width = 1600;
-	spriteInitData.m_height = 900;
-	//モノクロ用のシェーダーを指定する。
-	spriteInitData.m_fxFilePath = "Assets/shader/2D.fx";
-	//初期化オブジェクトを使って、スプライトを初期化する。
-	Sprite copyToFrameBufferSprite;
-	copyToFrameBufferSprite.Init(spriteInitData);
 
 	g_Light.Init();
+
+	//シャドウマップ描画用のレンダリングターゲットを作成する。
+	//カラーバッファのクリアカラー
+	//今回はカラーバッファは真っ白にする。
+	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	RenderTarget shadowMap;
+	shadowMap.Create(
+		1024,//【注目】レンダリングターゲットの横幅
+		1024,//【注目】レンダリングターゲットの縦幅
+		1,
+		1,
+		DXGI_FORMAT_R32_FLOAT,
+		DXGI_FORMAT_D32_FLOAT,
+		clearColor
+	);
+
+	//影描画用のライトカメラを作成する。
+	Camera lightCamera;
+	//カメラの位置を設定。これはライトの位置。
+	lightCamera.SetPosition(0, 600, 0);
+	//カメラの注視点を設定。これがライトが照らしている場所。
+	lightCamera.SetTarget(0, 0, 0);
+	//【注目】上方向を設定。今回はライトが真下を向いているので、X方向を上にしている。
+	lightCamera.SetUp(1, 0, 0);
+	//今回のサンプルでは画角を狭めにしておく。
+	lightCamera.SetViewAngle(Math::DegToRad(20.0f));
+	//ライトビュープロジェクション行列を計算している。
+	lightCamera.Update();
+
+	//シャドウマップ描画用のモデルを用意する。
+	ModelInitData teapotShadowModelInitData;
+	//【注目】シャドウマップ描画用のシェーダーを指定する。
+	teapotShadowModelInitData.m_fxFilePath = "Assets/shader/sampleDrawShadowMap.fx";
+	teapotShadowModelInitData.m_tkmFilePath = "Assets/modelData/unityChan.tkm";
+	Model teapotShadowModel;
+	teapotShadowModel.Init(teapotShadowModelInitData);
+	teapotShadowModel.UpdateWorldMatrix(
+		{ 0, 50, 0 },
+		g_quatIdentity,
+		g_vec3One
+	);
+
+	// 通常描画のティーポットモデルを初期化
+	ModelRender teapotModel;
+	teapotModel.Init("Assets/modelData/unityChan.tkm");
+	
+
+	// シャドウマップを表示するためのスプライトを初期化する
+	SpriteInitData spriteInitData;
+	spriteInitData.m_textures[0] = &shadowMap.GetRenderTargetTexture();
+	spriteInitData.m_fxFilePath = "Assets/shader/sprite.fx";
+	spriteInitData.m_width = 256;
+	spriteInitData.m_height = 256;
+
+	Sprite sprite;
+	sprite.Init(spriteInitData);
+
+	ModelInitData bgModelInitData;
+	//影が落とされるモデル用のシェーダーを指定する。
+	bgModelInitData.m_fxFilePath = "Assets/shader/sampleShadowReciever.fx";
+	//シャドウマップを拡張SRVに設定する。
+	bgModelInitData.m_expandShaderResoruceView[0] = &shadowMap.GetRenderTargetTexture();
+	//ライトビュープロジェクション行列を拡張定数バッファに設定する。
+	bgModelInitData.m_expandConstantBuffer = (void*)&lightCamera.GetViewProjectionMatrix();
+	bgModelInitData.m_expandConstantBufferSize = sizeof(lightCamera.GetViewProjectionMatrix());
+	bgModelInitData.m_tkmFilePath = "Assets/modelData/bg/bg.tkm";
+
+	Model bgModel;
+	bgModel.Init(bgModelInitData);
+
+
+
+	//ステックの入力量を取得
+	float lStick_x = 0.0f;
+	float lStick_y = 0.0f;
+
 
 	auto& renderContext = g_graphicsEngine->GetRenderContext();
 	// ここからゲームループ。
@@ -89,6 +134,43 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		// ゲームオブジェクトマネージャーの更新処理を呼び出す。
 		g_k2EngineLow->ExecuteUpdate();
+
+
+		if (g_pad[0]->IsPress(enButtonA))
+		{
+			lStick_y++;
+		}
+		if (g_pad[0]->IsPress(enButtonB))
+		{
+			lStick_y--;
+		}
+		if (g_pad[0]->IsPress(enButtonX))
+		{
+			lStick_x++;
+		}
+		if (g_pad[0]->IsPress(enButtonY))
+		{
+			lStick_x--;
+		}
+		teapotModel.SetPosition({ lStick_x ,lStick_y ,0.0f });
+		teapotModel.Update();
+		teapotShadowModel.UpdateWorldMatrix(
+			{ lStick_x ,lStick_y ,0.0f },
+			g_quatIdentity,
+			g_vec3One);
+
+
+		// 影を生成したいモデルをシャドウマップに描画する。
+		//レンダリングターゲットをシャドウマップに変更する。
+	//	renderContext.WaitUntilToPossibleSetRenderTarget(shadowMap);
+	//	renderContext.SetRenderTargetAndViewport(shadowMap);
+	//	renderContext.ClearRenderTargetView(shadowMap);
+
+		//影モデルを描画。
+	//	teapotShadowModel.Draw(renderContext, lightCamera);
+
+		//書き込み完了待ち。
+	//	renderContext.WaitUntilFinishDrawingToRenderTarget(shadowMap);
 
 
 		// ゲームオブジェクトマネージャーの描画処理を呼び出す。
@@ -123,7 +205,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.luminnceRenderTarget);
 
 		//ガウシアンブラーを実行する。
-		gaussianBlur.ExecuteOnGPU(renderContext, 20);
+		g_posteffect.gaussianBlur.ExecuteOnGPU(renderContext, 20);
 
 		//ボケ画像をメインレンダリングターゲットに加算合成。
 		//レンダリングターゲットとして利用できるまで待つ。
@@ -131,7 +213,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//レンダリングターゲットを設定。
 		renderContext.SetRenderTargetAndViewport(g_posteffect.mainRenderTarget);
 		//最終合成。
-		finalSprite.Draw(renderContext);
+		g_posteffect.finalSprite.Draw(renderContext);
 		//レンダリングターゲットへの書き込み終了待ち。
 		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.mainRenderTarget);
 
@@ -144,7 +226,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		if (g_pad[0]->IsPress(enButtonA))
 		{
-		//	copyToFrameBufferSprite.Draw(renderContext);
+	//		g_posteffect.copyToFrameBufferSprite.Draw(renderContext);
 		}
 
 		g_renderingEngine.SpriteRenderDraw(renderContext);
@@ -153,6 +235,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		g_k2EngineLow->DebubDrawWorld();
 
 		g_Light.Update();
+
+
+
+
+
+	//	teapotModel.Draw(renderContext);
+	//	bgModel.Draw(renderContext);
+
+	//	sprite.Update({ FRAME_BUFFER_W / -2.0f, FRAME_BUFFER_H / 2.0f,  0.0f }, g_quatIdentity, g_vec3One, { 0.0f, 1.0f });
+	//	sprite.Draw(renderContext);
 
 		// フレームの終了時に呼び出す必要がある処理を実行。
 		g_k2EngineLow->EndFrame();
