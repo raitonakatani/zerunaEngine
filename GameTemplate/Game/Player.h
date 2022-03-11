@@ -10,20 +10,13 @@ public:
 	{
 		enPlayerState_Idle,                //待機ステート
 		enPlayerState_Walk,                //歩きステート
-		enPlayerState_Run,                 //走りステート
+		enPlayerState_Run,				   //走りステート
+		enPlayerState_StealthyStep,
 		enPlayerState_ReceiveDamage,       //被ダメージステート
+		enPlayerState_Down,
 		enPlayerState_Avoidance,           //回避ステート
 		enPlayerState_FirstAttack,         //１撃目の攻撃ステート
-	};
-public:
-	/// <summary>
-	/// 攻撃ステート
-	/// </summary>
-	enum EnAttackState
-	{
-		enAttackState_FirstAttack,        //１撃目
-		enAttackState_SecondAttack,       //２撃目
-		enAttackState_ThirdAttack         //３撃目
+		enPlayerState_PokeAttack,
 	};
 public:
 	bool Start();
@@ -63,21 +56,9 @@ private:
 	/// </summary>
 	void Attack();
 	/// <summary>
-	/// 連続攻撃処理
-	/// </summary>
-	void Hit();
-	/// <summary>
 	/// 攻撃の当たり判定を作成する処理
 	/// </summary>
 	void MakeAttackCollision();
-	/// <summary>
-	/// ガード処理
-	/// </summary>
-	void Guard();
-	/// <summary>
-	/// 防御の当たり判定を作成する処理
-	/// </summary>
-	void MakeGuardCollision();
 	/// <summary>
 	/// 回避処理
 	/// </summary>
@@ -112,10 +93,12 @@ private:
 	/// 走りステートの遷移処理
 	/// </summary>
 	void ProcessRunStateTransition();
+	void ProcessStealthyStepStateTransition();
 	/// <summary>
-	/// ガードステートの遷移処理
+	/// 被ダメージステートの遷移処理
 	/// </summary>
 	void ProcessDamageStateTransition();
+	void ProcessDownStateTransition();
 	/// <summary>
 	/// 回避ステートの遷移処理
 	/// </summary>
@@ -131,15 +114,17 @@ private:
 		enAnimClip_Idle,	       //待機アニメーション
 		enAnimClip_Walk,           //歩きアニメーション
 		enAnimClip_Run,		       //走りアニメーション
+		enAnimClip_StealthyStep,
 		enAnimClip_Rolling,        //回転回避アニメーション
 		enAnimClip_FirstAttack,    //１撃目の攻撃アニメーション
+		enAnimClip_PokeAttack,
 		enAnimClip_ReceiveDamage,  //被ダメージステート
+		enAnimClip_Down,
 		enAnimClip_Num,		       //アニメーションの数
 	};
 	int                     m_sword_jointBoneId = -1;                   //「Sword」ボーンのID。
 	ModelRender				m_modelRender;                              //モデルレンダー
 	EnPlayerState           m_playerState = enPlayerState_Idle;         //プレイヤーステート
-	EnAttackState           m_attackState = enAttackState_FirstAttack;  //攻撃ステート
 	Vector3					m_position;					                //座標
 	Vector3                 m_moveSpeed;                                //移動速度
 	Skeleton                m_skeleton;	                                //スケルトン
@@ -149,4 +134,5 @@ private:
 	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
 	CharacterController     m_charaCon;	                                //キャラコン
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
+	int                     m_hp = 10;
 };
