@@ -36,7 +36,7 @@ private:
 	Player* m_player = nullptr;				// プレイヤー
 	bool m_fps = false;
 
-	LevelRender					m_levelRender;					//レベルレンダー。
+
 
 public:
 	//////////////////////////////////////

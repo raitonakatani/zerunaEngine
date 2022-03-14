@@ -56,13 +56,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -312,9 +312,7 @@
     <ClCompile Include="level3D\Level.cpp" />
     <ClCompile Include="level3D\MapChip.cpp" />
     <ClCompile Include="level3D\TklFile.cpp" />
-    <ClCompile Include="LevelRender.cpp" />
     <ClCompile Include="LightALL.cpp" />
-    <ClCompile Include="MapChipRender.cpp" />
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="math\Vector.cpp" />
     <ClCompile Include="ModelRender.cpp" />
@@ -410,9 +408,7 @@
     <ClInclude Include="level3D\Level.h" />
     <ClInclude Include="level3D\MapChip.h" />
     <ClInclude Include="level3D\TklFile.h" />
-    <ClInclude Include="LevelRender.h" />
     <ClInclude Include="LightALL.h" />
-    <ClInclude Include="MapChipRender.h" />
     <ClInclude Include="math\Math.h" />
     <ClInclude Include="math\Matrix.h" />
     <ClInclude Include="math\Vector.h" />

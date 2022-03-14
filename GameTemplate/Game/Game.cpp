@@ -27,26 +27,14 @@ bool Game::Start()
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
 
-	//レベルを構築する。
-	m_levelRender.Init("Assets/level/stage.tkl", [&](LevelObjectData& objData) {
-		if (objData.EqualObjectName(L"player") == true) {
-			//プレイヤーのインスタンスを生成する。
-			m_player = NewGO<Player>(0, "player");
-			m_player->SetPosition({ objData.position });
-			m_player->SetRotation(objData.rotation);
-			m_player->SetScale(objData.scale);
-			//trueにすると、レベルの方でモデルが読み込まれない。
-			return true;
-		}
-		return true;
-	}
+
 
 //	m_tank = NewGO<TankEnemy>(0);
-<<<<<<< HEAD
+
 //	m_tank->SetPosition({ 0.0f,0.0f,200.0f });
 //	m_enemy3 = NewGO<Enemy3>(0);
 //	m_enemy3->SetPosition({ 0.0f,0.0f,200.0f });
-=======
+
 //	m_tank->SetPosition({ 100.0f,0.0f,-100.0f });
 	m_speed = NewGO<SpeedEnemy>(0);
 	m_speed->SetPosition({ 100.0f,0.0f,-100.0f });
@@ -54,7 +42,7 @@ bool Game::Start()
 	m_enemy3 = NewGO<Enemy3>(0);
 	m_enemy3->SetPosition({ -2500.0f,0.0f,100.0f });
 	m_background = NewGO<Background>(0);
->>>>>>> 92e49d29f36d402a069dceb101d6047e1980e148
+
 
 	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
