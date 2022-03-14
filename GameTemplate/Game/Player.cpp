@@ -27,6 +27,8 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player2/stealthysteps.tka");
 	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
+	m_animationClipArray[enAnimClip_Crouch].Load("Assets/animData/player2/crouch.tka");
+	m_animationClipArray[enAnimClip_Crouch].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player2/rolling.tka");
 	m_animationClipArray[enAnimClip_Rolling].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/slashattack.tka");
@@ -278,6 +280,10 @@ void Player::PlayAnimation()
 		m_modelRender.PlayAnimation(enAnimClip_StealthySteps, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
+	case Player::enPlayerState_Crouch:
+		m_modelRender.PlayAnimation(enAnimClip_Crouch, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.2f);
+		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
 		m_modelRender.PlayAnimation(enAnimClip_Rolling, 0.1f);
@@ -328,6 +334,9 @@ void Player::ManageState()
 	case Player::enPlayerState_StealthySteps:
 		ProcessStealthyStepsStateTransition();
 		break;
+	case Player::enPlayerState_Crouch:
+		ProcessCrouchStateTransition();
+		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
 		ProcessAvoidanceStateTransition();
@@ -355,6 +364,40 @@ void Player::ManageState()
 
 void Player::ProcessCommonStateTransition()
 {
+	//ｘかｙの移動速度があったら
+	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
+	{
+		//Bボタンが押されたら
+		if (g_pad[0]->IsPress(enButtonA))
+		{
+			//走りステートの移行する
+			m_playerState = enPlayerState_Run;
+			return;
+		}
+		//それ以外のときは
+		else
+		{
+			//歩きステートに移行する
+			m_playerState = enPlayerState_Walk;
+			return;
+		}
+	}
+
+	//Xかｙの移動速度がなかったら
+	else
+	{
+		//待機ステートに移行する
+		m_playerState = enPlayerState_Idle;
+		return;
+	}
+
+	//忍び足ステート
+	//m_playerState = enPlayerState_StealthySteps;
+	//return;
+	//しゃがみステート
+	//m_playerState = enPlayerState_Crouch;
+	//return;
+
 	//Bボタンが押されたら
 	if (g_pad[0]->IsTrigger(enButtonB))
 	{
@@ -362,7 +405,6 @@ void Player::ProcessCommonStateTransition()
 		m_playerState = enPlayerState_Avoidance;
 		return;
 	}
-
 
 	//RB1ボタンが押されたら＆攻撃ステート１だったら
 	if (g_pad[0]->IsPress(enButtonRB1))
@@ -378,39 +420,6 @@ void Player::ProcessCommonStateTransition()
 	{
 		//突き攻撃ステートに移行する
 		m_playerState = enPlayerState_PokeAttack;
-		return;
-	}
-
-	//xかzの移動速度があったら
-	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
-	{
-		//Aボタンが押されたら
-		if (g_pad[0]->IsPress(enButtonA))
-		{
-			//走りステートへ移行する
-			m_playerState = enPlayerState_Run;
-			return;
-		}
-		//Xボタンが押されたら
-		if (g_pad[0]->IsPress(enButtonX))
-		{
-			//忍び足ステートへ移行する
-			m_playerState = enPlayerState_StealthySteps;
-			return;
-		}
-		//押されなかったら
-		else
-		{
-			//歩きステートへ移行する
-			m_playerState = enPlayerState_Walk;
-		}
-	}
-
-	//xかzの移動速度がなかったら
-	else
-	{
-		//待機ステートに移行する
-		m_playerState = enPlayerState_Idle;
 		return;
 	}
 }
@@ -434,6 +443,12 @@ void Player::ProcessRunStateTransition()
 }
 
 void Player::ProcessStealthyStepsStateTransition()
+{
+	//他のステートに遷移する
+	ProcessCommonStateTransition();
+}
+
+void Player::ProcessCrouchStateTransition()
 {
 	//他のステートに遷移する
 	ProcessCommonStateTransition();

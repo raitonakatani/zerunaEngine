@@ -15,21 +15,12 @@ public:
 		enPlayerState_Walk,                //歩きステート
 		enPlayerState_Run,                 //走りステート
 		enPlayerState_StealthySteps,       //忍び足ステート
+		enPlayerState_Crouch,
 		enPlayerState_ReceiveDamage,       //被ダメージステート
 		enPlayerState_Down,                //ダウンステート
 		enPlayerState_Avoidance,           //回避ステート
 		enPlayerState_FirstAttack,         //１撃目の攻撃ステート
 		enPlayerState_PokeAttack           //突き攻撃ステート
-	};
-public:
-	/// <summary>
-	/// 攻撃ステート
-	/// </summary>
-	enum EnAttackState
-	{
-		enAttackState_FirstAttack,        //１撃目
-		enAttackState_SecondAttack,       //２撃目
-		enAttackState_ThirdAttack         //３撃目
 	};
 public:
 	bool Start();
@@ -110,6 +101,8 @@ private:
 	/// 忍び足ステートの遷移処理
 	/// </summary>
 	void ProcessStealthyStepsStateTransition();
+
+	void ProcessCrouchStateTransition();
 	/// <summary>
 	/// 回避ステートの遷移処理
 	/// </summary>
@@ -134,6 +127,7 @@ private:
 		enAnimClip_Walk,           //歩きアニメーション
 		enAnimClip_Run,		       //走りアニメーション
 		enAnimClip_StealthySteps,  //忍び足アニメーション
+		enAnimClip_Crouch,
 		enAnimClip_Rolling,        //回転回避アニメーション
 		enAnimClip_FirstAttack,    //１撃目の攻撃アニメーション
 		enAnimClip_PokeAttack,     //突き攻撃アニメーション
@@ -144,7 +138,6 @@ private:
 	int                     m_sword_jointBoneId = -1;                   //「Sword」ボーンのID。
 	ModelRender				m_modelRender;                              //モデルレンダー
 	EnPlayerState           m_playerState = enPlayerState_Idle;         //プレイヤーステート
-	EnAttackState           m_attackState = enAttackState_FirstAttack;  //攻撃ステート
 	Vector3					m_position;					                //座標
 	Vector3                 m_moveSpeed;                                //移動速度
 	Skeleton                m_skeleton;	                                //スケルトン
