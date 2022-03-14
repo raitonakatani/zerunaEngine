@@ -3,9 +3,7 @@
 //ばねカメラを使用したい場合は、SpringCameraをインクルードする。
 //#include "camera/SpringCamera.h"
 
-class fastPlayer;
 class Player;
-class WarpCounter;
 
 //ゲーム中のカメラを制御する。
 class GameCamera : public IGameObject
@@ -15,6 +13,7 @@ public:
 	~GameCamera();
 	bool Start();
 	void Update();
+	void Render(RenderContext& rc);
 
 	/// <summary>
 /// 座標を設定。
@@ -28,24 +27,24 @@ public:
 	//メンバ変数
 	/////////////////////////////////////
 	
-	Vector3 m_toCameraPos;	//注視点から視点に向かうベクトル。
+	bool FPS = false;
+	Vector3 target;
 
-private:
-	void DeathCamera();
-	void FightCamera();
 private:
 	Vector3 toCameraPosOld;
-	fastPlayer* m_fastplayer = nullptr;	//プレイヤー。
-	Player* m_player = nullptr;
-	WarpCounter* warpCounter = nullptr;
+	Vector3 m_toCameraPos = Vector3::One;	//注視点から視点に向かうベクトル。
 //	Vector3 m_toCameraPos;	//注視点から視点に向かうベクトル。
+	Player* m_player = nullptr;
 	Vector3 m_Pos;	//注視点から視点に向かうベクトル。
-//	SpringCamera m_springCamera;	//ばねカメラ。
+//	Vector3 target;
 
-	Vector3 target;
-	Vector3 pos;
-	Vector3 posi;
 
-	float YZIKU = 200.0f;
-	float ZZIKU = -200.0f;
+
+	
+
+private:
+	Vector3 toCameraPosOld2;
+	Vector3 m_toCameraPos2;	//注視点から視点に向かうベクトル。
+//	Vector3 target2;
+
 };

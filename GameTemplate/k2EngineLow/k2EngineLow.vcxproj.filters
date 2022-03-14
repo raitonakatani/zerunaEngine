@@ -234,6 +234,8 @@
     <ClCompile Include="SpriteRender.cpp" />
     <ClCompile Include="RenderingEngine.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="LevelRender.cpp" />
+    <ClCompile Include="MapChipRender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -517,6 +519,8 @@
     <ClInclude Include="SpriteRender.h" />
     <ClInclude Include="RenderingEngine.h" />
     <ClInclude Include="ShadowMap.h" />
+    <ClInclude Include="LevelRender.h" />
+    <ClInclude Include="MapChipRender.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">

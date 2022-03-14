@@ -15,17 +15,18 @@ class Background;
 
 class Game : public IGameObject
 {
-	/*
+
 public:
 	~Game();
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
-	*/
+
 private:
 
 	SpriteRender m_spriteRender;
 	SpriteRender m_pressButton;
+	SpriteRender m_targetRender;
 	
 	GameCamera* m_gameCamera = nullptr;		// カメラ
 	TankEnemy* m_tank = nullptr;			// 敵
@@ -33,15 +34,15 @@ private:
 	Background* m_background = nullptr;		// 背景
 	Enemy3* m_enemy3 = nullptr;				// 敵
 	Player* m_player = nullptr;				// プレイヤー
+	bool m_fps = false;
+
+	LevelRender					m_levelRender;					//レベルレンダー。
+
 public:
 	//////////////////////////////////////
 	// メンバ関数。
 	//////////////////////////////////////
-	//Game();
-	~Game();
-	bool Start();
-	void Update();
-	void Render(RenderContext& rc);
+
 private:
 	CharacterController m_charaCon;
 	ModelRender m_bgModelRendedr;

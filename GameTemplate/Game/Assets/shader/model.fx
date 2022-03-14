@@ -6,23 +6,26 @@
 // 構造体
 ////////////////////////////////////////////////
 //スキニング用の頂点データをひとまとめ。
-struct SSkinVSIn{
-	int4  Indices  	: BLENDINDICES0;
-    float4 Weights  : BLENDWEIGHT0;
+struct SSkinVSIn
+{
+    int4 Indices : BLENDINDICES0;
+    float4 Weights : BLENDWEIGHT0;
 };
 //頂点シェーダーへの入力。
-struct SVSIn{
-	float4 pos 		: POSITION;		//モデルの頂点座標。
-	float3 normal	: NORMAL;
-	float2 uv 		: TEXCOORD0;	//UV座標。
-	SSkinVSIn skinVert;				//スキン用のデータ。
+struct SVSIn
+{
+    float4 pos : POSITION; //モデルの頂点座標。
+    float3 normal : NORMAL;
+    float2 uv : TEXCOORD0; //UV座標。
+    SSkinVSIn skinVert; //スキン用のデータ。
 };
 //ピクセルシェーダーへの入力。
-struct SPSIn{
-	float4 pos 			: SV_POSITION;	//スクリーン空間でのピクセルの座標。
-	float3 normal		: NORMAL;
-	float2 uv 			: TEXCOORD0;	//uv座標。
-	float3 worldPos		: TEXCOORD1;
+struct SPSIn
+{
+    float4 pos : SV_POSITION; //スクリーン空間でのピクセルの座標。
+    float3 normal : NORMAL;
+    float2 uv : TEXCOORD0; //uv座標。
+    float3 worldPos : TEXCOORD1;
     float3 normalInView : TEXCOORD2; //カメラ空間の法線。
 };
 
@@ -62,9 +65,9 @@ struct Ambientlight
 //モデル用の定数バッファ
 cbuffer ModelCb : register(b0)
 {
-	float4x4 mWorld;
-	float4x4 mView;
-	float4x4 mProj;
+    float4x4 mWorld;
+    float4x4 mView;
+    float4x4 mProj;
 };
 //ディレクションライト用のデータを受け取るための定数バッファを用意する。
 cbuffer LightALLCb : register(b1)
@@ -81,9 +84,9 @@ cbuffer LightALLCb : register(b1)
 ////////////////////////////////////////////////
 // グローバル変数。
 ////////////////////////////////////////////////
-Texture2D<float4> g_albedo : register(t0);				//アルベドマップ
-StructuredBuffer<float4x4> g_boneMatrix : register(t3);	//ボーン行列。
-sampler g_sampler : register(s0);	//サンプラステート。
+Texture2D<float4> g_albedo : register(t0); //アルベドマップ
+StructuredBuffer<float4x4> g_boneMatrix : register(t3); //ボーン行列。
+sampler g_sampler : register(s0); //サンプラステート。
 
 ////////////////////////////////////////////////
 // 関数定義。
@@ -98,8 +101,8 @@ float3 CalcLigFromDirectionLight(SPSIn psIn);
 /// </summary>
 float4x4 CalcSkinMatrix(SSkinVSIn skinVert)
 {
-	float4x4 skinning = 0;	
-	float w = 0.0f;
+    float4x4 skinning = 0;
+    float w = 0.0f;
 	[unroll]
     for (int i = 0; i < 3; i++)
     {
@@ -119,28 +122,28 @@ float4x4 CalcSkinMatrix(SSkinVSIn skinVert)
 /// </summary>
 SPSIn VSMainA(SVSIn vsIn, uniform bool hasSkin)
 {
-	SPSIn psIn;
+    SPSIn psIn;
 
-	float4x4 m;
-	if (hasSkin)
-	{
-		m = CalcSkinMatrix(vsIn.skinVert);
-	}
-	else
-	{
-		m = mWorld;
-	}
+    float4x4 m;
+    if (hasSkin)
+    {
+        m = CalcSkinMatrix(vsIn.skinVert);
+    }
+    else
+    {
+        m = mWorld;
+    }
 
-	psIn.pos = mul(m, vsIn.pos);	//モデルの頂点をワールド座標系に変換。	
-	psIn.worldPos = psIn.pos;
-	psIn.pos = mul(mView, psIn.pos);	//ワールド座標系からカメラ座標系に変換。
-	psIn.pos = mul(mProj, psIn.pos);	//カメラ座標系からスクリーン座標系に変換。
+    psIn.pos = mul(m, vsIn.pos); //モデルの頂点をワールド座標系に変換。	
+    psIn.worldPos = psIn.pos;
+    psIn.pos = mul(mView, psIn.pos); //ワールド座標系からカメラ座標系に変換。
+    psIn.pos = mul(mProj, psIn.pos); //カメラ座標系からスクリーン座標系に変換。
 
-	psIn.normal = mul(m, vsIn.normal); //頂点法線をピクセルシェーダーに渡す。
-	psIn.uv = vsIn.uv;
+    psIn.normal = mul(m, vsIn.normal); //頂点法線をピクセルシェーダーに渡す。
+    psIn.uv = vsIn.uv;
 
     psIn.normalInView = mul(mView, psIn.normal); //カメラ空間の法線を求める。
-	return psIn;
+    return psIn;
 }
 
 /// <summary>
@@ -148,14 +151,14 @@ SPSIn VSMainA(SVSIn vsIn, uniform bool hasSkin)
 /// </summary>
 SPSIn VSMain(SVSIn vsIn)
 {
-	return VSMainA(vsIn, false);
+    return VSMainA(vsIn, false);
 }
 /// <summary>
 /// スキンありメッシュの頂点シェーダーのエントリー関数。
 /// </summary>
-SPSIn VSSkinMain( SVSIn vsIn ) 
+SPSIn VSSkinMain(SVSIn vsIn)
 {
-	return VSMainA(vsIn, true);
+    return VSMainA(vsIn, true);
 }
 
 /// <summary>
@@ -196,7 +199,7 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     float3 distance = length(psIn.worldPos - spotlight.spPosition);
 
     //影響率は距離に比例して小さくなっていく。
-    float affect = 1.0f - 1.0f / spotlight.spRange* distance;
+    float affect = 1.0f - 1.0f / spotlight.spRange * distance;
     //影響力がマイナスにならないように補正をかける。
     if (affect < 0.0f)
     {
@@ -244,7 +247,7 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     // step-5 最終的なリムの強さを求める
     float limPower = power1 * power2;
     //pow()を使用して、強さの変化を指数関数的にする。
-    limPower = pow(limPower, 1.3f);    
+    limPower = pow(limPower, 1.3f);
     
     
     // step-14 スポットライトの反射光を最終的な反射光に足し算する

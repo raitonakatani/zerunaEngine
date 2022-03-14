@@ -31,11 +31,12 @@ namespace nsK2EngineLow {
 				numAnimationClips);
 		}
 	}
-	void ModelRender::Init(
-		const char* filePath,
+	void ModelRender::Init(	const char* filePath,
 		AnimationClip* animationClips,
 		int numAnimationClips,
-		EnModelUpAxis enModelUpAxis
+		EnModelUpAxis enModelUpAxis,
+		bool isShadowReciever,
+		int maxInstance
 		)
 	{
 		ModelInitData m_InitData;

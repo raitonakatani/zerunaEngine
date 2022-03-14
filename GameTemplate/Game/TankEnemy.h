@@ -16,7 +16,8 @@ public:
 		enEnemyState_Chase,				//追跡。
 		enEnemyState_Attack,				//攻撃。
 		enEnemyState_ReceiveDamage,		//被ダメージ。
-		enEnemyState_Down,					//ダウン。
+		enEnemyState_Down,
+		enEnemyState_Death,//ダウン。
 		enEnemyState_model
 	};
 public:
@@ -80,7 +81,7 @@ private:
 	/// プレイヤーを探索する。
 	/// </summary>
 	/// <returns>プレイヤーが見つかったらtrue。</returns>
-	const bool SearchPlayer() const;
+	void SearchPlayer();
 	/// <summary>
 	/// 攻撃用の当たり判定コリジョンを作成する。
 	/// </summary>
@@ -138,6 +139,7 @@ private:
 		enAnimationClip_Attack,					//攻撃アニメーション。
 		enAnimationClip_Damage,					//被ダメージアニメーション。
 		enAnimationClip_Down,					//ダウンアニメーション。
+		enAnimationClip_Death,					//即死アニメーション。
 		enAnimationClip_Num,					//アニメーションの数。
 	};
 	AnimationClip				m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。
@@ -151,6 +153,7 @@ private:
 	EnEnemyState				m_EnemyState = enEnemyState_Idle;			//エネミーステート。
 	EffectEmitter* m_effectEmitter = nullptr;			//エフェクト。							//画像。
 	bool						m_isUnderAttack = false;					//攻撃中か？
+	bool					m_isSearchPlayer = false;
 	float							m_hp = 20;									//HP。
 	Player* m_player = nullptr;												//プレイヤー。
 	Game* m_game = nullptr;
@@ -163,4 +166,5 @@ private:
 	int m_model = 0;
 	int                     m_Hand = -1;                   //「Hand」ボーンのID。
 	int                     m_weakness = -1;               //「m_weakness」ボーンのID。
+	SphereCollider			m_sphereCollider;
 };

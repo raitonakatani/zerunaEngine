@@ -87,7 +87,7 @@ void Enemy3::Update()
 		PlayAnimation();
 		//ステートの遷移処理。
 		ManageState();
-
+		//サーチ
 		SearchPlayer();
 
 	//モデルの更新。
@@ -167,6 +167,8 @@ void Enemy3::Collision()
 	{
 		return;
 	}
+
+
 
 	{
 		//プレイヤーの攻撃用のコリジョンを取得する。

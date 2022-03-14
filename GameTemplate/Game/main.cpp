@@ -3,6 +3,17 @@
 #include "Game.h"
 #include "Title.h"
 
+/// <summary>
+/// ディレクショナルライト
+/// </summary>
+struct DirectionalLight
+{
+	Vector3  color;
+	float pad0;         // パディング
+	Vector3  direction;
+	float pad1;         // パディング
+};
+
 const int NUM_WEIGHTS = 8;
 /// <summary>
 /// ブラー用のパラメーター
@@ -11,6 +22,8 @@ struct SBlurParam
 {
 	float weights[NUM_WEIGHTS];
 };
+
+
 
 // 関数宣言
 void InitRootSignature(RootSignature& rs);
@@ -33,10 +46,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	// k2EngineLowの初期化。
 	g_k2EngineLow = new K2EngineLow();
 	g_k2EngineLow->Init(g_hWnd, FRAME_BUFFER_W, FRAME_BUFFER_H);
-	g_camera3D->SetPosition({ 0.0f, 100.0f, 300.0f });
+	g_camera3D->SetPosition({ 0.0f, 100.0f, -100.0f });
 	g_camera3D->SetTarget({ 0.0f, 100.0f, 0.0f });
 
-	auto game = NewGO<Game>(0);
+auto game = NewGO<Game>(0);
 	//auto title = NewGO<Title>(0);
 
 	RootSignature rs;
@@ -48,6 +61,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 
 	g_Light.Init();
+
+
+
 
 	//シャドウマップ描画用のレンダリングターゲットを作成する。
 	//カラーバッファのクリアカラー
@@ -135,7 +151,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		// ゲームオブジェクトマネージャーの更新処理を呼び出す。
 		g_k2EngineLow->ExecuteUpdate();
 
-
+/*
 		if (g_pad[0]->IsPress(enButtonA))
 		{
 			lStick_y++;
@@ -159,7 +175,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			g_quatIdentity,
 			g_vec3One);
 
-
+*/
 		// 影を生成したいモデルをシャドウマップに描画する。
 		//レンダリングターゲットをシャドウマップに変更する。
 	//	renderContext.WaitUntilToPossibleSetRenderTarget(shadowMap);
@@ -231,6 +247,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		g_renderingEngine.SpriteRenderDraw(renderContext);
 
+
+		// ゲームオブジェクトマネージャーの描画処理を呼び出す。
+		g_k2EngineLow->ExecuteRender();
 		// デバッグ描画処理を実行する。
 		g_k2EngineLow->DebubDrawWorld();
 

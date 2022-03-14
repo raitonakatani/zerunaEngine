@@ -13,7 +13,9 @@ namespace nsK2EngineLow {
 			const char* filePath,
 			AnimationClip* animationClips = nullptr,
 			int numAnimationClips = 0,
-			EnModelUpAxis enModelUpAxis = enModelUpAxisZ
+			EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
+			bool isShadowReciever = true,
+			int maxInstance =1
 		);
 
 		
@@ -140,6 +142,22 @@ namespace nsK2EngineLow {
 		Model& GetModel()
 		{
 			return m_model;
+		}
+
+		/// <summary>
+		/// 座標、回転、拡大を全て設定。
+		/// </summary>
+		/// <remark>
+		/// インスタンシング描画が有効の場合は、この設定は無視されます。
+		/// </remark>
+		/// <param name="pos">座標。</param>
+		/// <param name="rotation">回転。</param>
+		/// <param name="scale">拡大。</param>
+		void SetTRS(const Vector3& pos, const Quaternion& rotation, const Vector3& scale)
+		{
+			SetPosition(pos);
+			SetRotation(rotation);
+			SetScale(scale);
 		}
 		/// <summary>
 		/// インスタンシング描画を行う？

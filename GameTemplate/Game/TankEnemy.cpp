@@ -36,6 +36,8 @@ bool TankEnemy::Start()
 	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
 	m_animationClips[enAnimationClip_Down].Load("Assets/animData/tankenemy/sibou.tka");
 	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Death].Load("Assets/animData/tankenemy/sokusi.tka");
+	m_animationClips[enAnimationClip_Death].SetLoopFlag(false);
 	//モデルを読み込む。
 	m_modelRender.Init("Assets/modelData/tankEnemy/tank.tkm", m_animationClips, enAnimationClip_Num);
 
@@ -55,6 +57,8 @@ bool TankEnemy::Start()
 		m_position		//座標。
 	);
 
+	//スフィアコライダーを初期化。
+	m_sphereCollider.Create(1.0f);
 
 	//「Sword」ボーンのID(番号)を取得する。
 	m_Hand = m_modelRender.FindBoneID(L"LeftHandMiddle2");
@@ -86,6 +90,8 @@ void TankEnemy::Update()
 	PlayAnimation();
 	//ステートの遷移処理。
 	ManageState();
+	//サーチ
+	SearchPlayer();
 
 	//モデルの更新。
 	m_modelRender.Update();
@@ -115,6 +121,26 @@ void TankEnemy::Rotation()
 	m_forward = Vector3::AxisZ;
 	m_rotation.Apply(m_forward);
 }
+
+//衝突したときに呼ばれる関数オブジェクト(壁用)
+struct SweepResultWall :public btCollisionWorld::ConvexResultCallback
+{
+	bool isHit = false;						//衝突フラグ。
+
+	virtual	btScalar	addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace)
+	{
+		//壁とぶつかってなかったら。
+		if (convexResult.m_hitCollisionObject->getUserIndex() != enCollisionAttr_Wall) {
+			//衝突したのは壁ではない。
+			return 0.0f;
+		}
+
+		//壁とぶつかったら。
+		//フラグをtrueに。
+		isHit = true;
+		return 0.0f;
+	}
+};
 
 void TankEnemy::Chase()
 {
@@ -150,13 +176,13 @@ void TankEnemy::Collision()
 	//剣のボーンのワールド行列を取得する。
 	Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
 	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(50.0f, 50.0f, 50.0f));
+	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(20.0f, 20.0f, 20.0f));
 	collisionObject->SetWorldMatrix(matrix);
-	collisionObject->SetName("enemy_attack");
+	collisionObject->SetName("enemy");
 
 
 	//プレイヤーの攻撃用のコリジョンを取得する。
-	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_porkattack");
 	//コリジョンの配列をfor文で回す。
 	for (auto collision : collisions)
 	{
@@ -164,7 +190,7 @@ void TankEnemy::Collision()
 		if (collision->IsHit(collisionObject))
 		{
 				//ダウンステートに遷移する。
-				m_EnemyState = enEnemyState_Down;
+				m_EnemyState = enEnemyState_Death;
 			return;
 		}
 	}
@@ -178,18 +204,32 @@ void TankEnemy::Collision()
 			//コリジョンとキャラコンが衝突したら。
 			if (collision->IsHit(m_charaCon))
 			{
-
-			//	m_hp -= 1;
-
-				//HPが0になったら。
-				if (m_hp <= 0)
-				{
-					//ダウンステートに遷移する。
-					m_EnemyState = enEnemyState_Down;
+				if (m_isSearchPlayer == false) {
+					m_hp -= 10;
+					//HPが0になったら。
+					if (m_hp <= 0)
+					{
+						//ダウンステートに遷移する。
+						m_EnemyState = enEnemyState_Death;
+					}
+					else {
+						//被ダメージステートに遷移する。
+						m_EnemyState = enEnemyState_ReceiveDamage;
+					}
 				}
 				else {
-					//被ダメージステートに遷移する。
-					m_EnemyState = enEnemyState_ReceiveDamage;
+					m_hp -= 4;
+
+					//HPが0になったら。
+					if (m_hp <= 0)
+					{
+						//ダウンステートに遷移する。
+						m_EnemyState = enEnemyState_Down;
+					}
+					else {
+						//被ダメージステートに遷移する。
+						m_EnemyState = enEnemyState_ReceiveDamage;
+					}
 				}
 				return;
 			}
@@ -214,29 +254,48 @@ void TankEnemy::Attack()
 	}
 }
 
-const bool TankEnemy::SearchPlayer() const
+void TankEnemy::SearchPlayer()
 {
-	Vector3 diff = m_player->GetPosition() - m_position;
+	m_isSearchPlayer = false;
 
-	//プレイヤーにある程度近かったら.。
-	if (diff.LengthSq() <= 500.0 * 500.0f)
+	m_forward = Vector3::AxisZ;
+	m_rotation.Apply(m_forward);
+
+	Vector3 playerPosition = m_player->GetPosition();
+	Vector3 diff = playerPosition - m_position;
+
+	diff.Normalize();
+	float angle = acosf(diff.Dot(m_forward));
+
+	//プレイヤーが視界内に居なかったら。
+	if (Math::PI * 0.35f <= fabsf(angle))
 	{
-		//エネミーからプレイヤーに向かうベクトルを正規化する。
-		diff.Normalize();
-		//エネミーの正面のベクトルと、エネミーからプレイヤーに向かうベクトルの。
-		//内積(cosθ)を求める。
-		float cos = m_forward.Dot(diff);
-		//内積(cosθ)から角度(θ)を求める。
-		float angle = acosf(cos);
-		//角度(θ)が120°より小さければ。
-		if (angle <= (Math::PI / 180.0f) * 135.0f)
-		{
-			//プレイヤーを見つけた！
-			return true;
-		}
+		//プレイヤーは見つかっていない。
+		return;
 	}
-	//プレイヤーを見つけられなかった。
-	return false;
+
+	btTransform start, end;
+	start.setIdentity();
+	end.setIdentity();
+	//始点はエネミーの座標。
+	start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
+	//終点はプレイヤーの座標。
+	end.setOrigin(btVector3(playerPosition.x, playerPosition.y + 70.0f, playerPosition.z));
+
+	SweepResultWall callback;
+	//コライダーを始点から終点まで動かして。
+	//衝突するかどうかを調べる。
+	PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
+	//壁と衝突した！
+	if (callback.isHit == true)
+	{
+		//プレイヤーは見つかっていない。
+		return;
+	}
+
+	//壁と衝突してない！！
+	//プレイヤー見つけたフラグをtrueに。
+	m_isSearchPlayer = true;
 }
 
 void TankEnemy::MakeAttackCollision()
@@ -262,7 +321,7 @@ void TankEnemy::ProcessCommonStateTransition()
 	Vector3 diff = m_player->GetPosition() - m_position;
 
 	//プレイヤーを見つけたら。
-	if (SearchPlayer() == true)
+	if (m_isSearchPlayer == true && diff.LengthSq() <= 500.0 * 500.0f)
 	{
 		//ベクトルを正規化する。
 		diff.Normalize();
@@ -409,6 +468,11 @@ void TankEnemy::ManageState()
 		//被ダメージステートのステート遷移処理。
 		ProcessReceiveDamageStateTransition();
 		break;
+		//即死ステートの時。
+	case enEnemyState_Death:
+		//ダウンステートのステート遷移処理。
+		ProcessDownStateTransition();
+		break;
 		//ダウンステートの時。
 	case enEnemyState_Down:
 		//ダウンステートのステート遷移処理。
@@ -444,6 +508,11 @@ void TankEnemy::PlayAnimation()
 		m_modelRender.SetAnimationSpeed(1.5f);
 		//被ダメージアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.1f);
+		break;
+		//即死ステートの時。
+	case enEnemyState_Death:
+		//ダウンアニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Death, 0.1f);
 		break;
 		//ダウンステートの時。
 	case enEnemyState_Down:

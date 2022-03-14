@@ -6,7 +6,7 @@ bool Background::Start()
 
 //	m_modelRender.Init("Assets/modelData/stage/RPG.stage.tkm");
 
-	m_modelRender.Init("Assets/modelData/karisute/stage.wall.tkm");
+	m_modelRender.Init("Assets/modelData/karisute/stage.tkm");
 	
 //	m_modelRender.SetPosition({ 0.0f,-900.0f,0.0f });
 //	m_modelRender.SetScale({ 0.5f,0.5f,0.5 });
@@ -16,7 +16,7 @@ bool Background::Start()
 	m_physicsStaticObject.CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
 	m_physicsStaticObject.GetbtCollisionObject()->setUserIndex(enCollisionAttr_Wall);
 
-	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+//	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 	return true;
 }
