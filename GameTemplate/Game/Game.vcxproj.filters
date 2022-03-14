@@ -19,6 +19,7 @@
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="Fade.cpp" />
+    <ClCompile Include="SpeedEnemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -33,5 +34,6 @@
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="Title.h" />
     <ClInclude Include="Fade.h" />
+    <ClInclude Include="SpeedEnemy.h" />
   </ItemGroup>
 </Project>

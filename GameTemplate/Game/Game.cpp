@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Background.h"
 #include "TankEnemy.h"
+#include "SpeedEnemy.h"
 #include "Enemy3.h"
 #include "Fade.h"
 
@@ -23,6 +24,9 @@ bool Game::Start()
 
 //	m_tank = NewGO<TankEnemy>(0);
 //	m_tank->SetPosition({ 100.0f,0.0f,-100.0f });
+	m_speed = NewGO<SpeedEnemy>(0);
+	m_speed->SetPosition({ 100.0f,0.0f,-100.0f });
+
 	m_enemy3 = NewGO<Enemy3>(0);
 	m_enemy3->SetPosition({ -2500.0f,0.0f,100.0f });
 	m_background = NewGO<Background>(0);

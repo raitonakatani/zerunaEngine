@@ -8,7 +8,7 @@
 namespace
 {
 	const float CHARACON_RADIUS = 20.0f;            //キャラコンの半径
-	const float CHARACON_HEIGHT =45.0f;             //キャラコンの高さ
+	const float CHARACON_HEIGHT = 45.0f;             //キャラコンの高さ
 	const float MODEL_POSITION_Y = 2.5f;            //モデルのY座標
 	const float MOVESPEED_MINIMUMVALUE = 0.001f;    //移動速度の最低値
 	const float MOVESPEED = 200.0f;                 //移動速度
@@ -41,7 +41,7 @@ void SpeedEnemy::InitAnimation()
 	m_animationClipArray[enAnimClip_Idle].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/speedenemy/run.tka");
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Attack].Load("Assets/animData/speedenemy/attack2.tka");
+	m_animationClipArray[enAnimClip_Attack].Load("Assets/animData/speedenemy/attack.tka");
 	m_animationClipArray[enAnimClip_Attack].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_Shout].Load("Assets/animData/speedenemy/shout.tka");
 	m_animationClipArray[enAnimClip_Shout].SetLoopFlag(false);
@@ -204,7 +204,7 @@ void SpeedEnemy::Attack()
 	if (m_isUnderAttack == true)
 	{
 		//攻撃用のコリジョンを作成する。
-		MakeAttackCollision();
+		//MakeAttackCollision();
 	}
 }
 
@@ -319,8 +319,8 @@ void SpeedEnemy::ProcessCommonStateTransition()
 			if (ram >= ATTACK_PROBABILITY)
 			{
 				//攻撃ステートに移行する
-				m_speedEnemyState = enSpeedEnemyState_Attack;
-				m_isUnderAttack = false;
+				//m_speedEnemyState = enSpeedEnemyState_Attack;
+				//m_isUnderAttack = false;
 				return;
 			}
 			else
@@ -486,3 +486,4 @@ void SpeedEnemy::Render(RenderContext& rc)
 	//モデルの描画
 	m_modelRender.Draw(rc);
 }
+

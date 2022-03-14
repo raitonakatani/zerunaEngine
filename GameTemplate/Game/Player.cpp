@@ -29,7 +29,7 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_StealthyStep].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player2/rolling.tka");
 	m_animationClipArray[enAnimClip_Rolling].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/firstattack.tka");
+	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/slashattack.tka");
 	m_animationClipArray[enAnimClip_FirstAttack].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player2/pokeattack.tka");
 	m_animationClipArray[enAnimClip_PokeAttack].SetLoopFlag(false);

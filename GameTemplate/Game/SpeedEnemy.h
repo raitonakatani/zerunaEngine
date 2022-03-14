@@ -172,7 +172,7 @@ private:
 	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
 	Vector3                 m_moveSpeed;                                //移動速度
 	Quaternion              m_rotation;                                 //回転
-	Player*                 m_player = nullptr;                         //プレイヤー
+	Player* m_player = nullptr;                         //プレイヤー
 	float                   m_idleTimer = 0.0f;                         //待機タイマー
 	float                   m_chaseTimer = 0.0f;                        //追跡タイマー
 	int                     m_hp = 100;                                 //HP
