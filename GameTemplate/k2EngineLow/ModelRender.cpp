@@ -31,12 +31,11 @@ namespace nsK2EngineLow {
 				numAnimationClips);
 		}
 	}
-	void ModelRender::Init(	const char* filePath,
+	void ModelRender::Init(
+		const char* filePath,
 		AnimationClip* animationClips,
 		int numAnimationClips,
-		EnModelUpAxis enModelUpAxis,
-		bool isShadowReciever,
-		int maxInstance
+		EnModelUpAxis enModelUpAxis
 		)
 	{
 		ModelInitData m_InitData;
@@ -77,6 +76,29 @@ namespace nsK2EngineLow {
 		m_model.Init(m_InitData);
 	}
 
+	void ModelRender::UpdateInstancingData(const Vector3& pos, const Quaternion& rot, const Vector3& scale)
+	{
+		K2_ASSERT(m_numInstance < m_maxInstance, "インスタンスの数が多すぎです。");
+		if (!m_isEnableInstancingDraw) {
+			return;
+		}
+		auto wlorldMatrix = m_zprepassModel.CalcWorldMatrix(pos, rot, scale);
+
+		// インスタンシング描画を行う。
+		m_worldMatrixArray[m_numInstance] = wlorldMatrix;
+		if (m_numInstance == 0) {
+			//インスタンス数が0の場合のみアニメーション関係の更新を行う。
+			// スケルトンを更新。
+			// 各インスタンスのワールド空間への変換は、
+			// インスタンスごとに行う必要があるので、頂点シェーダーで行う。
+			// なので、単位行列を渡して、モデル空間でボーン行列を構築する。
+			m_skeleton.Update(g_matIdentity);
+			//アニメーションを進める。
+			m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
+		}
+		m_numInstance++;
+	}
+
 	void ModelRender::Update()
 	{
 		m_model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
@@ -89,7 +111,6 @@ namespace nsK2EngineLow {
 		//アニメーションを進める。
 		m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
 	}
-
 
 	void ModelRender::Draw(RenderContext& rc)
 	{

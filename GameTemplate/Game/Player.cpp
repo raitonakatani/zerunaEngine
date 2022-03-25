@@ -62,7 +62,7 @@ bool Player::Start()
 	camera = FindGO<GameCamera>("GameCamera");
 
 	//キャラコン
-	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, g_vec3Zero);
+	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, m_position);
 
 	return true;
 }
@@ -87,7 +87,6 @@ void Player::Update()
 	//座標、回転、大きさの更新
 	m_modelRender.SetPosition(m_position);
 	m_modelRender.SetRotation(m_rotation);
-	//m_modelRender.SetScale(m_scale);
 	m_modelRender.SetScale({ 1.5f,1.5f,1.5 });
 	
 	//モデルの更新
@@ -147,6 +146,7 @@ void Player::Move()
 
 	//座標の更新
 	Vector3 modelPosition = m_position;
+	modelPosition.y += 2.0f;
 	m_modelRender.SetPosition(modelPosition);
 }
 

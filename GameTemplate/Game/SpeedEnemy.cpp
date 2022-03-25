@@ -2,8 +2,11 @@
 #include "SpeedEnemy.h"
 
 #include "Player.h"
+#include "Game.h"
 
 #include "CollisionObject.h"
+#include "Level3D/level.h"
+#include "MovedPath.h"
 
 namespace
 {
@@ -11,27 +14,26 @@ namespace
 	const float CHARACON_HEIGHT = 45.0f;             //キャラコンの高さ
 	const float MODEL_POSITION_Y = 2.5f;            //モデルのY座標
 	const float MOVESPEED_MINIMUMVALUE = 0.001f;    //移動速度の最低値
-	const float MOVESPEED = 200.0f;                 //移動速度
+	const float MOVESPEED = 220.0f;                 //移動速度
+	const float WANDER_MOVESPEED = 100.0f;
 	const float GRAVITY = 1000.0f;                  //重力
 	const float IDLETIMER_MAX = 0.3f;               //待機タイマーの最大値
 	const float IDLETIMER_DEFAULT = 0.0f;           //待機タイマーの初期値
 	const float CHASETIMER_MAX = 1.0f;              //追跡タイマーの最大値
 	const float CHASETIMER_DEFAULT = 0.0f;          //追跡タイマーの初期値
-	const float SEARCH_RANGE = 300.0f;              //プレイヤーを発見できる距離
-	const float SEARCH_ANGLE = 130.0f;              //プレイヤーを発見できる角度
-	const float ATTACK_RANGE = 45;					//攻撃できる距離
+	const float SEARCH_RANGE = 500.0f;              //プレイヤーを発見できる距離
+	const float SEARCH_ANGLE = 120.0f;              //プレイヤーを発見できる角度
+	const float ATTACK_RANGE = 50.0f;				//攻撃できる距離
 	const int   ATTACK_PROBABILITY = 1;             //攻撃を行う確率
-	const float RECEIVE_DAMAGE = 1;                 //プレイヤーから受けるダメージ
+	const int   RECEIVE_DAMAGE = 1;                 //プレイヤーから受けるダメージ
 }
 
 SpeedEnemy::SpeedEnemy()
 {
-
 }
 
 SpeedEnemy::~SpeedEnemy()
 {
-
 }
 
 void SpeedEnemy::InitAnimation()
@@ -51,18 +53,33 @@ void SpeedEnemy::InitAnimation()
 	m_animationClipArray[enAnimClip_Down].SetLoopFlag(false);
 }
 
+void SpeedEnemy::LoadPath(const int number)
+{
+	m_movedPath = std::make_unique<MovedPath>();
+	char wcsbuf[256];
+	sprintf_s(wcsbuf, 256, "Assets/speedpath/path_enemy%d.tkl", int(number));
+	m_movedPath->ReadPath(wcsbuf);
+}
+
 bool SpeedEnemy::Start()
 {
+	//パスの初期化
+	m_movedPath->Init(m_position, WANDER_MOVESPEED);
+
 	//アニメーションの初期化
 	InitAnimation();
 
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/speedenemy/speedenemy.tkm",
 		m_animationClipArray,
-		enAnimClip_Num);
+		enAnimClip_Num
+	);
 
 	//キャラコンの初期化
 	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, m_position);
+
+	//ナビメッシュを構築 （tknファイルを出力できないため）
+	m_nvmMesh.Init("Assets/nvm/test1.tkn");
 
 	//アニメーションイベント用の関数を設定する
 	m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
@@ -73,6 +90,7 @@ bool SpeedEnemy::Start()
 	m_punchBoneId = m_modelRender.FindBoneID(L"LeftHand");
 
 	m_player = FindGO<Player>("player");
+	m_game = FindGO<Game>("game");
 
 	//乱数を初期化。
 	srand((unsigned)time(NULL));
@@ -83,6 +101,8 @@ bool SpeedEnemy::Start()
 
 void SpeedEnemy::Update()
 {
+	//徘徊処理
+	Wander();
 	//追跡処理
 	Chase();
 	//回転処理
@@ -98,11 +118,60 @@ void SpeedEnemy::Update()
 
 	//座標と拡大率と回転を設定する
 	m_modelRender.SetPosition(m_position);
-	m_modelRender.SetScale(m_scale);
+	m_modelRender.SetScale(Vector3(1.5f,1.5f,1.5f));
 	m_modelRender.SetRotation(m_rotation);
 
 	//モデルの更新
 	m_modelRender.Update();
+}
+
+void SpeedEnemy::PathFind()
+{
+	/*
+	bool isEnd;
+
+	if (g_pad[0]->IsTrigger(enButtonA)) {
+		// パス検索
+		m_pathFinding.Execute(
+			m_path,							// 構築されたパスの格納先
+			m_nvmMesh,						// ナビメッシュ
+			m_position,						// 開始座標
+			Targetpos,			            // 移動目標座標
+			PhysicsWorld::GetInstance(),	// 物理エンジン	
+			50.0f,							// AIエージェントの半径
+			200.0f							// AIエージェントの高さ。
+		);
+	}
+	// パス上を移動する。
+	m_position = m_path.Move(
+		m_position,
+		10.0f,
+		isEnd
+	);
+	m_modelRender.SetPosition(m_position);
+	m_modelRender.Update();
+	*/
+}
+
+void SpeedEnemy::Wander()
+{
+	//徘徊ステートではなかったら
+	if (m_speedEnemyState != enSpeedEnemyState_Wander)
+	{
+		//何もしない
+		return;
+	}
+	
+	m_position = m_movedPath->Move();
+	Vector3 moveVector = m_movedPath->GetMoveVector();
+
+	moveVector.Normalize();
+	m_moveSpeed = moveVector * WANDER_MOVESPEED;
+
+	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
+
+	m_modelRender.SetPosition(m_position);
+	m_modelRender.SetRotation(m_rotation);
 }
 
 void SpeedEnemy::Chase()
@@ -113,7 +182,26 @@ void SpeedEnemy::Chase()
 		//何もしない
 		return;
 	}
+	/*
+	bool isEnd = false;
 
+	m_pathFinding.Execute(
+		m_path,							// 構築されたパスの格納先
+		m_nvmMesh,						// ナビメッシュ
+		m_position,						// 開始座標
+		m_player->GetPosition(),		// 移動目標座標
+		PhysicsWorld::GetInstance(),	// 物理エンジン	
+		50.0f,							// AIエージェントの半径
+		200.0f							// AIエージェントの高さ。
+	);
+
+	m_position = m_path.Move(
+		m_position,
+		10.0f,
+		isEnd
+	);
+	*/
+	
 	Vector3 diff = m_player->GetPosition() - m_position;
 	//正規化
 	diff.Normalize();
@@ -122,7 +210,8 @@ void SpeedEnemy::Chase()
 	m_moveSpeed.z = diff.z * MOVESPEED;
 
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
-	if (m_charaCon.IsOnGround()) {
+	if (m_charaCon.IsOnGround()) 
+	{
 		//地面についた。
 		m_moveSpeed.y = 0.0f;
 	}
@@ -135,17 +224,26 @@ void SpeedEnemy::Chase()
 
 void SpeedEnemy::Rotation()
 {
-	if (fabsf(m_moveSpeed.x) < MOVESPEED_MINIMUMVALUE
-		&& fabsf(m_moveSpeed.z) < MOVESPEED_MINIMUMVALUE) {
+	//if (fabsf(m_moveSpeed.x) < MOVESPEED_MINIMUMVALUE
+	//	&& fabsf(m_moveSpeed.z) < MOVESPEED_MINIMUMVALUE) {
 		//m_moveSpeed.xとm_moveSpeed.zの絶対値がともに0.001以下ということは
 		//このフレームではキャラは移動していないので旋回する必要はない。
-		return;
-	}
+	//	return;
+	//}
 	//atan2はtanθの値を角度(ラジアン単位)に変換してくれる関数。
 	//m_moveSpeed.x / m_moveSpeed.zの結果はtanθになる。
 	//atan2を使用して、角度を求めている。
 	//これが回転角度になる。
+
+	if (m_speedEnemyState == enSpeedEnemyState_Chase)
+	{
+		Vector3 diff = m_player->GetPosition() - m_position;
+		diff.Normalize();
+		m_moveSpeed = diff;
+	}
+
 	float angle = atan2(-m_moveSpeed.x, m_moveSpeed.z);
+
 	//atanが返してくる角度はラジアン単位なので
 	//SetRotationDegではなくSetRotationを使用する。
 	m_rotation.SetRotationY(-angle);
@@ -153,7 +251,7 @@ void SpeedEnemy::Rotation()
 	//回転を設定する。
 	m_modelRender.SetRotation(m_rotation);
 
-	//プレイヤーの前ベクトルを計算する。
+	//前ベクトルを計算する。
 	m_forward = Vector3::AxisZ;
 	m_rotation.Apply(m_forward);
 }
@@ -238,6 +336,10 @@ void SpeedEnemy::PlayAnimation()
 		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.3f);
 		m_modelRender.SetAnimationSpeed(1.6f);
 		break;
+	case SpeedEnemy::enSpeedEnemyState_Wander:
+		m_modelRender.PlayAnimation(enAnimClip_Run, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.0f);
+		break;
 		//追跡ステートの時
 	case SpeedEnemy::enSpeedEnemyState_Chase:
 		m_modelRender.PlayAnimation(enAnimClip_Run, 0.2f);
@@ -263,9 +365,6 @@ void SpeedEnemy::PlayAnimation()
 		m_modelRender.PlayAnimation(enAnimClip_Down, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.5f);
 		break;
-		//それ以外の時
-	default:
-		break;
 	}
 }
 
@@ -276,6 +375,9 @@ void SpeedEnemy::ManageState()
 		//待機ステートの時
 	case SpeedEnemy::enSpeedEnemyState_Idle:
 		ProcessIdleStateTransition();
+		break;
+	case SpeedEnemy::enSpeedEnemyState_Wander:
+		ProcessWanderStateTransition();
 		break;
 		//追跡ステートの時
 	case SpeedEnemy::enSpeedEnemyState_Chase:
@@ -297,9 +399,6 @@ void SpeedEnemy::ManageState()
 	case SpeedEnemy::enSpeedEnemyState_Down:
 		ProcessDownStateTransition();
 		break;
-		//それ以外の時
-	default:
-		break;
 	}
 }
 
@@ -319,8 +418,8 @@ void SpeedEnemy::ProcessCommonStateTransition()
 			if (ram >= ATTACK_PROBABILITY)
 			{
 				//攻撃ステートに移行する
-				//m_speedEnemyState = enSpeedEnemyState_Attack;
-				//m_isUnderAttack = false;
+				m_speedEnemyState = enSpeedEnemyState_Attack;
+				m_isUnderAttack = false;
 				return;
 			}
 			else
@@ -342,7 +441,7 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	else
 	{
 		//待機ステートに移行する
-		m_speedEnemyState = enSpeedEnemyState_Idle;
+		m_speedEnemyState = enSpeedEnemyState_Wander;
 		return;
 	}
 }
@@ -359,6 +458,13 @@ void SpeedEnemy::ProcessIdleStateTransition()
 		ProcessCommonStateTransition();
 		return;
 	}
+}
+
+void SpeedEnemy::ProcessWanderStateTransition()
+{
+	//共通のステートの遷移処理に移行する
+	ProcessCommonStateTransition();
+	return;
 }
 
 void SpeedEnemy::ProcessChaseStateTransition()

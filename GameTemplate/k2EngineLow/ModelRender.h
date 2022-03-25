@@ -13,9 +13,7 @@ namespace nsK2EngineLow {
 			const char* filePath,
 			AnimationClip* animationClips = nullptr,
 			int numAnimationClips = 0,
-			EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
-			bool isShadowReciever = true,
-			int maxInstance =1
+			EnModelUpAxis enModelUpAxis = enModelUpAxisZ
 		);
 
 		
@@ -27,6 +25,22 @@ namespace nsK2EngineLow {
 	//	void InitInstancingDraw(int maxInstance);
 
 		void Draw(RenderContext& rc);
+
+		/// <summary>
+		/// 座標、回転、拡大を全て設定。
+		/// </summary>
+		/// <remark>
+		/// インスタンシング描画が有効の場合は、この設定は無視されます。
+		/// </remark>
+		/// <param name="pos">座標。</param>
+		/// <param name="rotation">回転。</param>
+		/// <param name="scale">拡大。</param>
+		void SetTRS(const Vector3& pos, const Quaternion& rotation, const Vector3& scale)
+		{
+			SetPosition(pos);
+			SetRotation(rotation);
+			SetScale(scale);
+		}
 
 		/// <summary>
 		/// 座標を設定。
@@ -78,7 +92,7 @@ namespace nsK2EngineLow {
 		}
 
 		void Update();
-
+		void UpdateInstancingData(const Vector3& pos, const Quaternion& rot, const Vector3& scale);
 	
 		/// <summary>
 		/// アニメーションの初期化。
@@ -143,22 +157,6 @@ namespace nsK2EngineLow {
 		{
 			return m_model;
 		}
-
-		/// <summary>
-		/// 座標、回転、拡大を全て設定。
-		/// </summary>
-		/// <remark>
-		/// インスタンシング描画が有効の場合は、この設定は無視されます。
-		/// </remark>
-		/// <param name="pos">座標。</param>
-		/// <param name="rotation">回転。</param>
-		/// <param name="scale">拡大。</param>
-		void SetTRS(const Vector3& pos, const Quaternion& rotation, const Vector3& scale)
-		{
-			SetPosition(pos);
-			SetRotation(rotation);
-			SetScale(scale);
-		}
 		/// <summary>
 		/// インスタンシング描画を行う？
 		/// </summary>
@@ -199,9 +197,11 @@ namespace nsK2EngineLow {
 		AnimationClip*				m_animationClips = nullptr;			// アニメーションクリップ。
 		int							m_numAnimationClips = 0;			// アニメーションクリップの数。
 		Animation					m_animation;						// アニメーション。
+		Model						m_zprepassModel;					// ZPrepassで描画されるモデル
 		Vector3 					m_position = Vector3::Zero;			// 座標。
 		Quaternion	 				m_rotation = Quaternion::Identity;	// 回転。
 		Vector3						m_scale = Vector3::One;				// 拡大率。
+		int							m_numInstance = 0;					// インスタンスの数。
 		int							m_maxInstance = 1;					// 最大インスタンス数。
 		//int							m_fixNumInstanceOnFrame = 0;		// このフレームに描画するインスタンスの数の確定数。。
 		bool						m_isEnableInstancingDraw = false;	// インスタンシング描画が有効？
