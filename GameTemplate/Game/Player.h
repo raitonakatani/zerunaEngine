@@ -28,36 +28,12 @@ public:
 	void Render(RenderContext& rc);
 
 	/// <summary>
-	/// 座標を設定する。
-	/// </summary>
-	/// <param name="position">座標。</param>
-	void SetPosition(const Vector3& position)
-	{
-		m_position = position;
-	}
-	/// <summary>
 	/// 座標を取得する。
 	/// </summary>
 	/// <returns>座標。</returns>
 	const Vector3& GetPosition() const
 	{
 		return m_position;
-	}
-	/// <summary>
-	/// 回転を設定する。
-	/// </summary>
-	/// <param name="rotation">回転。</param>
-	void SetRotation(const Quaternion& rotation)
-	{
-		m_rotation = rotation;
-	}
-	/// <summary>
-	/// 大きさを設定する。
-	/// </summary>
-	/// <param name="scale">大きさ。</param>
-	void SetScale(const Vector3& scale)
-	{
-		m_scale = scale;
 	}
 
 	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
@@ -166,7 +142,7 @@ private:
 	Vector3                 m_moveSpeed;                                //移動速度
 	Skeleton                m_skeleton;	                                //スケルトン
 	Quaternion				m_rotation;					                //回転
-	Vector3					m_scale;		                //拡大率
+	Vector3					m_scale = g_vec3One;		                //拡大率
 	Animation				m_animation;				                //アニメーション
 	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
 	CharacterController     m_charaCon;	                                //キャラコン

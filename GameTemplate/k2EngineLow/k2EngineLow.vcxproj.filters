@@ -517,7 +517,6 @@
     <ClInclude Include="SpriteRender.h" />
     <ClInclude Include="RenderingEngine.h" />
     <ClInclude Include="ShadowMap.h" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">
@@ -577,8 +576,5 @@
     <Filter Include="AI\PathFinding">
       <UniqueIdentifier>{72d94fe6-e599-4523-8e54-81df808c96fd}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="k2EngineLow.rc" />
   </ItemGroup>
 </Project>

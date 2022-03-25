@@ -1,13 +1,6 @@
 #pragma once
 
 class Player;
-class Game;
-class MovedPath;
-
-#include "tkFile/TknFile.h"
-#include "AI/PathFinding/NaviMesh.h"
-#include "AI/PathFinding/Path.h"
-#include "AI/PathFinding/PathFinding.h"
 
 /// <summary>
 /// スピードエネミークラス
@@ -21,7 +14,6 @@ public:
 	enum EnSpeedEnemyState
 	{
 		enSpeedEnemyState_Idle,           //待機ステート
-		enSpeedEnemyState_Wander,
 		enSpeedEnemyState_Chase,          //追跡ステート
 		enSpeedEnemyState_Attack,         //攻撃ステート
 		enSpeedEnemyState_Shout,          //叫びステート
@@ -67,13 +59,16 @@ public:
 	{
 		m_scale = scale;
 	}
-
-	void LoadPath(const int number);
+	/// <summary>
+	/// HPを取得する
+	/// </summary>
+	/// <returns>HP</returns>
+	const int& GetHp() const
+	{
+		return m_hp;
+	}
 
 private:
-	void PathFind();
-
-	void Wander();
 	/// <summary>
 	/// アニメーションの初期化
 	/// </summary>
@@ -121,10 +116,6 @@ private:
 	/// </summary>
 	void ProcessIdleStateTransition();
 	/// <summary>
-	/// 徘徊ステートの遷移処理
-	/// </summary>
-	void ProcessWanderStateTransition();
-	/// <summary>
 	/// 追跡ステートの遷移処理
 	/// </summary>
 	void ProcessChaseStateTransition();
@@ -156,16 +147,6 @@ private:
 	/// <returns>攻撃できるならtrue</returns>
 	const bool IsCanAttack() const;
 
-	bool GetPlayer()
-	{
-		if (m_player == nullptr)
-		{
-			m_player = FindGO<Player>("player");
-			return false;
-		}
-		return true;
-	}
-
 private:
 	/// <summary>
 	/// アニメーションクリップの番号を表す列挙型
@@ -180,28 +161,22 @@ private:
 		enAnimClip_Down,           //ダウンステート
 		enAnimClip_Num             //アニメーションの数
 	};
-	//移動方向ベクトル。
-	std::unique_ptr<MovedPath>	m_movedPath;
-	ModelRender                 m_modelRender;                              //モデルレンダー
-	CharacterController         m_charaCon;                                 //キャラコン
-	EnSpeedEnemyState           m_speedEnemyState = enSpeedEnemyState_Wander; //スピードエネミーステート
-	Animation			     	m_animation;				                //アニメーション
-	AnimationClip               m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
-	Vector3                     m_position;                                 //座標
-	Vector3                     m_scale = Vector3::One;                     //拡大率
-	Vector3                     m_forward = Vector3::AxisZ;                 //前方向のベクトル
-	Vector3                     m_moveSpeed;                                //移動速度
-	Quaternion                  m_rotation;                                 //回転
-	Player*                     m_player = nullptr;                         //プレイヤー
-	float                       m_idleTimer = 0.0f;                         //待機タイマー
-	float                       m_chaseTimer = 0.0f;                        //追跡タイマー
-	int                         m_hp = 100;                                 //HP
-	int                         m_punchBoneId = -1;                         //パンチのボーン
-	bool                        m_isUnderAttack = false;                    //攻撃中か？
-	Game*                       m_game = nullptr;
-	TknFile                     m_tknFile;
-	nsAI::NaviMesh              m_nvmMesh;
-	nsAI::Path                  m_path;
-	nsAI::PathFinding           m_pathFinding;
+
+	ModelRender             m_modelRender;                              //モデルレンダー
+	CharacterController     m_charaCon;                                 //キャラコン
+	EnSpeedEnemyState       m_speedEnemyState = enSpeedEnemyState_Idle; //スピードエネミーステート
+	Animation				m_animation;				                //アニメーション
+	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
+	Vector3                 m_position;                                 //座標
+	Vector3                 m_scale = Vector3::One;                     //拡大率
+	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
+	Vector3                 m_moveSpeed;                                //移動速度
+	Quaternion              m_rotation;                                 //回転
+	Player* m_player = nullptr;                         //プレイヤー
+	float                   m_idleTimer = 0.0f;                         //待機タイマー
+	float                   m_chaseTimer = 0.0f;                        //追跡タイマー
+	int                     m_hp = 100;                                 //HP
+	int                     m_punchBoneId = -1;                         //パンチのボーン
+	bool                    m_isUnderAttack = false;                    //攻撃中か？
 };
 

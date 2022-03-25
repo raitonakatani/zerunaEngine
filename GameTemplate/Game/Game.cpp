@@ -8,114 +8,73 @@
 #include "Enemy3.h"
 #include "Fade.h"
 
-#include "Level3D/Level.h"
 
 Game::~Game()
 {
-	//DeleteGO(m_player);
-	//DeleteGO(m_background);
+//	DeleteGO(m_player);
+//	DeleteGO(m_background);
 }
-
 bool Game::Start()
 {
+//	g_camera3D->SetPosition({ 0.0f, 100.0f, -600.0f });
+
+	m_background = NewGO<Background>(0);
+//	m_bgModelRendedr.Init("Assets/modelData/karisute/stage.yuka.tkm");
+//	m_bgObject.CreateFromModel(m_bgModelRendedr.GetModel(), m_bgModelRendedr.GetWorldMatrix(0));
+
+	m_player = NewGO<Player>(0, "player");
+
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
-	//m_player = NewGO<Player>(0, "player");
-	//m_player->SetPosition({ 100.0f,0.0f,400.0f });
-
-	//m_background = NewGO<Background>(0, "background");
-	//m_speed = NewGO<SpeedEnemy>(0, "speedenemy");
-
-	Level levelRender;
-	levelRender.Init("Assets/level3D/stage.tkl", [&](LevelObjectData& objData)
-		{
-			if (objData.EqualObjectName(L"player2") == true) {
-				//プレイヤーのオブジェクトを作成
-				m_player = NewGO<Player>(0, "player");
-				//座標を設定
-				m_player->SetPosition(objData.position);
-				//大きさを設定
-				m_player->SetScale(objData.scale);
-				//回転を設定
-				m_player->SetRotation(objData.rotation);
-				return true;
-			}
-			else if (objData.EqualObjectName(L"bg") == true) {
-				//背景オブジェクトを作成
-				m_background = NewGO<Background>(0, "background");
-				//座標を設定
-				m_background->SetPosition(objData.position);
-				//大きさを設定
-				m_background->SetScale(objData.scale);
-				//回転を設定
-				m_background->SetRotation(objData.rotation);
-				return true;
-			}
-			else if (objData.ForwardMatchName(L"speedenemy") == true)
-			{
-				auto speed = NewGO<SpeedEnemy>(0, "speedenemy");
-				//座標を設定
-				speed->SetPosition(objData.position);
-				//大きさを設定
-				speed->SetScale(objData.scale);
-				//回転を設定
-				speed->SetRotation(objData.rotation);
-
-				int number = _wtoi(&objData.name[10]);
-				speed->LoadPath(number);
-				m_speeds.push_back(speed);
-				return true;
-			}
-			return true;
-		});
-
-	//	g_camera3D->SetPosition({ 0.0f, 100.0f, -600.0f });
-
-	//	m_background = NewGO<Background>(0);
-	//	m_bgModelRendedr.Init("Assets/modelData/karisute/stage.yuka.tkm");
-	//	m_bgObject.CreateFromModel(m_bgModelRendedr.GetModel(), m_bgModelRendedr.GetWorldMatrix(0));
-
-	//	m_player = NewGO<Player>(0, "player");
-	//	m_speed = NewGO<SpeedEnemy>(0);
-	//	m_speed->SetPosition({ 100.0f,0.0f,400.0f });
-
-	//	m_tank = NewGO<TankEnemy>(0);
-
-	//	m_tank->SetPosition({ 0.0f,0.0f,200.0f });
-	//	m_enemy3 = NewGO<Enemy3>(0);
-	//	m_enemy3->SetPosition({ 0.0f,0.0f,200.0f });
-
-	//	m_tank->SetPosition({ 100.0f,0.0f,-100.0f });
-
-	//	m_enemy3 = NewGO<Enemy3>(0);
-	//	m_enemy3->SetPosition({ -2500.0f,0.0f,100.0f });
-
-	//	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
-
-		//画像を読み込む。
-	//	m_spriteRender.Init("Assets/sprite/TENEBRIS.dds", 800, 450, AlphaBlendMode_None);
-	//	m_pressButton.Init("Assets/sprite/button.dds", 400, 225, AlphaBlendMode_Trans);
-	//	m_targetRender.Init("Assets/sprite/TENEBRIS.dds", 50, 50);
 
 
-	//	g_camera3D->SetViewAngle(Math::DegToRad(60.0f));
-	//	g_camera3D->SetPosition(0.0f, 1000.0f, 1000.0f);
 
-	//	g_camera3D->SetTarget(0.0f, 400.0f, 0.0f);
-	//	g_camera3D->SetFar(20000.0f);
 
-	//	m_charaRender.Init("Assets/modelData/unityChan.tkm");
-	//	m_charaRender.SetScale(1.2f, 1.2f, 1.2f);
-	//	m_targetPointRender.Init("Assets/modelData/light.tkm");
-	//	m_targetPointRender.SetScale(2.0f, 2.0f, 2.0f);
-	//	m_targetPointRender.SetShadowCasterFlag(false);
-	//	m_charaCon.Init(10.0f, 10.0f, m_targetPointPosition);
-	//	m_targetPointPointLight.Init();
+//	m_tank = NewGO<TankEnemy>(0);
 
-		// ナビメッシュを構築。
-	//	m_nvmMesh.Init("Assets/nvm/test1.tkn");
+//	m_tank->SetPosition({ 0.0f,0.0f,200.0f });
+//	m_enemy3 = NewGO<Enemy3>(0);
+//	m_enemy3->SetPosition({ 0.0f,0.0f,200.0f });
 
-	//	SkyCube* sky = NewGO<SkyCube>(0);
-	//	sky->SetLuminance(0.2f);
+//	m_tank->SetPosition({ 100.0f,0.0f,-100.0f });
+	m_speed = NewGO<SpeedEnemy>(0);
+	m_speed->SetPosition({ 100.0f,0.0f,-100.0f });
+
+	m_enemy3 = NewGO<Enemy3>(0);
+	m_enemy3->SetPosition({ -2500.0f,0.0f,100.0f });
+	m_background = NewGO<Background>(0);
+
+
+	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+
+
+	//画像を読み込む。
+	m_spriteRender.Init("Assets/sprite/TENEBRIS.dds", 800, 450, AlphaBlendMode_None);
+//	m_pressButton.Init("Assets/sprite/button.dds", 400, 225, AlphaBlendMode_Trans);
+//	m_targetRender.Init("Assets/sprite/TENEBRIS.dds", 50, 50);
+
+
+//	g_camera3D->SetViewAngle(Math::DegToRad(60.0f));
+//	g_camera3D->SetPosition(0.0f, 1000.0f, 1000.0f);
+
+//	g_camera3D->SetTarget(0.0f, 400.0f, 0.0f);
+//	g_camera3D->SetFar(20000.0f);
+
+//	m_charaRender.Init("Assets/modelData/unityChan.tkm");
+//	m_charaRender.SetScale(1.2f, 1.2f, 1.2f);
+//	m_targetPointRender.Init("Assets/modelData/light.tkm");
+//	m_targetPointRender.SetScale(2.0f, 2.0f, 2.0f);
+//	m_targetPointRender.SetShadowCasterFlag(false);
+	m_charaCon.Init(10.0f, 10.0f, m_targetPointPosition);
+//	m_targetPointPointLight.Init();
+
+	// ナビメッシュを構築。
+	m_nvmMesh.Init("Assets/nvm/test1.tkn");
+
+//	SkyCube* sky = NewGO<SkyCube>(0);
+//	sky->SetLuminance(0.2f);
+	return true;
+
+
 
 	return true;
 }
@@ -134,7 +93,7 @@ void Game::Update()
 			m_nvmMesh,						// ナビメッシュ
 			m_position,						// 開始座標
 			m_targetPointPosition,			// 移動目標座標
-			PhysicsWorld::GetInstance(),	// 物理エンジン
+			PhysicsWorld::GetInstance(),	// 物理エンジン	
 			50.0f,							// AIエージェントの半径
 			200.0f							// AIエージェントの高さ。
 		);
@@ -171,8 +130,8 @@ void Game::Update()
 	Vector3 newPos = newTarget + toCameraPos;
 	g_camera3D->SetTarget(newTarget);
 	g_camera3D->SetPosition(newPos);
-
-
+	
+	
 	if (g_pad[0]->IsPress(enButtonLB1))
 	{
 		m_fps = true;
@@ -189,10 +148,11 @@ void Game::Render(RenderContext& rc)
 	//画像の描画。
 	//m_spriteRender.Draw(rc);
 	//m_pressButton.Draw(rc);
-	//m_bgModelRendedr.Draw(rc);
+//	m_bgModelRendedr.Draw(rc);
 
-	//m_charaRender.Draw(rc);
-	//m_targetPointRender.Draw(rc);
+	
+	m_charaRender.Draw(rc);
+	m_targetPointRender.Draw(rc);
 
 	if (m_fps == true)
 	{

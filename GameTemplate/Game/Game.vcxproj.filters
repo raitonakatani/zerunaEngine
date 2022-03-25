@@ -20,8 +20,6 @@
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="SpeedEnemy.cpp" />
-    <ClCompile Include="MovedPath.cpp" />
-    <ClCompile Include="Path.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -37,7 +35,5 @@
     <ClInclude Include="Title.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="SpeedEnemy.h" />
-    <ClInclude Include="MovedPath.h" />
-    <ClInclude Include="Path.h" />
   </ItemGroup>
 </Project>
