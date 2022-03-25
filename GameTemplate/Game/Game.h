@@ -27,15 +27,13 @@ private:
 	SpriteRender m_spriteRender;
 	SpriteRender m_pressButton;
 	SpriteRender m_targetRender;
-	
+
 	GameCamera* m_gameCamera = nullptr;		// ƒJƒƒ‰
 	TankEnemy* m_tank = nullptr;			// “G
-	SpeedEnemy* m_speed = nullptr;
 	Background* m_background = nullptr;		// ”wŒi
 	Enemy3* m_enemy3 = nullptr;				// “G
 	Player* m_player = nullptr;				// ƒvƒŒƒCƒ„[
 	bool m_fps = false;
-
 
 
 public:
@@ -55,4 +53,5 @@ private:
 	nsAI::PathFinding m_pathFiding;
 	Vector3 m_position;
 	Vector3 m_targetPointPosition;
+	std::vector<SpeedEnemy*>		m_speeds;
 };
