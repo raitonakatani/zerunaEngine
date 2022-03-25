@@ -62,7 +62,7 @@ bool Player::Start()
 	camera = FindGO<GameCamera>("GameCamera");
 
 	//キャラコン
-	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, g_vec3Zero);
+	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, m_position);
 
 	return true;
 }
@@ -87,19 +87,19 @@ void Player::Update()
 	//座標、回転、大きさの更新
 	m_modelRender.SetPosition(m_position);
 	m_modelRender.SetRotation(m_rotation);
-	//m_modelRender.SetScale(m_scale);
 	m_modelRender.SetScale({ 1.5f,1.5f,1.5 });
-	
+
 	//モデルの更新
 	m_modelRender.Update();
 }
 
 void Player::Move()
 {
-	//待機ステート、歩きステート、走りステート以外だったら
+	//待機ステート、歩きステート、走りステート、忍び足ステート以外だったら
 	if (m_playerState != enPlayerState_Run &&
 		m_playerState != enPlayerState_Walk &&
 		m_playerState != enPlayerState_StealthySteps &&
+		m_playerState != enPlayerState_Crouch &&
 		m_playerState != enPlayerState_Idle)
 	{
 		//なにもしない
@@ -126,8 +126,9 @@ void Player::Move()
 		m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
 		m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
 	}
-
-	else if (m_playerState == enPlayerState_StealthySteps) {
+	//忍び足ステートだったら
+	else if (m_playerState == enPlayerState_StealthySteps)
+	{
 		m_moveSpeed += cameraForward * lStick_y * STEALTHYSTEP_MOVESPEED;
 		m_moveSpeed += cameraRight * lStick_x * STEALTHYSTEP_MOVESPEED;
 	}
@@ -145,6 +146,7 @@ void Player::Move()
 
 	//座標の更新
 	Vector3 modelPosition = m_position;
+	modelPosition.y += 2.0f;
 	m_modelRender.SetPosition(modelPosition);
 }
 
@@ -194,8 +196,8 @@ void Player::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-				//被ダメージステートに遷移する。
-				m_playerState = enPlayerState_ReceiveDamage;
+			//被ダメージステートに遷移する。
+			m_playerState = enPlayerState_ReceiveDamage;
 			return;
 		}
 	}
@@ -234,7 +236,7 @@ void Player::MakeAttackCollision()
 	);
 
 
-	if (m_playerState == enPlayerState_PokeAttack){
+	if (m_playerState == enPlayerState_PokeAttack) {
 		collisionObject->SetName("player_porkattack");
 	}
 	else {
@@ -364,40 +366,6 @@ void Player::ManageState()
 
 void Player::ProcessCommonStateTransition()
 {
-	//ｘかｙの移動速度があったら
-	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
-	{
-		//Bボタンが押されたら
-		if (g_pad[0]->IsPress(enButtonA))
-		{
-			//走りステートの移行する
-			m_playerState = enPlayerState_Run;
-			return;
-		}
-		//それ以外のときは
-		else
-		{
-			//歩きステートに移行する
-			m_playerState = enPlayerState_Walk;
-			return;
-		}
-	}
-
-	//Xかｙの移動速度がなかったら
-	else
-	{
-		//待機ステートに移行する
-		m_playerState = enPlayerState_Idle;
-		return;
-	}
-
-	//忍び足ステート
-	//m_playerState = enPlayerState_StealthySteps;
-	//return;
-	//しゃがみステート
-	//m_playerState = enPlayerState_Crouch;
-	//return;
-
 	//Bボタンが押されたら
 	if (g_pad[0]->IsTrigger(enButtonB))
 	{
@@ -420,6 +388,42 @@ void Player::ProcessCommonStateTransition()
 	{
 		//突き攻撃ステートに移行する
 		m_playerState = enPlayerState_PokeAttack;
+		return;
+	}
+
+	//xかyの移動速度があったら
+	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
+	{
+		//左ステックが押し込まれたら
+		if (g_pad[0]->IsPress(enButtonLB3))
+		{
+			//忍び足ステートに移行する
+			m_playerState = enPlayerState_StealthySteps;
+			return;
+		}
+		//Aボタンが押されたら
+		if (g_pad[0]->IsPress(enButtonA))
+		{
+			//走りステートに移行する
+			m_playerState = enPlayerState_Run;
+			return;
+		}
+		//歩きステートに移行する
+		m_playerState = enPlayerState_Walk;
+		return;
+	}
+	//xかyの移動速度がなかったら
+	else
+	{
+		//左ステックが押し込まれたら
+		if (g_pad[0]->IsPress(enButtonLB3))
+		{
+			//しゃがみステートに移行する
+			m_playerState = enPlayerState_Crouch;
+			return;
+		}
+		//待機ステートに移行する
+		m_playerState = enPlayerState_Idle;
 		return;
 	}
 }
@@ -507,12 +511,12 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 		m_isUnderAttack = false;
 	}
 
-	if (wcscmp(eventName, L"porkattack_start") == 0)
+	if (wcscmp(eventName, L"pokeattack_start") == 0)
 	{
 		//攻撃フラグをtrueにする
 		m_isUnderAttack = true;
 	}
-	else if (wcscmp(eventName, L"porkattack_end") == 0)
+	else if (wcscmp(eventName, L"pokeattack_end") == 0)
 	{
 		//攻撃フラグをfalseにする
 		m_isUnderAttack = false;
