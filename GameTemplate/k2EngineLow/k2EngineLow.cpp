@@ -6,7 +6,7 @@ namespace nsK2EngineLow {
 	K2EngineLow* g_engine = nullptr;
 	GameTime* g_gameTime = nullptr;
 //	LightALL* g_sceneLight = nullptr;
-//	RenderingEngine* g_renderingEngine = nullptr;
+	RenderingEngine* g_renderingEngine = nullptr;
 	CollisionObjectManager* g_collisionObjectManager = nullptr;
 
 	K2EngineLow::~K2EngineLow()

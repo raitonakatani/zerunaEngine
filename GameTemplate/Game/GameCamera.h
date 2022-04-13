@@ -4,6 +4,7 @@
 //#include "camera/SpringCamera.h"
 
 class Player;
+class TankEnemy;
 
 //ゲーム中のカメラを制御する。
 class GameCamera : public IGameObject
@@ -29,6 +30,10 @@ public:
 	
 	bool FPS = false;
 	Vector3 target;
+	int m_camera = 0;
+	Vector3 posi;
+	float m_timer = 0.0f;
+	int rook = 0;
 
 private:
 	Vector3 toCameraPosOld;
@@ -37,7 +42,7 @@ private:
 	Player* m_player = nullptr;
 	Vector3 m_Pos;	//注視点から視点に向かうベクトル。
 //	Vector3 target;
-
+	TankEnemy* m_tank;
 
 
 	

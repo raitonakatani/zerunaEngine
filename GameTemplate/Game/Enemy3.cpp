@@ -45,7 +45,7 @@ bool Enemy3::Start()
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
 	//m_modelRender.SetScale(m_scale);
-	m_modelRender.SetScale({ 2.0f,2.0f,2.0 });
+	m_modelRender.SetScale(m_scale);
 	m_modelRender.Update();
 
 	//キャラクターコントローラーを初期化。
@@ -63,6 +63,16 @@ bool Enemy3::Start()
 
 	m_player = FindGO<Player>("player");
 	m_game = FindGO<Game>("game");
+
+	m_enemypath.Init("Assets/path/enemy/enemypath1.tkl");
+	m_enemypath2.Init("Assets/path/enemy/enemypath2.tkl");
+	m_enemypath3.Init("Assets/path/enemy/enemypath3.tkl");
+	m_enemypath4.Init("Assets/path/enemy/enemypath4.tkl");
+
+	m_point = m_enemypath.GetFirstPoint();
+	m_point2 = m_enemypath2.GetFirstPoint();
+	m_point3 = m_enemypath3.GetFirstPoint();
+	m_point4 = m_enemypath4.GetFirstPoint();
 
 	//乱数を初期化。
 	srand((unsigned)time(NULL));
@@ -141,6 +151,14 @@ struct SweepResultWall :public btCollisionWorld::ConvexResultCallback
 
 void Enemy3::Chase()
 {
+
+	//プレイヤーを見つけていなかったら。
+	if (state == 1)
+	{
+		m_Enemy3State = enEnemy3State_Chase;
+		Aroute();
+	}
+
 	//追跡ステートでないなら、追跡処理はしない。
 	if (m_Enemy3State != enEnemy3State_Chase)
 	{
@@ -229,7 +247,7 @@ void Enemy3::SearchPlayer()
 	float angle = acosf(diff.Dot(m_forward));
 
 	//プレイヤーが視界内に居なかったら。
-	if (Math::PI * 0.35f <= fabsf(angle))
+	if (Math::PI * 0.45f <= fabsf(angle))
 	{
 		//プレイヤーは見つかっていない。
 		return;
@@ -285,6 +303,7 @@ void Enemy3::ProcessCommonStateTransition()
 	//プレイヤーを見つけたら。
 	if (m_isSearchPlayer == true && diff.LengthSq() <= 500.0 * 500.0f)
 	{	
+		state = 0;
 		//ベクトルを正規化する。
 		diff.Normalize();
 		//移動速度を設定する。
@@ -329,10 +348,7 @@ void Enemy3::ProcessCommonStateTransition()
 	//プレイヤーを見つけられなければ。
 	else
 	{
-		//待機ステートに遷移する。
-		m_Enemy3State = enEnemy3State_Idle;
-		return;
-
+		state = 1;
 	}
 }
 
@@ -450,7 +466,7 @@ void Enemy3::PlayAnimation()
 		break;
 		//追跡ステートの時。
 	case enEnemy3State_Chase:
-		m_modelRender.SetAnimationSpeed(1.4f);
+		m_modelRender.SetAnimationSpeed(1.6f);
 		//走りアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Walk, 0.1f);
 		break;
@@ -504,14 +520,84 @@ const bool Enemy3::IsCanAttack() const
 	return false;
 }
 
-void Enemy3::MODEL()
-{
-	m_model = 1;
-}
-
 void Enemy3::Render(RenderContext& rc)
 {
-	
 		//モデルを描画する。
 		m_modelRender.Draw(rc);
+}
+
+///経路
+void Enemy3::Aroute()
+{
+
+
+	if (m_enemyNumber == 0)
+	{
+		Vector3 diff = m_point->s_position - m_position;
+		if (diff.Length() <= 50.0f) {
+			if (m_point->s_number == m_enemypath.GetPointListSize() - 1) {
+				m_point = m_enemypath.GetFirstPoint();
+			}
+			else {
+				m_point = m_enemypath.GetNextPoint(m_point->s_number);
+			}
+
+		}
+
+		Vector3 range = m_point->s_position - m_position;
+		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
+		m_moveSpeed.y = 0.0f;
+	}
+
+	if (m_enemyNumber == 1)
+	{
+		Vector3 diff = m_point2->s_position - m_position;
+		if (diff.Length() <= 50.0f) {
+			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1) {
+				m_point2 = m_enemypath2.GetFirstPoint();
+			}
+			else {
+				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
+			}
+
+		}
+		Vector3 range = m_point2->s_position - m_position;
+		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
+		m_moveSpeed.y = 0.0f;
+	}
+	if (m_enemyNumber == 2)
+	{
+		Vector3 diff = m_point3->s_position - m_position;
+		if (diff.Length() <= 50.0f) {
+			if (m_point3->s_number == m_enemypath3.GetPointListSize() - 1) {
+				m_point3 = m_enemypath3.GetFirstPoint();
+			}
+			else {
+				m_point3 = m_enemypath3.GetNextPoint(m_point3->s_number);
+			}
+
+		}
+
+		Vector3 range = m_point3->s_position - m_position;
+		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
+		m_moveSpeed.y = 0.0f;
+	}
+	if (m_enemyNumber == 3)
+	{
+		Vector3 diff = m_point4->s_position - m_position;
+		if (diff.Length() <= 50.0f) {
+			if (m_point4->s_number == m_enemypath4.GetPointListSize() - 1) {
+				m_point4 = m_enemypath4.GetFirstPoint();
+			}
+			else {
+				m_point4 = m_enemypath4.GetNextPoint(m_point4->s_number);
+			}
+
+		}
+
+		Vector3 range = m_point4->s_position - m_position;
+		m_moveSpeed = range * 15.0f * g_gameTime->GetFrameDeltaTime();;
+		m_moveSpeed.y = 0.0f;
+	}
+
 }

@@ -121,4 +121,7 @@ static const int MAX_BONE = 512;	// ƒ{[ƒ“‚ÌÅ‘å”B
 
 using namespace nsK2EngineLow;
 #include "CollisionObject.h"
+//#include "MapChipRender.h"
+//#include "LevelRender.h"
+//#include "level3D/MapChip.h""
 #include "k2EngineLow.h"

@@ -1,13 +1,8 @@
 #pragma once
 
-class Player;
-class Game;
-class MovedPath;
+#include "EnemyPath.h"
 
-#include "tkFile/TknFile.h"
-#include "AI/PathFinding/NaviMesh.h"
-#include "AI/PathFinding/Path.h"
-#include "AI/PathFinding/PathFinding.h"
+class Player;
 
 /// <summary>
 /// スピードエネミークラス
@@ -21,7 +16,6 @@ public:
 	enum EnSpeedEnemyState
 	{
 		enSpeedEnemyState_Idle,           //待機ステート
-		enSpeedEnemyState_Wander,
 		enSpeedEnemyState_Chase,          //追跡ステート
 		enSpeedEnemyState_Attack,         //攻撃ステート
 		enSpeedEnemyState_Shout,          //叫びステート
@@ -67,13 +61,33 @@ public:
 	{
 		m_scale = scale;
 	}
+	/// <summary>
+	/// HPを取得する
+	/// </summary>
+	/// <returns>HP</returns>
+	const int& GetHp() const
+	{
+		return m_hp;
+	}
 
-	void LoadPath(const int number);
+	/// <summary>
+	/// 騎士の番号を設定する。
+	/// </summary>
+	/// <param name="kisiNumber">騎士の番号。</param>
+	void SetspeedNumber(const int kisiNumber)
+	{
+		m_speedNumber = kisiNumber;
+	}
+	/// <summary>
+	/// 騎士の番号を取得する。
+	/// </summary>
+	/// <returns>騎士の番号。</returns>
+	const int GetspeedNumber() const
+	{
+		return m_speedNumber;
+	}
 
 private:
-	void PathFind();
-
-	void Wander();
 	/// <summary>
 	/// アニメーションの初期化
 	/// </summary>
@@ -121,10 +135,6 @@ private:
 	/// </summary>
 	void ProcessIdleStateTransition();
 	/// <summary>
-	/// 徘徊ステートの遷移処理
-	/// </summary>
-	void ProcessWanderStateTransition();
-	/// <summary>
 	/// 追跡ステートの遷移処理
 	/// </summary>
 	void ProcessChaseStateTransition();
@@ -149,22 +159,17 @@ private:
 	/// プレイヤーを発見したか？
 	/// </summary>
 	/// <returns>発見したらtrue</returns>
-	const bool SearchPlayer() const;
+	void SearchPlayer();
 	/// <summary>
 	/// プレイヤーを攻撃できるか？
 	/// </summary>
 	/// <returns>攻撃できるならtrue</returns>
 	const bool IsCanAttack() const;
 
-	bool GetPlayer()
-	{
-		if (m_player == nullptr)
-		{
-			m_player = FindGO<Player>("player");
-			return false;
-		}
-		return true;
-	}
+	/// <summary>
+	/// 経路A
+	/// </summary>
+	void Aroute();
 
 private:
 	/// <summary>
@@ -180,28 +185,34 @@ private:
 		enAnimClip_Down,           //ダウンステート
 		enAnimClip_Num             //アニメーションの数
 	};
-	//移動方向ベクトル。
-	std::unique_ptr<MovedPath>	m_movedPath;
-	ModelRender                 m_modelRender;                              //モデルレンダー
-	CharacterController         m_charaCon;                                 //キャラコン
-	EnSpeedEnemyState           m_speedEnemyState = enSpeedEnemyState_Wander; //スピードエネミーステート
-	Animation			     	m_animation;				                //アニメーション
-	AnimationClip               m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
-	Vector3                     m_position;                                 //座標
-	Vector3                     m_scale = Vector3::One;                     //拡大率
-	Vector3                     m_forward = Vector3::AxisZ;                 //前方向のベクトル
-	Vector3                     m_moveSpeed;                                //移動速度
-	Quaternion                  m_rotation;                                 //回転
+
+	ModelRender             m_modelRender;                              //モデルレンダー
+	CharacterController     m_charaCon;                                 //キャラコン
+	EnSpeedEnemyState       m_speedEnemyState = enSpeedEnemyState_Idle; //スピードエネミーステート
+	Animation				m_animation;				                //アニメーション
+	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
+	Vector3                 m_position;                                 //座標
+	Vector3                 m_scale = Vector3::One;                     //拡大率
+	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
+	Vector3                 m_moveSpeed;                                //移動速度
+	Quaternion              m_rotation;                                 //回転
 	Player* m_player = nullptr;                         //プレイヤー
-	float                       m_idleTimer = 0.0f;                         //待機タイマー
-	float                       m_chaseTimer = 0.0f;                        //追跡タイマー
-	int                         m_hp = 100;                                 //HP
-	int                         m_punchBoneId = -1;                         //パンチのボーン
-	bool                        m_isUnderAttack = false;                    //攻撃中か？
-	Game* m_game = nullptr;
-	TknFile                     m_tknFile;
-	nsAI::NaviMesh              m_nvmMesh;
-	nsAI::Path                  m_path;
-	nsAI::PathFinding           m_pathFinding;
+	int state = 0;
+	bool					m_isSearchPlayer = false;
+	SphereCollider			m_sphereCollider;
+	float                   m_idleTimer = 0.0f;                         //待機タイマー
+	float                   m_chaseTimer = 0.0f;                        //追跡タイマー
+	int                     m_hp = 100;                                 //HP
+	int                     m_punchBoneId = -1;                         //パンチのボーン
+	bool                    m_isUnderAttack = false;                    //攻撃中か？
+	int m_speedNumber = 0;
+	EnemyPath m_enemypath;
+	EnemyPath m_enemypath2;
+	EnemyPath m_enemypath3;
+	EnemyPath m_enemypath4;
+	Point* m_point;
+	Point* m_point2;
+	Point* m_point3;
+	Point* m_point4;
 };
 

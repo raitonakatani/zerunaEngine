@@ -23,9 +23,9 @@ namespace nsK2EngineLow {
 		m_light.directionlight.dirDirection.Normalize();
 
 		// ライトのカラーは(*･ω･)/ﾊｰｲ
-		m_light.directionlight.dirColor.x = 0.2f;
-		m_light.directionlight.dirColor.y = 0.2f;
-		m_light.directionlight.dirColor.z = 0.2f;
+		m_light.directionlight.dirColor.x = 0.5f;
+		m_light.directionlight.dirColor.y = 0.5f;
+		m_light.directionlight.dirColor.z = 0.5f;
 
 		// 視点の位置を設定する
 		m_light.eyePos =g_camera3D->GetPosition(); 
@@ -41,12 +41,12 @@ namespace nsK2EngineLow {
 		m_light.pointlight.ptColor.z = 0.0f;
 
 		// ポイントライトの影響範囲を設定する
-		m_light.pointlight.ptRange = 100.0f;
+		m_light.pointlight.ptRange = 0.0f;
 
 		// アンビエントライト
-		m_light.ambientlight.ambientLight.x = 0.8f;
-		m_light.ambientlight.ambientLight.y = 0.8f;
-		m_light.ambientlight.ambientLight.z = 0.8f;
+		m_light.ambientlight.ambientLight.x = 0.3f;
+		m_light.ambientlight.ambientLight.y = 0.3f;
+		m_light.ambientlight.ambientLight.z = 0.3f;
 
 
 		// 視点の位置を設定する
@@ -70,7 +70,7 @@ namespace nsK2EngineLow {
 		m_light.spotlight.spDirection.Normalize();
 
 		//射出範囲は300
-		m_light.spotlight.spRange = 500.0f;
+		m_light.spotlight.spRange = 0.0f;
 		//射出角度は25度。
 		m_light.spotlight.spAngle = Math::DegToRad(25.0f);
 
@@ -87,7 +87,7 @@ namespace nsK2EngineLow {
 		// 視点の位置を設定する
 		m_light.eyePos = g_camera3D->GetPosition();
 
-		if (g_pad[0]->IsPress(enButtonX))
+/*		if (g_pad[0]->IsPress(enButtonX))
 		{
 			posi--;
 		}
@@ -110,7 +110,7 @@ namespace nsK2EngineLow {
 		qRotX.SetRotation(rotAxis, g_pad[0]->GetRStickYF() * 0.01f);
 		//計算したクォータニオンでライトの方向を回す。
 		qRotX.Apply(m_light.spotlight.spDirection);
-
+		*/
 	}
 
 /*

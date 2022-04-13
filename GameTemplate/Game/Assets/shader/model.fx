@@ -139,10 +139,10 @@ SPSIn VSMainA(SVSIn vsIn, uniform bool hasSkin)
     psIn.pos = mul(mView, psIn.pos); //ワールド座標系からカメラ座標系に変換。
     psIn.pos = mul(mProj, psIn.pos); //カメラ座標系からスクリーン座標系に変換。
 
-    psIn.normal = mul(m, vsIn.normal); //頂点法線をピクセルシェーダーに渡す。
+    psIn.normal = normalize(mul(m, vsIn.normal)); //頂点法線をピクセルシェーダーに渡す。
     psIn.uv = vsIn.uv;
 
-    psIn.normalInView = mul(mView, psIn.normal); //カメラ空間の法線を求める。
+    psIn.normalInView = normalize(mul(mView, psIn.normal)); //カメラ空間の法線を求める。
     return psIn;
 }
 
@@ -234,7 +234,7 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     specSpotLight *= affect;
     // ディレクションライト+ポイントライト+環境光を求める
     float3 finalLig = directionLig
-                    + pointLig
+                 //   + pointLig
                     + ambientlight.ambientLight;
 
     
@@ -251,16 +251,16 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     
     
     // step-14 スポットライトの反射光を最終的な反射光に足し算する
-    finalLig += diffSpotLight + specSpotLight;
+ //   finalLig += diffSpotLight + specSpotLight;
     
         // step-6 最終的な反射光にリムライトの反射光を合算する
-    float3 limColor = limPower * directionlight.dirColor;
+//    float3 limColor = limPower * directionlight.dirColor;
 
     
     float4 finalColor = g_albedo.Sample(g_sampler, psIn.uv);
 
     //最終的な反射光にリムの反射光を合算する。
-    finalLig += limColor;
+ //   finalLig += limColor;
     
     // テクスチャカラーに求めた光を乗算して最終出力カラーを求める
     finalColor.xyz *= finalLig;
@@ -293,8 +293,9 @@ float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 worldP
     float3 refVec = reflect(lightDirection, normal);
 
     // 光が当たったサーフェイスから視点に伸びるベクトルを求める
-    float3 toEye = worldPos;
+    float3 toEye = eyePos - worldPos;
     toEye = normalize(toEye);
+
 
     // 鏡面反射の強さを求める
     float t = dot(refVec, toEye);
@@ -303,7 +304,7 @@ float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 worldP
     t = max(0.0f, t);
 
     // 鏡面反射の強さを絞る
-    t = pow(t, 500.0f);
+    t = pow(t, 50.0f);
 
     // 鏡面反射光を求める
     return lightColor * t;

@@ -88,7 +88,16 @@ namespace nsK2EngineLow {
 		{
 			return m_sprite.GetMulColor();
 		}
-
+		/// <summary>
+		/// XVˆ—B
+		/// </summary>
+		void Update()
+		{
+			m_sprite.Update(m_position,
+				m_rotation,
+				m_scale,
+				m_pivot);
+		}
 		void OnRender2D(RenderContext& rc)
 		{
 			m_sprite.Draw(rc);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EnemyPath.h"
+
 //クラス宣言。
 class Player;
 class Game;
@@ -24,7 +26,6 @@ public:
 	~Enemy3();
 	bool Start();
 	void Update();
-	void MODEL();
 	void Render(RenderContext& rc);
 	/// <summary>
 	/// 座標を設定する。
@@ -57,6 +58,22 @@ public:
 	void SetScale(const Vector3& scale)
 	{
 		m_scale = scale;
+	}
+	/// <summary>
+	/// 騎士の番号を設定する。
+	/// </summary>
+	/// <param name="kisiNumber">騎士の番号。</param>
+	void SetenemyNumber(const int kisiNumber)
+	{
+		m_enemyNumber = kisiNumber;
+	}
+	/// <summary>
+	/// 騎士の番号を取得する。
+	/// </summary>
+	/// <returns>騎士の番号。</returns>
+	const int GetenemyNumber() const
+	{
+		return m_enemyNumber;
 	}
 
 private:
@@ -132,6 +149,11 @@ private:
 	/// <returns>攻撃できるならtrue。</returns>
 	const bool IsCanAttack() const;
 
+	/// <summary>
+	/// 経路A
+	/// </summary>
+	void Aroute();
+
 	enum EnAnimationClip {						//アニメーション。
 		enAnimationClip_Idle,					//待機アニメーション。
 		enAnimationClip_Walk,					//歩きアニメーション。
@@ -160,10 +182,18 @@ private:
 	bool						m_isShowHPBar = false;
 	bool model = false;
 	bool					m_isSearchPlayer = false;
-	float modeltimer = 0.0f;
-	int m_model = 0;
 	int                     m_Hand= -1;                   //「Hand」ボーンのID。
 	SphereCollider			m_sphereCollider;
+	int state = 0;
+	int m_enemyNumber = 0;
+	EnemyPath m_enemypath;
+	EnemyPath m_enemypath2;
+	EnemyPath m_enemypath3;
+	EnemyPath m_enemypath4;
+	Point* m_point;
+	Point* m_point2;
+	Point* m_point3;
+	Point* m_point4;
 };
 
 

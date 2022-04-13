@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "GameCamera.h"
+#include "Menu.h"
 
 
 namespace
 {
-	const float CHARACON_RADIUS = 20.0f;            //キャラコンの半径
-	const float CHARACON_HEIGHT = 60.0f;            //キャラコンの高さ
+	const float CHARACON_RADIUS = 25.0f;            //キャラコンの半径
+	const float CHARACON_HEIGHT = 100.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
 	const float WALK_MOVESPEED = 100.0f;            //歩きステートの移動速度
 	const float RUN_MOVESPEED = 250.0f;            //走りステートの移動速度
@@ -27,8 +28,6 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player2/stealthysteps.tka");
 	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Crouch].Load("Assets/animData/player2/crouch.tka");
-	m_animationClipArray[enAnimClip_Crouch].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player2/rolling.tka");
 	m_animationClipArray[enAnimClip_Rolling].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/slashattack.tka");
@@ -61,8 +60,32 @@ bool Player::Start()
 
 	camera = FindGO<GameCamera>("GameCamera");
 
+	//サウンドを読み込む。
+	g_soundEngine->ResistWaveFileBank(9, "Assets/sound/9Step.wav");
+
 	//キャラコン
-	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, m_position);
+	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, g_vec3Zero);
+
+
+	m_HPberRender.Init("Assets/sprite/ft.dds", 1600, 900);
+	//表示する座標を設定する。
+	m_HPberRender.SetPosition({ 0.0f,0.0f ,0.0f });
+	m_HPberRender.SetPivot({ 0.0f, 0.5f });
+
+	m_HPRender.Init("Assets/sprite/HP.dds", 1600, 900);
+	//表示する座標を設定する。
+	m_HPRender.SetPosition({ 0.0f,0.0f ,0.0f });
+	m_HPRender.SetPivot({ 0.0f, 0.5f });
+
+	m_stmnberRender.Init("Assets/sprite/ft.dds", 1600, 900);
+	//表示する座標を設定する。
+	m_stmnberRender.SetPosition({ 0.0f,0.0f ,0.0f });
+	m_stmnberRender.SetPivot({ 0.0f, 0.5f });
+
+	m_staminaRender.Init("Assets/sprite/stmn.dds", 1600, 900);
+	//表示する座標を設定する。
+	m_staminaRender.SetPosition({ 0.0f,0.0f ,0.0f });
+	m_staminaRender.SetPivot({ 0.0f, 0.5f });
 
 	return true;
 }
@@ -87,19 +110,88 @@ void Player::Update()
 	//座標、回転、大きさの更新
 	m_modelRender.SetPosition(m_position);
 	m_modelRender.SetRotation(m_rotation);
-	m_modelRender.SetScale({ 1.5f,1.5f,1.5 });
-
+	//m_modelRender.SetScale(m_scale);
+	m_modelRender.SetScale({ 2.0f,2.0f,2.0 });
+	
 	//モデルの更新
 	m_modelRender.Update();
+
+
+	//HPバー
+/*	if (m_hp <= 0.0f)
+	{
+		m_hp = 0.0f;
+	}
+*/
+	if (m_hp >= 100.0f)
+	{
+		m_hp = 100.0f;
+	}
+
+	life = m_hp / 100.0f;
+	m_HPRender.SetScale({ life, 1.0f, 0.0f });
+	m_HPRender.SetPivot({ 0.0f, 0.5f });
+	m_HPRender.SetPosition({ -800.0f,0.0f ,0.0f });
+	m_HPRender.Update();
+
+
+	if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
+		&& m_menu == false)					//かつm_menu==falseの時。
+	{
+		m_menu = true;
+		menu = NewGO<Menu>(0);
+	}
+	else if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
+		&& m_menu == true)					//かつm_menu==trueの時。 
+	{
+		m_menu = false;
+		DeleteGO(menu);
+	}
+
+	if (m_sutamina <= 0.0f)
+	{
+		m_sutamina = 0.0f;
+	}
+	if (m_sutamina == 0.0f)
+	{
+		COOLtime = true;
+	}
+	if (m_sutamina >= 150.0f)
+	{
+		m_sutamina = 150.0f;
+	}
+
+	if (COOLtime == true)
+	{
+		cooltime += g_gameTime->GetFrameDeltaTime();
+		if (m_sutamina >= 50.0f)
+		{
+			COOLtime = false;
+		}
+	}
+	else {
+		cooltime = 0.0f;
+	}
+
+	m_hurusutamina = m_sutamina / 150.0f;
+	m_staminaRender.SetScale({ m_hurusutamina,1.0f,0.0f });
+	m_staminaRender.SetPosition({ -800.0f,0.0f ,0.0f });
+	m_staminaRender.SetPivot({ 0.0f, 0.5f });
+	m_staminaRender.Update();
+
+
+	m_HPberRender.SetPosition({ -800.0f,45.0f ,0.0f });
+	m_HPberRender.Update();
+	m_stmnberRender.SetPosition({ -800.0f,0.0f ,0.0f });
+	m_stmnberRender.Update();
 }
 
 void Player::Move()
 {
-	//待機ステート、歩きステート、走りステート、忍び足ステート以外だったら
+	//待機ステート、歩きステート、走りステート以外だったら
 	if (m_playerState != enPlayerState_Run &&
 		m_playerState != enPlayerState_Walk &&
 		m_playerState != enPlayerState_StealthySteps &&
-		m_playerState != enPlayerState_Crouch &&
 		m_playerState != enPlayerState_Idle)
 	{
 		//なにもしない
@@ -120,24 +212,34 @@ void Player::Move()
 	cameraRight.y = 0.0f;
 	cameraRight.Normalize();
 
-	//走りステートだったら
-	if (m_playerState == enPlayerState_Run)
+	if (COOLtime == true)
 	{
-		m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
-		m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
+		m_moveSpeed += cameraForward * lStick_y * 100.0f;	//奥方向への移動速度を加算。
+		m_moveSpeed += cameraRight * lStick_x * 100.0f;		//右方向への移動速度を加算。
+		m_sutamina++;
 	}
-	//忍び足ステートだったら
-	else if (m_playerState == enPlayerState_StealthySteps)
+	if (COOLtime == false)
 	{
-		m_moveSpeed += cameraForward * lStick_y * STEALTHYSTEP_MOVESPEED;
-		m_moveSpeed += cameraRight * lStick_x * STEALTHYSTEP_MOVESPEED;
-	}
-	//それ以外だったら
-	else {
-		m_moveSpeed += cameraForward * lStick_y * WALK_MOVESPEED;
-		m_moveSpeed += cameraRight * lStick_x * WALK_MOVESPEED;
-	}
+		//走りステートだったら
+		if (m_playerState == enPlayerState_Run)
+		{
+			m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
+			m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
+			m_sutamina--;
+		}
 
+		else if (m_playerState == enPlayerState_StealthySteps) {
+			m_moveSpeed += cameraForward * lStick_y * STEALTHYSTEP_MOVESPEED;
+			m_moveSpeed += cameraRight * lStick_x * STEALTHYSTEP_MOVESPEED;
+			m_sutamina++;
+		}
+		//それ以外だったら
+		else {
+			m_moveSpeed += cameraForward * lStick_y * WALK_MOVESPEED;
+			m_moveSpeed += cameraRight * lStick_x * WALK_MOVESPEED;
+			m_sutamina++;
+		}
+	}
 	//重力
 	m_moveSpeed.y -= GRAVITY * g_gameTime->GetFrameDeltaTime();
 
@@ -146,7 +248,6 @@ void Player::Move()
 
 	//座標の更新
 	Vector3 modelPosition = m_position;
-	modelPosition.y += 2.0f;
 	m_modelRender.SetPosition(modelPosition);
 }
 
@@ -182,8 +283,16 @@ void Player::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-			//被ダメージステートに遷移する。
-			m_playerState = enPlayerState_ReceiveDamage;
+			m_hp -= 80.0f;
+
+			if (m_hp <= 0)
+			{
+				m_playerState = enPlayerState_Down;
+			}
+			else {
+				//被ダメージステートに遷移する。
+				m_playerState = enPlayerState_ReceiveDamage;
+			}
 			return;
 		}
 	}
@@ -196,8 +305,15 @@ void Player::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-			//被ダメージステートに遷移する。
-			m_playerState = enPlayerState_ReceiveDamage;
+			m_hp -= 80.0f;
+			if (m_hp <= 0)
+			{
+				m_playerState = enPlayerState_Down;
+			}
+			else {
+				//被ダメージステートに遷移する。
+				m_playerState = enPlayerState_ReceiveDamage;
+			}
 			return;
 		}
 	}
@@ -236,7 +352,7 @@ void Player::MakeAttackCollision()
 	);
 
 
-	if (m_playerState == enPlayerState_PokeAttack) {
+	if (m_playerState == enPlayerState_PokeAttack){
 		collisionObject->SetName("player_porkattack");
 	}
 	else {
@@ -280,10 +396,6 @@ void Player::PlayAnimation()
 		//忍び足ステートの時
 	case Player::enPlayerState_StealthySteps:
 		m_modelRender.PlayAnimation(enAnimClip_StealthySteps, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.2f);
-		break;
-	case Player::enPlayerState_Crouch:
-		m_modelRender.PlayAnimation(enAnimClip_Crouch, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
 		//回避ステートの時
@@ -336,9 +448,6 @@ void Player::ManageState()
 	case Player::enPlayerState_StealthySteps:
 		ProcessStealthyStepsStateTransition();
 		break;
-	case Player::enPlayerState_Crouch:
-		ProcessCrouchStateTransition();
-		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
 		ProcessAvoidanceStateTransition();
@@ -374,6 +483,7 @@ void Player::ProcessCommonStateTransition()
 		return;
 	}
 
+
 	//RB1ボタンが押されたら＆攻撃ステート１だったら
 	if (g_pad[0]->IsPress(enButtonRB1))
 	{
@@ -386,42 +496,68 @@ void Player::ProcessCommonStateTransition()
 	//RB2ボタンが押されたら
 	if (g_pad[0]->IsTrigger(enButtonRB2))
 	{
+
+		//コリジョンオブジェクトを作成する。
+		auto collisionObject = NewGO<CollisionObject>(0);
+
+		Vector3 collisionPosition = m_position;
+		collisionPosition.y += 120.0f;
+		//ボックス状のコリジョンを作成する。
+		collisionObject->CreateBox(collisionPosition,				   //座標。
+			Quaternion::Identity,                                      //回転。
+			Vector3(200.0f, 200.0f, 200.0f)                              //大きさ。
+		);
+		collisionObject->SetName("player");
+
+
 		//突き攻撃ステートに移行する
 		m_playerState = enPlayerState_PokeAttack;
+
 		return;
 	}
 
-	//xかyの移動速度があったら
+	//Xボタンが押されたら
+	if (g_pad[0]->IsPress(enButtonX))
+	{
+		//忍び足ステートへ移行する
+		m_playerState = enPlayerState_StealthySteps;
+		return;
+	}
+
+	//xかzの移動速度があったら
 	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
 	{
-		//左ステックが押し込まれたら
-		if (g_pad[0]->IsPress(enButtonLB3))
+		if (COOLtime == true)
 		{
-			//忍び足ステートに移行する
-			m_playerState = enPlayerState_StealthySteps;
+			//歩きステートへ移行する
+			m_playerState = enPlayerState_Walk;
 			return;
 		}
 		//Aボタンが押されたら
-		if (g_pad[0]->IsPress(enButtonA))
+		if (COOLtime == false && g_pad[0]->IsPress(enButtonA))
 		{
-			//走りステートに移行する
+			//走りステートへ移行する
 			m_playerState = enPlayerState_Run;
 			return;
 		}
-		//歩きステートに移行する
-		m_playerState = enPlayerState_Walk;
-		return;
-	}
-	//xかyの移動速度がなかったら
-	else
-	{
-		//左ステックが押し込まれたら
-		if (g_pad[0]->IsPress(enButtonLB3))
+		//Xボタンが押されたら
+		if (g_pad[0]->IsPress(enButtonX))
 		{
-			//しゃがみステートに移行する
-			m_playerState = enPlayerState_Crouch;
+			//忍び足ステートへ移行する
+			m_playerState = enPlayerState_StealthySteps;
 			return;
 		}
+		//押されなかったら
+		else
+		{
+			//歩きステートへ移行する
+			m_playerState = enPlayerState_Walk;
+		}
+	}
+
+	//xかzの移動速度がなかったら
+	else
+	{
 		//待機ステートに移行する
 		m_playerState = enPlayerState_Idle;
 		return;
@@ -447,12 +583,6 @@ void Player::ProcessRunStateTransition()
 }
 
 void Player::ProcessStealthyStepsStateTransition()
-{
-	//他のステートに遷移する
-	ProcessCommonStateTransition();
-}
-
-void Player::ProcessCrouchStateTransition()
 {
 	//他のステートに遷移する
 	ProcessCommonStateTransition();
@@ -491,10 +621,10 @@ void Player::ProcessReceiveDamageStateTransition()
 void Player::ProcessDownStateTransition()
 {
 	//アニメーションの再生が終わったら
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		DeleteGO(this);
-	}
+//	if (m_modelRender.IsPlayingAnimation() == false)
+//	{
+//		DeleteGO(this);
+//	}
 }
 
 void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
@@ -511,20 +641,46 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 		m_isUnderAttack = false;
 	}
 
-	if (wcscmp(eventName, L"pokeattack_start") == 0)
+	if (wcscmp(eventName, L"porkattack_start") == 0)
 	{
 		//攻撃フラグをtrueにする
 		m_isUnderAttack = true;
 	}
-	else if (wcscmp(eventName, L"pokeattack_end") == 0)
+	else if (wcscmp(eventName, L"porkattack_end") == 0)
 	{
 		//攻撃フラグをfalseにする
 		m_isUnderAttack = false;
 	}
+
+	if (wcscmp(eventName, L"Run_step") == 0) {
+		//足音。
+		 //効果音を再生する。
+		SoundSource* stepse = NewGO<SoundSource>(0);
+		stepse->Init(9);
+		stepse->Play(false);
+		stepse->SetVolume(1.5f);
+	}
+
+	if (wcscmp(eventName, L"Walk_step") == 0) {
+		//足音。
+		 //効果音を再生する。
+		SoundSource* stepse = NewGO<SoundSource>(0);
+		stepse->Init(9);
+		stepse->Play(false);
+		stepse->SetVolume(0.6f);
+	}
+
 }
 
 void Player::Render(RenderContext& rc)
 {
+	//画像を描写する。
+	m_HPRender.Draw(rc);
+	m_staminaRender.Draw(rc);
+
+	m_HPberRender.Draw(rc);
+	m_stmnberRender.Draw(rc);
+
 	//ドロー。
 	m_modelRender.Draw(rc);
 }

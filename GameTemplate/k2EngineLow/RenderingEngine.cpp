@@ -4,7 +4,8 @@
 
 namespace nsK2EngineLow {
 
-    RenderingEngine g_renderingEngine;
+    RenderingEngine g_renderEngine;
+
     void RenderingEngine::SpriteRenderDraw(RenderContext& rc)
     {
 
@@ -15,4 +16,11 @@ namespace nsK2EngineLow {
         m_Spriterenders.clear();
 
     }
+
+    void RenderingEngine::Update()
+    {
+        // シーンライトの更新。
+        g_Light.Update();
+    }
+
 }

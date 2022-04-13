@@ -1,8 +1,15 @@
 #pragma once
 
+#include "tkFile/TknFile.h"
+#include "AI/PathFinding/NaviMesh.h"
+#include "AI/PathFinding/Path.h"
+#include "AI/PathFinding/PathFinding.h"
+#include "EnemyPath.h"
+
 //クラス宣言。
 class Player;
 class Game;
+class GameCamera;
 
 	/// <summary>
 	/// エネミー。
@@ -25,7 +32,6 @@ public:
 	~TankEnemy();
 	bool Start();
 	void Update();
-	void MODEL();
 	void Render(RenderContext& rc);
 	/// <summary>
 	/// 座標を設定する。
@@ -59,6 +65,24 @@ public:
 	{
 		m_scale = scale;
 	}
+	/// <summary>
+	/// 騎士の番号を設定する。
+	/// </summary>
+	/// <param name="kisiNumber">騎士の番号。</param>
+	void SettankNumber(const int kisiNumber)
+	{
+		m_tankNumber = kisiNumber;
+	}
+	/// <summary>
+	/// 騎士の番号を取得する。
+	/// </summary>
+	/// <returns>騎士の番号。</returns>
+	const int GettankNumber() const
+	{
+		return m_tankNumber;
+	}
+
+	
 
 private:
 	/// <summary>
@@ -133,6 +157,16 @@ private:
 	/// <returns>攻撃できるならtrue。</returns>
 	const bool IsCanAttack() const;
 
+
+	/// <summary>
+	/// 経路A
+	/// </summary>
+	void Aroute();
+	/// <summary>
+	/// 経路B
+	/// </summary>
+	void Broute();
+
 	enum EnAnimationClip {						//アニメーション。
 		enAnimationClip_Idle,					//待機アニメーション。
 		enAnimationClip_Walk,					//歩きアニメーション。
@@ -145,10 +179,13 @@ private:
 	AnimationClip				m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。
 	ModelRender					m_modelRender;								//モデルレンダー。
 	Vector3						m_position;									//座標。
+	Vector3						m_firstPosition;							//最初の座標。
 	Vector3						m_moveSpeed;								//移動速度。
 	Vector3						m_forward = Vector3::AxisZ;					//エネミーの正面ベクトル。
 	Quaternion					m_rotation;									//回転。
 	Vector3						m_scale = Vector3::One;						//大きさ。
+	//Vector3 m_moveVector;
+	Vector3        m_toPlayer;
 	CharacterController			m_charaCon;									//キャラコン。
 	EnEnemyState				m_EnemyState = enEnemyState_Idle;			//エネミーステート。
 	EffectEmitter* m_effectEmitter = nullptr;			//エフェクト。							//画像。
@@ -157,14 +194,31 @@ private:
 	float							m_hp = 20;									//HP。
 	Player* m_player = nullptr;												//プレイヤー。
 	Game* m_game = nullptr;
+	GameCamera* m_camera;
+	EnemyPath m_enemypath;
+	EnemyPath m_enemypath2;
+	EnemyPath m_enemypath3;
+	EnemyPath m_enemypath4;
+	Point* m_point;
+	Point* m_point2;
+	Point* m_point3;
+	Point* m_point4;
 	float						m_chaseTimer = 0.0f;						//追跡タイマー。
 	float						m_idleTimer = 0.0f;							//待機タイマー。
 	float						a = 0.0f;			//拡大率
 	bool						m_isShowHPBar = false;
-	bool model = false;
-	float modeltimer = 0.0f;
-	int m_model = 0;
+	int m_tankNumber = 0;
 	int                     m_Hand = -1;                   //「Hand」ボーンのID。
 	int                     m_weakness = -1;               //「m_weakness」ボーンのID。
 	SphereCollider			m_sphereCollider;
+	int state = 0;
+	int Bstate = 0;
+	float m_timer = 0.0f;
+	float m_timer2 = 0.0f;
+
+private:
+	TknFile m_tknFile;
+	nsAI::NaviMesh m_nvmMesh;
+	nsAI::Path m_path;
+	nsAI::PathFinding m_pathFiding;
 };

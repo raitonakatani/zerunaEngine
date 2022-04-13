@@ -69,7 +69,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Preview|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -225,12 +225,14 @@
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Enemy3.cpp" />
+    <ClCompile Include="EnemyPath.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCamera.cpp" />
+    <ClCompile Include="GameClear.cpp" />
+    <ClCompile Include="index.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MovedPath.cpp" />
-    <ClCompile Include="Path.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SpeedEnemy.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -245,11 +247,13 @@
   <ItemGroup>
     <ClInclude Include="Background.h" />
     <ClInclude Include="Enemy3.h" />
+    <ClInclude Include="EnemyPath.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameCamera.h" />
-    <ClInclude Include="MovedPath.h" />
-    <ClInclude Include="Path.h" />
+    <ClInclude Include="GameClear.h" />
+    <ClInclude Include="index.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SpeedEnemy.h" />
     <ClInclude Include="stdafx.h" />

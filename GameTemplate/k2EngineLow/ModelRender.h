@@ -18,7 +18,13 @@ namespace nsK2EngineLow {
 			int maxInstance =1
 		);
 
-		
+		void InitModel(const char* filePath);
+		void modelUpdate();
+
+		ModelInitData transModelInitData;
+		Model sphereModel;
+		Vector3 planePos = { 0.0f, 160.0f, 20.0f };
+
 
 	//	void InitModel(const char* filePath);
 
@@ -182,8 +188,14 @@ namespace nsK2EngineLow {
 			}
 			return m_model.GetWorldMatrix();
 		}
+		/// <summary>
+		/// インスタンシングデータの更新。
+		/// </summary>
+		/// <param name="pos">座標</param>
+		/// <param name="rot">回転</param>
+		/// <param name="scale">拡大率</param>
+		void UpdateInstancingData(const Vector3& pos, const Quaternion& rot, const Vector3& scale);
 
-		const char* a;
 
 	private:
 		/// <summary>
@@ -192,6 +204,7 @@ namespace nsK2EngineLow {
 		/// <param name="filePath">ファイルパス。</param>
 		void InitSkeleton(const char* filePath);
 
+
 	private:
 		Model						m_model;	
 		Skeleton					m_skeleton;							// スケルトン
@@ -199,9 +212,11 @@ namespace nsK2EngineLow {
 		AnimationClip*				m_animationClips = nullptr;			// アニメーションクリップ。
 		int							m_numAnimationClips = 0;			// アニメーションクリップの数。
 		Animation					m_animation;						// アニメーション。
-		Vector3 					m_position = Vector3::Zero;			// 座標。
-		Quaternion	 				m_rotation = Quaternion::Identity;	// 回転。
-		Vector3						m_scale = Vector3::One;				// 拡大率。
+		Vector3 					m_position;			// 座標。
+		Quaternion	 				m_rotation;	// 回転。
+		Vector3						m_scale;				// 拡大率。
+		Model						m_zprepassModel;					// ZPrepassで描画されるモデル
+		int							m_numInstance = 0;					// インスタンスの数。
 		int							m_maxInstance = 1;					// 最大インスタンス数。
 		//int							m_fixNumInstanceOnFrame = 0;		// このフレームに描画するインスタンスの数の確定数。。
 		bool						m_isEnableInstancingDraw = false;	// インスタンシング描画が有効？

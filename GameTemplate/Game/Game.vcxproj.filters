@@ -20,8 +20,10 @@
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="SpeedEnemy.cpp" />
-    <ClCompile Include="MovedPath.cpp" />
-    <ClCompile Include="Path.cpp" />
+    <ClCompile Include="EnemyPath.cpp" />
+    <ClCompile Include="GameClear.cpp" />
+    <ClCompile Include="index.cpp" />
+    <ClCompile Include="Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -37,7 +39,9 @@
     <ClInclude Include="Title.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="SpeedEnemy.h" />
-    <ClInclude Include="MovedPath.h" />
-    <ClInclude Include="Path.h" />
+    <ClInclude Include="EnemyPath.h" />
+    <ClInclude Include="GameClear.h" />
+    <ClInclude Include="index.h" />
+    <ClInclude Include="Menu.h" />
   </ItemGroup>
 </Project>

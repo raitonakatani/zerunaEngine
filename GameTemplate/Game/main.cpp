@@ -2,6 +2,7 @@
 #include "system/system.h"
 #include "Game.h"
 #include "Title.h"
+#include "Fade.h"
 
 /// <summary>
 /// ディレクショナルライト
@@ -12,6 +13,8 @@ struct DirectionalLight
 	float pad0;         // パディング
 	Vector3  direction;
 	float pad1;         // パディング
+	Vector3 eyePos; // 視点
+	float specPow;  // スペキュラの絞り
 };
 
 const int NUM_WEIGHTS = 8;
@@ -49,8 +52,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	g_camera3D->SetPosition({ 0.0f, 100.0f, -100.0f });
 	g_camera3D->SetTarget({ 0.0f, 100.0f, 0.0f });
 
-auto game = NewGO<Game>(0);
-	//auto title = NewGO<Title>(0);
+//	auto game = NewGO<Game>(0);
+auto title = NewGO<Title>(0);
+	NewGO<Fade>(0, "fade");
 
 	RootSignature rs;
 	InitRootSignature(rs);
@@ -68,7 +72,7 @@ auto game = NewGO<Game>(0);
 	//シャドウマップ描画用のレンダリングターゲットを作成する。
 	//カラーバッファのクリアカラー
 	//今回はカラーバッファは真っ白にする。
-	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+/*	float clearColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	RenderTarget shadowMap;
 	shadowMap.Create(
 		1024,//【注目】レンダリングターゲットの横幅
@@ -134,11 +138,94 @@ auto game = NewGO<Game>(0);
 	Model bgModel;
 	bgModel.Init(bgModelInitData);
 
-
+*/
 
 	//ステックの入力量を取得
 	float lStick_x = 0.0f;
 	float lStick_y = 0.0f;
+
+
+
+	// ルートシグネチャを作成
+	RootSignature rootSignature;
+	InitRootSignature(rootSignature);
+
+
+	// ディレクションライト
+	DirectionalLight light;
+	light.direction.x = 1.0f;
+	light.direction.y = -1.0f;
+	light.direction.z = -1.0f;
+	light.direction.Normalize();
+
+	light.color.x = 1.0f;
+	light.color.y = 1.0f;
+	light.color.z = 1.0f;
+	light.eyePos = g_camera3D->GetPosition();
+
+	ModelRender model;
+	model.InitModel("Assets/modelData/player/player2.tkm");
+
+
+	// モデルを初期化
+	ModelInitData modelInitData;
+	// 人型モデルを初期化
+	modelInitData.m_tkmFilePath = "Assets/modelData/player/player2.tkm";
+	modelInitData.m_fxFilePath = "Assets/shader/model1.fx";
+	Model humanModel;
+	humanModel.Init(modelInitData);
+	humanModel.UpdateWorldMatrix({ 0.0f, 0.0f, 0.0f }, g_quatIdentity, g_vec3One);
+
+	// 背景モデルを初期化
+	modelInitData.m_tkmFilePath = "Assets/modelData/karisute/stage3.tkm";
+	Model bgModel;
+	bgModel.Init(modelInitData);
+
+
+	RenderTarget albedRT;
+	RenderTarget normalRT;
+	RenderTarget worldPosRT;
+	SpriteInitData spriteInitData;
+	Sprite defferdLightinSpr;
+
+	// G-Bufferを作成
+	// アルベドカラー書き込み用のレンダリングターゲット
+	albedRT.Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+	// 法線書き込み用のレンダリングターゲット
+	normalRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_UNKNOWN
+	);
+	worldPosRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_R32G32B32A32_FLOAT, // ワールド座標を記録するので、32ビット浮動小数点バッファーを利用する
+		DXGI_FORMAT_UNKNOWN
+	);
+
+	// ポストエフェクト的にディファードライティングを行うためのスプライトを初期化
+	// 画面全体にレンダリングするので幅と高さはフレームバッファーの幅と高さと同じ
+	spriteInitData.m_width = FRAME_BUFFER_W;
+	spriteInitData.m_height = FRAME_BUFFER_H;
+	// ディファードライティングで使用するテクスチャを設定
+	spriteInitData.m_textures[0] = &albedRT.GetRenderTargetTexture();
+	spriteInitData.m_textures[1] = &normalRT.GetRenderTargetTexture();
+
+	// ディファードライティングで使用するテクスチャにワールド座標テクスチャを追加
+	spriteInitData.m_textures[2] = &worldPosRT.GetRenderTargetTexture();
+
+	spriteInitData.m_fxFilePath = "Assets/shader/sprite1.fx";
+	spriteInitData.m_expandConstantBuffer = &light;
+	spriteInitData.m_expandConstantBufferSize = sizeof(light);
+	// 初期化データを使ってスプライトを作成
+	defferdLightinSpr.Init(spriteInitData);
+
 
 
 	auto& renderContext = g_graphicsEngine->GetRenderContext();
@@ -150,6 +237,59 @@ auto game = NewGO<Game>(0);
 
 		// ゲームオブジェクトマネージャーの更新処理を呼び出す。
 		g_k2EngineLow->ExecuteUpdate();
+
+		// ゲームオブジェクトマネージャーの描画処理を呼び出す。
+		g_k2EngineLow->ExecuteRender();
+
+		// デバッグ描画処理を実行する。
+		g_k2EngineLow->DebubDrawWorld();
+
+		g_Light.Update();
+
+
+	/*	if (g_pad[0]->IsPress(enButtonA))
+		{
+			model.modelUpdate();
+
+			// レンダリングターゲットをG-Bufferに変更して書き込む
+			RenderTarget* rts[] = {
+				&albedRT, // 0番目のレンダリングターゲット
+				&normalRT, // 1番目のレンダリングターゲット
+				&worldPosRT // 2番目のレンダリングターゲット
+			};
+
+			// まず、レンダリングターゲットとして設定できるようになるまで待つ
+			renderContext.WaitUntilToPossibleSetRenderTargets(ARRAYSIZE(rts), rts);
+			// レンダリングターゲットを設定
+			renderContext.SetRenderTargets(ARRAYSIZE(rts), rts);
+			// レンダリングターゲットをクリア
+			renderContext.ClearRenderTargetViews(ARRAYSIZE(rts), rts);
+
+
+			humanModel.Draw(renderContext);
+			bgModel.Draw(renderContext);
+
+
+			// レンダリングターゲットへの書き込み待ち
+			renderContext.WaitUntilFinishDrawingToRenderTargets(ARRAYSIZE(rts), rts);
+
+			// レンダリング先をフレームバッファーに戻してスプライトをレンダリングする
+			g_graphicsEngine->ChangeRenderTargetToFrameBuffer(renderContext);
+			// G-Bufferの内容を元にしてディファードライティング
+			defferdLightinSpr.Draw(renderContext);
+
+			// step-2 深度ステンシルビューをG-Bufferを作成したときのものに変更する
+			//深度ステンシルビューはG-Bufferを作成したときのものに変更する。
+			renderContext.SetRenderTarget(
+				g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
+				rts[0]->GetDSVCpuDescriptorHandle()
+			);
+
+			model.Draw(renderContext);
+		}
+		else {
+*/			g_renderEngine.SpriteRenderDraw(renderContext);
+	//	}
 
 /*
 		if (g_pad[0]->IsPress(enButtonA))
@@ -190,70 +330,62 @@ auto game = NewGO<Game>(0);
 
 
 		// ゲームオブジェクトマネージャーの描画処理を呼び出す。
-		g_k2EngineLow->ExecuteRender();
+	//	g_k2EngineLow->ExecuteRender();
 
 		//レンダリングターゲットをmainRenderTargetに変更する。
 		//レンダリングターゲットとして利用できるまで待つ。
-		renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.mainRenderTarget);
+//		renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.mainRenderTarget);
 		//レンダリングターゲットを設定。
-		renderContext.SetRenderTargetAndViewport(g_posteffect.mainRenderTarget);
+//		renderContext.SetRenderTargetAndViewport(g_posteffect.mainRenderTarget);
 		//レンダリングターゲットをクリア。
-		renderContext.ClearRenderTargetView(g_posteffect.mainRenderTarget);
+//		renderContext.ClearRenderTargetView(g_posteffect.mainRenderTarget);
 
 		// ゲームオブジェクトマネージャーの描画処理を呼び出す。
-		g_k2EngineLow->ExecuteRender();
+	//	g_k2EngineLow->ExecuteRender();
 
 		//mainRenderTargetに各種モデルを描画する。
 		//plModel.Draw(renderContext);
 		//レンダリングターゲットへの書き込み終了待ち。
-		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.mainRenderTarget);
+//		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.mainRenderTarget);
 
 		//輝度抽出
 		//輝度抽出用のレンダリングターゲットに変更。
-		renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.luminnceRenderTarget);
+//		renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.luminnceRenderTarget);
 		//レンダリングターゲットを設定。
-		renderContext.SetRenderTargetAndViewport(g_posteffect.luminnceRenderTarget);
+//		renderContext.SetRenderTargetAndViewport(g_posteffect.luminnceRenderTarget);
 		//レンダリングターゲットをクリア。
-		renderContext.ClearRenderTargetView(g_posteffect.luminnceRenderTarget);
+//		renderContext.ClearRenderTargetView(g_posteffect.luminnceRenderTarget);
 		//輝度抽出を行う。
-		g_posteffect.luminanceSprite.Draw(renderContext);
+//		g_posteffect.luminanceSprite.Draw(renderContext);
 		//レンダリングターゲットへの書き込み終了待ち。
-		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.luminnceRenderTarget);
+//		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.luminnceRenderTarget);
 
 		//ガウシアンブラーを実行する。
-		g_posteffect.gaussianBlur.ExecuteOnGPU(renderContext, 20);
+///		g_posteffect.gaussianBlur.ExecuteOnGPU(renderContext, 20);
 
 		//ボケ画像をメインレンダリングターゲットに加算合成。
 		//レンダリングターゲットとして利用できるまで待つ。
-		renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.mainRenderTarget);
+//		renderContext.WaitUntilToPossibleSetRenderTarget(g_posteffect.mainRenderTarget);
 		//レンダリングターゲットを設定。
-		renderContext.SetRenderTargetAndViewport(g_posteffect.mainRenderTarget);
+//		renderContext.SetRenderTargetAndViewport(g_posteffect.mainRenderTarget);
 		//最終合成。
-		g_posteffect.finalSprite.Draw(renderContext);
+//		g_posteffect.finalSprite.Draw(renderContext);
 		//レンダリングターゲットへの書き込み終了待ち。
-		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.mainRenderTarget);
+//		renderContext.WaitUntilFinishDrawingToRenderTarget(g_posteffect.mainRenderTarget);
 
 		//メインレンダリングターゲットの絵をフレームバッファにコピー。
-		renderContext.SetRenderTarget(
-			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
-			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
-		);
+//		renderContext.SetRenderTarget(
+//			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
+//			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
+//		);
 
 
-		if (g_pad[0]->IsPress(enButtonA))
-		{
+//		if (g_pad[0]->IsPress(enButtonA))
+//		{
 	//		g_posteffect.copyToFrameBufferSprite.Draw(renderContext);
-		}
+//		}
 
-		g_renderingEngine.SpriteRenderDraw(renderContext);
-
-
-		// ゲームオブジェクトマネージャーの描画処理を呼び出す。
-		g_k2EngineLow->ExecuteRender();
-		// デバッグ描画処理を実行する。
-		g_k2EngineLow->DebubDrawWorld();
-
-		g_Light.Update();
+	
 
 
 
