@@ -28,13 +28,13 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player/stealthysteps.tka");
 	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Crouch].Load("Assets/animData/player/crouch2.tka");
+	m_animationClipArray[enAnimClip_Crouch].Load("Assets/animData/player/crouch.tka");
 	m_animationClipArray[enAnimClip_Crouch].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player/rolling.tka");
 	m_animationClipArray[enAnimClip_Rolling].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player/attack.tka");
 	m_animationClipArray[enAnimClip_FirstAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player/pokeattack.tka");
+	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player/porkattack.tka");
 	m_animationClipArray[enAnimClip_PokeAttack].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_ReceiveDamage].Load("Assets/animData/player/damage.tka");
 	m_animationClipArray[enAnimClip_ReceiveDamage].SetLoopFlag(false);
@@ -58,7 +58,7 @@ bool Player::Start()
 		});
 
 	//「Sword」ボーンのID(番号)を取得する。
-	m_sword_jointBoneId = m_modelRender.FindBoneID(L"Sword_joint");
+	m_sword_jointBoneId = m_modelRender.FindBoneID(L"sword");
 
 	camera = FindGO<GameCamera>("GameCamera");
 
