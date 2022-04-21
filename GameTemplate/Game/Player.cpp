@@ -20,23 +20,25 @@ namespace
 void Player::InitAnimation()
 {
 	//アニメーションクリップをロードする。
-	m_animationClipArray[enAnimClip_Idle].Load("Assets/animData/player2/idle.tka");
+	m_animationClipArray[enAnimClip_Idle].Load("Assets/animData/player/idle.tka");
 	m_animationClipArray[enAnimClip_Idle].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Walk].Load("Assets/animData/player2/walk.tka");
+	m_animationClipArray[enAnimClip_Walk].Load("Assets/animData/player/walk.tka");
 	m_animationClipArray[enAnimClip_Walk].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/player2/run.tka");
+	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/player/run.tka");
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player2/stealthysteps.tka");
+	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player/stealthysteps.tka");
 	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
-	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player2/rolling.tka");
+	m_animationClipArray[enAnimClip_Crouch].Load("Assets/animData/player/crouch2.tka");
+	m_animationClipArray[enAnimClip_Crouch].SetLoopFlag(true);
+	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player/rolling.tka");
 	m_animationClipArray[enAnimClip_Rolling].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/slashattack.tka");
+	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player/attack.tka");
 	m_animationClipArray[enAnimClip_FirstAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player2/pokeattack.tka");
+	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player/pokeattack.tka");
 	m_animationClipArray[enAnimClip_PokeAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_ReceiveDamage].Load("Assets/animData/player2/damage.tka");
+	m_animationClipArray[enAnimClip_ReceiveDamage].Load("Assets/animData/player/damage.tka");
 	m_animationClipArray[enAnimClip_ReceiveDamage].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_Down].Load("Assets/animData/player2/down.tka");
+	m_animationClipArray[enAnimClip_Down].Load("Assets/animData/player/down.tka");
 	m_animationClipArray[enAnimClip_Down].SetLoopFlag(false);
 }
 
@@ -46,7 +48,7 @@ bool Player::Start()
 	InitAnimation();
 
 	//モデルの読み込み
-	m_modelRender.Init("Assets/modelData/player/player2.tkm"
+	m_modelRender.Init("Assets/modelData/player/player.tkm"
 		, m_animationClipArray, enAnimClip_Num
 	);
 
@@ -192,6 +194,7 @@ void Player::Move()
 	if (m_playerState != enPlayerState_Run &&
 		m_playerState != enPlayerState_Walk &&
 		m_playerState != enPlayerState_StealthySteps &&
+		m_playerState != enPlayerState_Crouch&&
 		m_playerState != enPlayerState_Idle)
 	{
 		//なにもしない
@@ -398,6 +401,10 @@ void Player::PlayAnimation()
 		m_modelRender.PlayAnimation(enAnimClip_StealthySteps, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
+	case Player::enPlayerState_Crouch:
+		m_modelRender.PlayAnimation(enAnimClip_Crouch, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.2f);
+		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
 		m_modelRender.PlayAnimation(enAnimClip_Rolling, 0.1f);
@@ -447,6 +454,9 @@ void Player::ManageState()
 		//忍び足ステートの時
 	case Player::enPlayerState_StealthySteps:
 		ProcessStealthyStepsStateTransition();
+		break;
+	case Player::enPlayerState_Crouch:
+		ProcessCrouchStateTransition();
 		break;
 		//回避ステートの時
 	case Player::enPlayerState_Avoidance:
@@ -516,21 +526,22 @@ void Player::ProcessCommonStateTransition()
 		return;
 	}
 
-	//Xボタンが押されたら
-	if (g_pad[0]->IsPress(enButtonX))
-	{
-		//忍び足ステートへ移行する
-		m_playerState = enPlayerState_StealthySteps;
-		return;
-	}
+	////Xボタンが押されたら
+	//if (g_pad[0]->IsPress(enButtonX))
+	//{
+	//	//忍び足ステートへ移行する
+	//	m_playerState = enPlayerState_StealthySteps;
+	//	return;
+	//}
 
 	//xかzの移動速度があったら
 	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
 	{
-		if (COOLtime == true)
+		//Xボタンが押されたら
+		if (g_pad[0]->IsPress(enButtonLB3))
 		{
-			//歩きステートへ移行する
-			m_playerState = enPlayerState_Walk;
+			//忍び足ステートへ移行する
+			m_playerState = enPlayerState_StealthySteps;
 			return;
 		}
 		//Aボタンが押されたら
@@ -540,27 +551,32 @@ void Player::ProcessCommonStateTransition()
 			m_playerState = enPlayerState_Run;
 			return;
 		}
-		//Xボタンが押されたら
-		if (g_pad[0]->IsPress(enButtonX))
-		{
-			//忍び足ステートへ移行する
-			m_playerState = enPlayerState_StealthySteps;
-			return;
-		}
-		//押されなかったら
-		else
+		if (COOLtime == true)
 		{
 			//歩きステートへ移行する
 			m_playerState = enPlayerState_Walk;
+			return;
 		}
+		////押されなかったら
+		//else
+		//{
+			//歩きステートへ移行する
+		m_playerState = enPlayerState_Walk;
+		return;
+		/*}*/
 	}
 
 	//xかzの移動速度がなかったら
 	else
 	{
+		if (g_pad[0]->IsPress(enButtonLB3))
+		{
+			//しゃがみステートに移行する
+			m_playerState = enPlayerState_Crouch;
+			return;
+		}
 		//待機ステートに移行する
 		m_playerState = enPlayerState_Idle;
-		return;
 	}
 }
 
@@ -583,6 +599,12 @@ void Player::ProcessRunStateTransition()
 }
 
 void Player::ProcessStealthyStepsStateTransition()
+{
+	//他のステートに遷移する
+	ProcessCommonStateTransition();
+}
+
+void Player::ProcessCrouchStateTransition()
 {
 	//他のステートに遷移する
 	ProcessCommonStateTransition();

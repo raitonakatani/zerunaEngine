@@ -42,6 +42,7 @@ Game::~Game()
 	DeleteGO(m_background);
 	DeleteGO(GameBGM);
 }
+
 bool Game::Start()
 {
 //	g_camera3D->SetPosition({ 0.0f, 100.0f, -600.0f });
@@ -115,7 +116,7 @@ bool Game::Start()
 
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
-	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 
 //	m_pressButton.Init("Assets/sprite/button.dds", 400, 225, AlphaBlendMode_Trans);

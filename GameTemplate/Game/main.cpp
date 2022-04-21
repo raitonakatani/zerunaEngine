@@ -164,13 +164,13 @@ auto title = NewGO<Title>(0);
 	light.eyePos = g_camera3D->GetPosition();
 
 	ModelRender model;
-	model.InitModel("Assets/modelData/player/player2.tkm");
+	model.InitModel("Assets/modelData/player/player.tkm");
 
 
 	// ƒ‚ƒfƒ‹‚ğ‰Šú‰»
 	ModelInitData modelInitData;
 	// lŒ^ƒ‚ƒfƒ‹‚ğ‰Šú‰»
-	modelInitData.m_tkmFilePath = "Assets/modelData/player/player2.tkm";
+	modelInitData.m_tkmFilePath = "Assets/modelData/player/player.tkm";
 	modelInitData.m_fxFilePath = "Assets/shader/model1.fx";
 	Model humanModel;
 	humanModel.Init(modelInitData);
