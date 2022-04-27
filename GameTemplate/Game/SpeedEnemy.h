@@ -17,8 +17,6 @@ public:
 	{
 		enSpeedEnemyState_Idle,           //待機ステート
 		enSpeedEnemyState_Chase,          //追跡ステート
-		enSpeedEnemyState_Wander,         //徘徊ステート
-		enSpeedEnemyState_Return,         //帰還ステート
 		enSpeedEnemyState_Attack,         //攻撃ステート
 		enSpeedEnemyState_Shout,          //叫びステート
 		enSpeedEnemyState_ReceiveDamage,  //被ダメージステート

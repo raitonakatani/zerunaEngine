@@ -10,7 +10,7 @@ namespace
 	const float CHARACON_HEIGHT = 100.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
 	const float WALK_MOVESPEED = 100.0f;            //歩きステートの移動速度
-	const float RUN_MOVESPEED = 250.0f;            //走りステートの移動速度
+	const float RUN_MOVESPEED = 250.0f;            //走りステートの移動速度250.0f
 	const float STEALTHYSTEP_MOVESPEED = 50.0f;     //忍び足ステートの移動速度
 	const float GRAVITY = 1000.0f;                  //重力
 	const float ATTACK_TIME = 1.5f;                 //連続攻撃ができる時間

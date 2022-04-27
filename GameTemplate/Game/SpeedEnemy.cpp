@@ -66,16 +66,22 @@ void SpeedEnemy::InitPathLevel()
 	case 1:
 		//Aルートの徘徊パスの読み込み
 		m_enemypathA.Init("Assets/path/speed/enemypath2.tkl");
+		//Bルートの徘徊パスの読み込み
+		m_enemypathB.Init("Assets/path/speed/enemypath2B.tkl");
 		break;
 		//エネミー番号が2だったら
 	case 2:
 		//Aルートの徘徊パスの読み込み
 		m_enemypathA.Init("Assets/path/speed/enemypath3.tkl");
+		//Bルートの徘徊パスの読み込み
+		m_enemypathB.Init("Assets/path/speed/enemypath3B.tkl");
 		break;
 		//エネミー番号が3だったら
 	case 3:
 		//Aルートの徘徊パスの読み込み
 		m_enemypathA.Init("Assets/path/speed/enemypath4.tkl");
+		//Bルートの徘徊パスの読み込み
+		m_enemypathB.Init("Assets/path/speed/enemypath4B.tkl");
 		break;
 		//それ以外の場合
 	default:
@@ -85,7 +91,7 @@ void SpeedEnemy::InitPathLevel()
 	//Aルートの最初のポイントを取得する
 	m_pointA = m_enemypathA.GetFirstPoint();
 	//Bルートの最初のポイントを取得する
-	//m_pointB = m_enemypathB.GetFirstPoint();
+	m_pointB = m_enemypathB.GetFirstPoint();
 }
 
 bool SpeedEnemy::Start()
@@ -163,7 +169,7 @@ void SpeedEnemy::Chase()
 		return;
 	}
 	//Aルートの徘徊処理
-	Aroute();
+	Broute();
 
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
 	if (m_charaCon.IsOnGround()) {
