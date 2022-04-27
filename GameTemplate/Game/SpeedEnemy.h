@@ -17,6 +17,8 @@ public:
 	{
 		enSpeedEnemyState_Idle,           //待機ステート
 		enSpeedEnemyState_Chase,          //追跡ステート
+		enSpeedEnemyState_Wander,         //徘徊ステート
+		enSpeedEnemyState_Return,         //帰還ステート
 		enSpeedEnemyState_Attack,         //攻撃ステート
 		enSpeedEnemyState_Shout,          //叫びステート
 		enSpeedEnemyState_ReceiveDamage,  //被ダメージステート
@@ -71,13 +73,14 @@ public:
 	}
 
 	/// <summary>
-	/// 騎士の番号を設定する。
+	/// エネミーの番号を設定する。
 	/// </summary>
-	/// <param name="kisiNumber">騎士の番号。</param>
-	void SetspeedNumber(const int kisiNumber)
+	/// <param name="enemyNumber">エネミーの番号。</param>
+	void SetSpeedNumber(const int enemyNumber)
 	{
-		m_speedNumber = kisiNumber;
+		m_speedNumber = enemyNumber;
 	}
+
 	/// <summary>
 	/// 騎士の番号を取得する。
 	/// </summary>
@@ -87,7 +90,12 @@ public:
 		return m_speedNumber;
 	}
 
+
 private:
+	/// <summary>
+	/// パスの初期化
+	/// </summary>
+	void InitPathLevel();
 	/// <summary>
 	/// アニメーションの初期化
 	/// </summary>
@@ -170,6 +178,10 @@ private:
 	/// 経路A
 	/// </summary>
 	void Aroute();
+	/// <summary>
+	/// 経路B
+	/// </summary>
+	void Broute();
 
 private:
 	/// <summary>
@@ -205,14 +217,10 @@ private:
 	int                     m_hp = 100;                                 //HP
 	int                     m_punchBoneId = -1;                         //パンチのボーン
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
-	int m_speedNumber = 0;
-	EnemyPath m_enemypath;
-	EnemyPath m_enemypath2;
-	EnemyPath m_enemypath3;
-	EnemyPath m_enemypath4;
-	Point* m_point;
-	Point* m_point2;
-	Point* m_point3;
-	Point* m_point4;
+	int m_speedNumber = 0;                                              //エネミーの番号
+	EnemyPath m_enemypathA;                                             //Aルートのパス
+	EnemyPath m_enemypathB;                                             //Bルートのパス
+	Point* m_pointA;                                                    //Aルートのポイント
+	Point* m_pointB;                                                    //Bルートのポイント
 };
 

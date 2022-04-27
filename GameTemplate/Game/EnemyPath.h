@@ -28,7 +28,7 @@ public:
 	void Init(const char* filePath);
 	std::map<int, Point> m_pointlist;
 	LevelRender m_level;
-	LevelRender m_level2;
+	
 private:
 	Point* m_point;
 };

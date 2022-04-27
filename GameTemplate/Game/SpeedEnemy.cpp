@@ -51,10 +51,49 @@ void SpeedEnemy::InitAnimation()
 	m_animationClipArray[enAnimClip_Down].SetLoopFlag(false);
 }
 
+void SpeedEnemy::InitPathLevel()
+{
+	switch (m_speedNumber)
+	{
+		//エネミー番号が0だったら
+	case 0:
+		//Aルートの徘徊パスの読み込み
+		m_enemypathA.Init("Assets/path/speed/enemypath1.tkl");
+		//Bルートの徘徊パスの読み込み
+		m_enemypathB.Init("Assets/path/speed/enemypath1B.tkl");
+		break;
+		//エネミー番号が1だったら
+	case 1:
+		//Aルートの徘徊パスの読み込み
+		m_enemypathA.Init("Assets/path/speed/enemypath2.tkl");
+		break;
+		//エネミー番号が2だったら
+	case 2:
+		//Aルートの徘徊パスの読み込み
+		m_enemypathA.Init("Assets/path/speed/enemypath3.tkl");
+		break;
+		//エネミー番号が3だったら
+	case 3:
+		//Aルートの徘徊パスの読み込み
+		m_enemypathA.Init("Assets/path/speed/enemypath4.tkl");
+		break;
+		//それ以外の場合
+	default:
+		break;
+	}
+	
+	//Aルートの最初のポイントを取得する
+	m_pointA = m_enemypathA.GetFirstPoint();
+	//Bルートの最初のポイントを取得する
+	//m_pointB = m_enemypathB.GetFirstPoint();
+}
+
 bool SpeedEnemy::Start()
 {
 	//アニメーションの初期化
 	InitAnimation();
+	//徘徊パスのレベルの初期化
+	InitPathLevel();
 
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/speedenemy/speedenemy.tkm",
@@ -73,16 +112,6 @@ bool SpeedEnemy::Start()
 	m_punchBoneId = m_modelRender.FindBoneID(L"LeftHand");
 
 	m_player = FindGO<Player>("player");
-
-	m_enemypath.Init("Assets/path/speed/enemypath1.tkl");
-	m_enemypath2.Init("Assets/path/speed/enemypath2.tkl");
-	m_enemypath3.Init("Assets/path/speed/enemypath3.tkl");
-	m_enemypath4.Init("Assets/path/speed/enemypath4.tkl");
-	
-	m_point = m_enemypath.GetFirstPoint();
-	m_point2 = m_enemypath2.GetFirstPoint();
-	m_point3 = m_enemypath3.GetFirstPoint();
-	m_point4 = m_enemypath4.GetFirstPoint();
 
 	//スフィアコライダーを初期化。
 	m_sphereCollider.Create(1.0f);
@@ -120,19 +149,21 @@ void SpeedEnemy::Update()
 
 void SpeedEnemy::Chase()
 {
-	//プレイヤーを見つけていなかったら。
-	if (state == 1)
-	{
-		m_speedEnemyState = enSpeedEnemyState_Chase;
-		Aroute();
-	}
+	////プレイヤーを見つけていなかったら。
+	//if (state == 1)
+	//{
+	//	m_speedEnemyState = enSpeedEnemyState_Chase;
+	//	Aroute();
+	//}
 
-	//追跡ステートでないなら、追跡処理はしない。
+	////追跡ステートでないなら、追跡処理はしない。
 	if (m_speedEnemyState != enSpeedEnemyState_Chase)
 	{
 		//何もしない
 		return;
 	}
+	//Aルートの徘徊処理
+	Aroute();
 
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
 	if (m_charaCon.IsOnGround()) {
@@ -342,55 +373,56 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	m_idleTimer = IDLETIMER_DEFAULT;
 	m_chaseTimer = CHASETIMER_DEFAULT;
 
-	//エネミーからプレイヤーに向かうベクトルを計算する。
-	Vector3 diff = m_player->GetPosition() - m_position;
+	////エネミーからプレイヤーに向かうベクトルを計算する。
+	//Vector3 diff = m_player->GetPosition() - m_position;
 
-	//プレイヤーを発見したら
-	if (m_isSearchPlayer == true && diff.LengthSq() <= 500.0 * 500.0f)
-	{
-		state = 0;
-		//ベクトルを正規化する。
-		diff.Normalize();
-		//移動速度を設定する。
-		m_moveSpeed = diff * 150.0f;
+	////プレイヤーを発見したら
+	//if (m_isSearchPlayer == true && diff.LengthSq() <= 500.0 * 500.0f)
+	//{
+	//	state = 0;
+	//	//ベクトルを正規化する。
+	//	diff.Normalize();
+	//	//移動速度を設定する。
+	//	m_moveSpeed = diff * 150.0f;
 
-		Vector3 toPlayerDir = diff;
-		m_forward = toPlayerDir;
+	//	Vector3 toPlayerDir = diff;
+	//	m_forward = toPlayerDir;
 
-		m_rotation.SetRotationY(atan2(m_forward.x, m_forward.z));
-		m_modelRender.SetRotation(m_rotation);
+	//	m_rotation.SetRotationY(atan2(m_forward.x, m_forward.z));
+	//	m_modelRender.SetRotation(m_rotation);
 
-		//攻撃できるなら
-		if (IsCanAttack() == true)
-		{
-			int ram = rand() % 100;
-			if (ram >= ATTACK_PROBABILITY)
-			{
-				//攻撃ステートに移行する
-				m_speedEnemyState = enSpeedEnemyState_Attack;
-				//m_isUnderAttack = false;
-				return;
-			}
-			else
-			{
-				//待機ステートに移行する
-				m_speedEnemyState = enSpeedEnemyState_Idle;
-				return;
-			}
-		}
-		//攻撃できないなら
-		else
-		{
+	//	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
+	//	//攻撃できるなら
+	//	if (IsCanAttack() == true)
+	//	{
+	//		int ram = rand() % 100;
+	//		if (ram >= ATTACK_PROBABILITY)
+	//		{
+	//			//攻撃ステートに移行する
+	//			m_speedEnemyState = enSpeedEnemyState_Attack;
+	//			//m_isUnderAttack = false;
+	//			return;
+	//		}
+	//		else
+	//		{
+	//			//待機ステートに移行する
+	//			m_speedEnemyState = enSpeedEnemyState_Idle;
+	//			return;
+	//		}
+	//	}
+	//	//攻撃できないなら
+	//	else
+	//	{
 			//追跡ステートに移行する
 			m_speedEnemyState = enSpeedEnemyState_Chase;
 			return;
-		}
-	}
-	//プレイヤーを発見できなかったら
-	else
-	{
-		state = 1;
-	}
+	//	}
+	//}
+	////プレイヤーを発見できなかったら
+	//else
+	//{
+	//	state = 1;
+	//}
 }
 
 void SpeedEnemy::ProcessIdleStateTransition()
@@ -555,74 +587,64 @@ void SpeedEnemy::Render(RenderContext& rc)
 ///経路
 void SpeedEnemy::Aroute()
 {
-
-	if (m_speedNumber == 0)
+	//目標地点までのベクトル
+	Vector3 diff = m_pointA->s_position - m_position;
+	//目標地点に近かったら
+	if (diff.LengthSq() <= 120.0f * 120.0f * g_gameTime->GetFrameDeltaTime())
 	{
-		Vector3 diff = m_point->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point->s_number == m_enemypath.GetPointListSize() - 1) {
-				m_point = m_enemypath.GetFirstPoint();
-			}
-			else {
-				m_point = m_enemypath.GetNextPoint(m_point->s_number);
-			}
-
+		//最後の目標地点だったら
+		if (m_pointA->s_number == m_enemypathA.GetPointListSize() - 1)
+		{
+			//最初の目標地点へ
+			m_pointA = m_enemypathA.GetFirstPoint();
 		}
-
-		Vector3 range = m_point->s_position - m_position;
-		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
+		//最後の目標地点ではなかったら
+		else
+		{
+			//次の目標地点へ
+			m_pointA = m_enemypathA.GetNextPoint(m_pointA->s_number);
+		}
+	}
+	//目標地点に近くなかったら
+	else
+	{
+		//正規化
+		diff.Normalize();
+		//目標地点に向かうベクトル×移動速度
+		m_moveSpeed = diff * 120.0f;
+		//Y座標の移動速度を0にする
 		m_moveSpeed.y = 0.0f;
 	}
+}
 
-	if (m_speedNumber == 1)
+void SpeedEnemy::Broute()
+{
+	//目標地点までのベクトル
+	Vector3 diff = m_pointB->s_position - m_position;
+	//目標地点に近かったら
+	if (diff.LengthSq() <= 120.0f * 120.0f * g_gameTime->GetFrameDeltaTime())
 	{
-		Vector3 diff = m_point2->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1) {
-				m_point2 = m_enemypath2.GetFirstPoint();
-			}
-			else {
-				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
-			}
-
+		//最後の目標地点だったら
+		if (m_pointB->s_number == m_enemypathB.GetPointListSize() - 1) 
+		{
+			//最初の目標地点へ
+			m_pointB = m_enemypathB.GetFirstPoint();
 		}
-		Vector3 range = m_point2->s_position - m_position;
-		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
+		//最後の目標地点ではなかったら
+		else 
+		{
+			//次の目標地点へ
+			m_pointB = m_enemypathB.GetNextPoint(m_pointB->s_number);
+		}
+	}
+	//目標地点に近くなかったら
+	else
+	{
+		//正規化
+		diff.Normalize();
+		//目標地点に向かうベクトル×移動速度
+		m_moveSpeed = diff * 120.0f;
+		//Y座標の移動速度を0にする
 		m_moveSpeed.y = 0.0f;
 	}
-	if (m_speedNumber == 2)
-	{
-		Vector3 diff = m_point3->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point3->s_number == m_enemypath3.GetPointListSize() - 1) {
-				m_point3 = m_enemypath3.GetFirstPoint();
-			}
-			else {
-				m_point3 = m_enemypath3.GetNextPoint(m_point3->s_number);
-			}
-
-		}
-
-		Vector3 range = m_point3->s_position - m_position;
-		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
-		m_moveSpeed.y = 0.0f;
-	}
-	if (m_speedNumber == 3)
-	{
-		Vector3 diff = m_point4->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point4->s_number == m_enemypath4.GetPointListSize() - 1) {
-				m_point4 = m_enemypath4.GetFirstPoint();
-			}
-			else {
-				m_point4 = m_enemypath4.GetNextPoint(m_point4->s_number);
-			}
-
-		}
-
-		Vector3 range = m_point4->s_position - m_position;
-		m_moveSpeed = range * 10.0f * g_gameTime->GetFrameDeltaTime();;
-		m_moveSpeed.y = 0.0f;
-	}
-
 }

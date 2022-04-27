@@ -107,7 +107,7 @@ bool Game::Start()
 			m_speed->SetRotation(objData.rotation);
 			m_speed->SetScale(objData.scale);
 			//”Ô†‚ðÝ’è‚·‚éB
-			m_speed->SetspeedNumber(objData.number);
+			m_speed->SetSpeedNumber(objData.number);
 			return true;
 		}
 		return true;
@@ -116,7 +116,7 @@ bool Game::Start()
 
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
-	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 
 //	m_pressButton.Init("Assets/sprite/button.dds", 400, 225, AlphaBlendMode_Trans);
