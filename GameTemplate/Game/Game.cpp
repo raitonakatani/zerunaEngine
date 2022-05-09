@@ -4,9 +4,13 @@
 #include "Player.h"
 #include "Title.h"
 #include "Background.h"
+#include "Floor.h"
+
 #include "TankEnemy.h"
+#include "TankEnemy2.h"
 #include "SpeedEnemy.h"
 #include "Enemy3.h"
+
 #include "Fade.h"
 #include "index.h"
 #include "GameClear.h"
@@ -26,6 +30,11 @@ Game::~Game()
 	{
 		DeleteGO(enemy);
 	}
+	const auto& tkenemys = FindGOs<TankEnemy2>("TankEnemy2");
+	for (auto tkenemy : tkenemys)
+	{
+		DeleteGO(tkenemy);
+	}
 	const auto& enemys2 = FindGOs<SpeedEnemy>("m_enemy2");
 	for (auto enemy2 : enemys2)
 	{
@@ -40,9 +49,9 @@ Game::~Game()
 	DeleteGO(m_gameCamera);
 	DeleteGO(m_player);
 	DeleteGO(m_background);
+	DeleteGO(m_floor);
 	DeleteGO(GameBGM);
 }
-
 bool Game::Start()
 {
 //	g_camera3D->SetPosition({ 0.0f, 100.0f, -600.0f });
@@ -53,10 +62,15 @@ bool Game::Start()
 
 	m_player = NewGO<Player>(0, "player");
 
+	m_floor = NewGO<Floor>(0, "floor");
+	m_floor->SetPosition({1.0f,1.0f,1.0f});
+	m_floor->SetRotation({ 0.0f,0.0f,0.0f ,0.0f});
+	m_floor->SetScale({ 1.0f,1.0f,1.0f });
 
 
 	//レベルを構築する。
 	m_levelRender.Init("Assets/Level/BackGround.tkl", [&](LevelObjectData& objData) {
+		
 		if (objData.EqualObjectName(L"stage") == true) {
 
 			m_background = NewGO<Background>(0, "background");
@@ -67,7 +81,7 @@ bool Game::Start()
 			return true;
 		}
 		
-		if (objData.EqualObjectName(L"index") == true) {
+/*		if (objData.EqualObjectName(L"index") == true) {
 
 			m_index = NewGO<index>(0, "index");
 			m_index->SetPosition(objData.position);
@@ -76,7 +90,7 @@ bool Game::Start()
 			//trueにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
-
+*/
 		if (objData.ForwardMatchName(L"tank") == true) {
 			//エネミーのインスタンスを生成する。
 			m_tank = NewGO<TankEnemy>(0, "TankEnemy");
@@ -89,7 +103,19 @@ bool Game::Start()
 			return true;
 		}
 
-		if (objData.ForwardMatchName(L"enemy") == true) {
+		if (objData.ForwardMatchName(L"secondtank") == true) {
+			//エネミーのインスタンスを生成する。
+			m_tank2 = NewGO<TankEnemy2>(0, "TankEnemy2");
+			m_tank2->SetPosition({0.0f,800.0f,0.0f});// { objData.position });
+			m_tank2->SetRotation(objData.rotation);
+			m_tank2->SetScale(objData.scale);
+			//番号を設定する。
+			m_tank2->SettankNumber(objData.number);
+			//falseにすると、レベルの方でモデルが読み込まれない。
+			return true;
+		}
+
+/*		if (objData.ForwardMatchName(L"enemy") == true) {
 			//エネミーのインスタンスを生成する。
 			m_enemy3 = NewGO<Enemy3>(0,"m_enemy3");
 			m_enemy3->SetPosition({ objData.position });
@@ -107,16 +133,16 @@ bool Game::Start()
 			m_speed->SetRotation(objData.rotation);
 			m_speed->SetScale(objData.scale);
 			//番号を設定する。
-			m_speed->SetSpeedNumber(objData.number);
+			m_speed->SetspeedNumber(objData.number);
 			return true;
 		}
-		return true;
+	*/	return true;
 	});
 
 
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
-	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 
 //	m_pressButton.Init("Assets/sprite/button.dds", 400, 225, AlphaBlendMode_Trans);

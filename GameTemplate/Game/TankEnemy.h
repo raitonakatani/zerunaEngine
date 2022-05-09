@@ -10,6 +10,8 @@
 class Player;
 class Game;
 class GameCamera;
+class TankEnemy2;
+class EnemyPath;
 
 	/// <summary>
 	/// エネミー。
@@ -25,6 +27,8 @@ public:
 		enEnemyState_ReceiveDamage,		//被ダメージ。
 		enEnemyState_Down,
 		enEnemyState_Death,//ダウン。
+		enEnemyState_look,//警報。
+		enEnemyState_alert,//警戒。
 		enEnemyState_model
 	};
 public:
@@ -151,6 +155,11 @@ private:
 	/// ダウンステートの遷移処理。
 	/// </summary>
 	void ProcessDownStateTransition();
+
+	void lookTransition();
+
+	void alertTransition();
+
 	/// <summary>
 	/// 攻撃できる距離かどうか調べる。
 	/// </summary>
@@ -174,6 +183,8 @@ private:
 		enAnimationClip_Damage,					//被ダメージアニメーション。
 		enAnimationClip_Down,					//ダウンアニメーション。
 		enAnimationClip_Death,					//即死アニメーション。
+		enAnimationClip_look,					//アニメーション。
+		enAnimationClip_alert,
 		enAnimationClip_Num,					//アニメーションの数。
 	};
 	AnimationClip				m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。
@@ -184,37 +195,49 @@ private:
 	Vector3						m_forward = Vector3::AxisZ;					//エネミーの正面ベクトル。
 	Quaternion					m_rotation;									//回転。
 	Vector3						m_scale = Vector3::One;						//大きさ。
-	//Vector3 m_moveVector;
-	Vector3        m_toPlayer;
+	//Vector3					m_moveVector;
+	Vector3						m_toPlayer;
+	SoundSource*				SE;
 	CharacterController			m_charaCon;									//キャラコン。
 	EnEnemyState				m_EnemyState = enEnemyState_Idle;			//エネミーステート。
-	EffectEmitter* m_effectEmitter = nullptr;			//エフェクト。							//画像。
+	EffectEmitter*				m_effectEmitter = nullptr;			//エフェクト。							//画像。
 	bool						m_isUnderAttack = false;					//攻撃中か？
-	bool					m_isSearchPlayer = false;
-	float							m_hp = 20;									//HP。
-	Player* m_player = nullptr;												//プレイヤー。
-	Game* m_game = nullptr;
-	GameCamera* m_camera;
-	EnemyPath m_enemypath;
-	EnemyPath m_enemypath2;
-	EnemyPath m_enemypath3;
-	EnemyPath m_enemypath4;
-	Point* m_point;
-	Point* m_point2;
-	Point* m_point3;
-	Point* m_point4;
-	float						m_chaseTimer = 0.0f;						//追跡タイマー。
-	float						m_idleTimer = 0.0f;							//待機タイマー。
-	float						a = 0.0f;			//拡大率
+	bool						m_isSearchPlayer = false;
+	float						m_hp = 20;									//HP。
+	Player*						m_player = nullptr;												//プレイヤー。
+	TankEnemy2*					m_tank2 = nullptr;
+	Game*						m_game = nullptr;
+	GameCamera*					m_camera;
+	//EnemyPath					m_pathposi;
+	EnemyPath					m_enemypath;
+	EnemyPath					m_enemypath2;
+	EnemyPath					m_enemypath3;
+	EnemyPath					m_enemypath4;
+	Point*						m_point;
+	Point*						m_point2;
+	Point*						m_point3;
+	Point*						m_point4;
+	SpriteRender				alertSprite;				//警戒レベル
+	float						m_chaseTimer = 0.0f;		//追跡タイマー。
+	float						m_idleTimer = 0.0f;			//待機タイマー。
+	float						alertTimet = 0.0f;					//拡大率
 	bool						m_isShowHPBar = false;
-	int m_tankNumber = 0;
-	int                     m_Hand = -1;                   //「Hand」ボーンのID。
-	int                     m_weakness = -1;               //「m_weakness」ボーンのID。
-	SphereCollider			m_sphereCollider;
-	int state = 0;
-	int Bstate = 0;
-	float m_timer = 0.0f;
-	float m_timer2 = 0.0f;
+	int							m_tankNumber = 0;
+	int							m_Hand = -1;				//「Hand」ボーンのID。
+	int							m_weakness = -1;			//「m_weakness」ボーンのID。
+	SphereCollider				m_sphereCollider;
+	int							state = 0;
+	int							Bstate = 0;
+	int							alertLevel = 0; //警戒
+	float						m_timer = 0.0f;
+	float						m_timer2 = 0.0f;
+	Vector3						Weak;
+	int							cooltime = 0;
+	int							ab;
+	float m_angl =0.40f;
+	float m_range =1000.0f;
+	Vector3 targetpos;
+	bool mikke;
 
 private:
 	TknFile m_tknFile;

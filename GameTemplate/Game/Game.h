@@ -7,9 +7,11 @@
 class Player;
 class GameCamera;
 class TankEnemy;
+class TankEnemy2;
 class SpeedEnemy;
 class Enemy3;
 class Background;
+class Floor;
 class Fade;
 class index;
 
@@ -35,8 +37,10 @@ private:
 	
 	GameCamera*					m_gameCamera = nullptr;		// ƒJƒƒ‰
 	TankEnemy*					m_tank = nullptr;			// “G
+	TankEnemy2*					m_tank2 = nullptr;			// “G
 	SpeedEnemy*					m_speed = nullptr;			//“G
 	Background*					m_background = nullptr;		// ”wŒi
+	Floor*						m_floor = nullptr;
 	Enemy3*						m_enemy3 = nullptr;			// “G
 	index*						m_index = nullptr;			//–Ú“I•¨
 	Player*						m_player = nullptr;			// ƒvƒŒƒCƒ„[

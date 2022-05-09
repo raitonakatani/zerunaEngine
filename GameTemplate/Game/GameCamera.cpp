@@ -17,7 +17,7 @@ bool GameCamera::Start()
 
 //	m_toCameraPos.Set(1.0f, 1.0f, 1.0f);
 	//注視点から視点までのベクトルを設定。
-	m_toCameraPos2.Set(0.1f, 100.0f, -200.0f);
+	m_toCameraPos2.Set(0.0f, 100.0f, -200.0f);
 	//プレイヤーのインスタンスを探す。
 	m_player = FindGO<Player>("player");
 	m_tank = FindGO<TankEnemy>("TankEmemy");
@@ -76,7 +76,7 @@ void GameCamera::Update()
 		else {
 			m_camera = 0;
 		}
-*/
+
 		if (m_camera==1)
 		{
 			m_timer += g_gameTime->GetFrameDeltaTime();
@@ -111,7 +111,12 @@ void GameCamera::Update()
 
 			g_camera3D->SetPosition(pos2);
 		}
-		//メインカメラに注視点と視点を設定する。
+*/		//メインカメラに注視点と視点を設定する。
+
+			//視点を計算する。
+		Vector3 pos2 = target2 + m_toCameraPos2;
+
+		g_camera3D->SetPosition(pos2);
 		g_camera3D->SetTarget(target2);
 
 		//カメラの更新。

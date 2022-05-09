@@ -33,6 +33,7 @@ public:
 		}
 private:
 	ModelRender m_modelRender;					//モデル
+	ModelRender m_modelRender2;					//モデル
 	Model m_model;
 	PhysicsStaticObject m_physicsStaticObject;	//静的物理オブジェクト・
 //	BoxCollider m_boxCollider;

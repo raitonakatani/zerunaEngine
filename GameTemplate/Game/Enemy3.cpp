@@ -83,7 +83,7 @@ bool Enemy3::Start()
 
 void Enemy3::Update()
 {
-	g_Light.SetLigPoint({ m_position.x+100.0f,50.0f,m_position.z });
+//	g_Light.SetLigPoint({ m_position.x+100.0f,50.0f,m_position.z });
 	
 		//’ÇÕˆ—B
 		Chase();

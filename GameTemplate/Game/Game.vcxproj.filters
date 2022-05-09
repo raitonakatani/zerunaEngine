@@ -24,6 +24,8 @@
     <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="index.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="TankEnemy2.cpp" />
+    <ClCompile Include="Floor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -43,5 +45,7 @@
     <ClInclude Include="GameClear.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="TankEnemy2.h" />
+    <ClInclude Include="Floor.h" />
   </ItemGroup>
 </Project>
