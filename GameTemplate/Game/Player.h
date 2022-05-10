@@ -1,7 +1,7 @@
 #pragma once
 
 class GameCamera;
-class Menu;
+class PAUSE;
 
 // プレイヤークラス。
 class Player : public IGameObject
@@ -175,7 +175,7 @@ public:
 	CharacterController     m_charaCon;	                                //キャラコン
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
 	GameCamera*				camera;
-	Menu*					menu = nullptr;
+	PAUSE*					m_pause = nullptr;
 	SpriteRender			m_HPRender;							        //画像。
 	SpriteRender			m_staminaRender;
 	SpriteRender			m_HPberRender;						        //画像。

@@ -26,6 +26,8 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="TankEnemy2.cpp" />
     <ClCompile Include="Floor.cpp" />
+    <ClCompile Include="PAUSE.cpp" />
+    <ClCompile Include="Retry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -47,5 +49,7 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="TankEnemy2.h" />
     <ClInclude Include="Floor.h" />
+    <ClInclude Include="PAUSE.h" />
+    <ClInclude Include="Retry.h" />
   </ItemGroup>
 </Project>

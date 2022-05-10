@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Title.h"
 #include "Fade.h"
+#include "Retry.h"
  
 
 // ä÷êîêÈåæ
@@ -32,6 +33,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 //	auto game = NewGO<Game>(0);
     auto title = NewGO<Title>(0);
 	NewGO<Fade>(0, "fade");
+
+    auto retryCounter = NewGO<Retry>(0, "retry");
 
     	RootSignature rs;
 	InitRootSignature(rs);

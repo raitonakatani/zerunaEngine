@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "GameCamera.h"
-#include "Menu.h"
+#include "PAUSE.h"
 
 
 namespace
@@ -9,12 +9,12 @@ namespace
 	const float CHARACON_RADIUS = 25.0f;            //キャラコンの半径
 	const float CHARACON_HEIGHT = 100.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
-	const float WALK_MOVESPEED = 100.0f;            //歩きステートの移動速度
-	const float RUN_MOVESPEED = 250.0f;            //走りステートの移動速度
-	const float STEALTHYSTEP_MOVESPEED = 50.0f;     //忍び足ステートの移動速度
+	const float WALK_MOVESPEED = 200.0f;            //歩きステートの移動速度
+	const float RUN_MOVESPEED = 400.0f;            //走りステートの移動速度
+	const float STEALTHYSTEP_MOVESPEED = 100.0f;     //忍び足ステートの移動速度
 	const float GRAVITY = 1000.0f;                  //重力
 	const float ATTACK_TIME = 1.5f;                 //連続攻撃ができる時間
-	const float AVOIDANCE_SPEED = 300.0f;           //回避ステートの移動速度
+	const float AVOIDANCE_SPEED = 400.0f;           //回避ステートの移動速度
 }
 
 void Player::InitAnimation()
@@ -69,29 +69,46 @@ bool Player::Start()
 
 	m_HPberRender.Init("Assets/sprite/ft.dds", 1600, 900);
 	//表示する座標を設定する。
-	m_HPberRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_HPberRender.SetPivot({ 0.0f, 0.5f });
+	m_HPberRender.SetPosition({ 0.0f,0.0f ,0.0f });
 
 	m_HPRender.Init("Assets/sprite/HP.dds", 1600, 900);
 	//表示する座標を設定する。
-	m_HPRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_HPRender.SetPivot({ 0.0f, 0.5f });
-
+	m_HPRender.SetPosition({ 0.0f,0.0f ,0.0f });
+	m_HPRender.Update();
 	m_stmnberRender.Init("Assets/sprite/ft.dds", 1600, 900);
 	//表示する座標を設定する。
-	m_stmnberRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_stmnberRender.SetPivot({ 0.0f, 0.5f });
+	m_stmnberRender.SetPosition({ 0.0f,0.0f ,0.0f });
 
 	m_staminaRender.Init("Assets/sprite/stmn.dds", 1600, 900);
 	//表示する座標を設定する。
-	m_staminaRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_staminaRender.SetPivot({ 0.0f, 0.5f });
-
+	m_staminaRender.SetPosition({ 0.0f,0.0f ,0.0f });
+	m_staminaRender.Update();
 	return true;
 }
 
 void Player::Update()
 {
+	if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
+		&& m_menu == false)					//かつm_menu==falseの時。
+	{
+		m_menu = true;
+		m_pause = NewGO<PAUSE>(0, "PASUE");
+	}
+	else if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
+		&& m_menu == true)					//かつm_menu==trueの時。 
+	{
+		m_menu = false;
+	}
+
+
+	if(m_menu == true)
+	{
+		return;
+	}
 	//移動処理
 	Move();
 	//回転処理
@@ -130,23 +147,11 @@ void Player::Update()
 
 	life = m_hp / 100.0f;
 	m_HPRender.SetScale({ life, 1.0f, 0.0f });
-	m_HPRender.SetPivot({ 0.0f, 0.5f });
+//	m_HPRender.SetPivot({ 0.0f, 0.5f });
 	m_HPRender.SetPosition({ -800.0f,0.0f ,0.0f });
 	m_HPRender.Update();
 
 
-	if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
-		&& m_menu == false)					//かつm_menu==falseの時。
-	{
-		m_menu = true;
-		menu = NewGO<Menu>(0);
-	}
-	else if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
-		&& m_menu == true)					//かつm_menu==trueの時。 
-	{
-		m_menu = false;
-		DeleteGO(menu);
-	}
 
 	if (m_sutamina <= 0.0f)
 	{
@@ -176,7 +181,7 @@ void Player::Update()
 	m_hurusutamina = m_sutamina / 150.0f;
 	m_staminaRender.SetScale({ m_hurusutamina,1.0f,0.0f });
 	m_staminaRender.SetPosition({ -800.0f,0.0f ,0.0f });
-	m_staminaRender.SetPivot({ 0.0f, 0.5f });
+	//m_staminaRender.SetPivot({ 0.0f, 0.5f });
 	m_staminaRender.Update();
 
 
@@ -225,7 +230,7 @@ void Player::Move()
 		{
 			m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
 			m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
-		//	m_sutamina--;
+			m_sutamina--;
 		}
 
 		else if (m_playerState == enPlayerState_StealthySteps) {

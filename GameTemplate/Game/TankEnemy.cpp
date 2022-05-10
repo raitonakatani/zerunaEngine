@@ -995,20 +995,6 @@ void TankEnemy::Broute()
 
 void TankEnemy::Render(RenderContext& rc)
 {
-
-	//if (alertLevel == 0)
-	//{
-	//	alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	//}
-	//if (alertLevel == 1)
-	//{
-	//	alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-	//}
-	//if (alertLevel == 2)
-	//{
-	//	alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-	//}
-
 	alertSprite.Draw(rc);
 	//ÉÇÉfÉãÇï`âÊÇ∑ÇÈÅB
 	m_modelRender.Draw(rc);

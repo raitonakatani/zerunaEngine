@@ -14,6 +14,7 @@ class Background;
 class Floor;
 class Fade;
 class index;
+class Retry;
 
 class Game : public IGameObject
 {
@@ -48,6 +49,7 @@ private:
 	float						siboutimer = 0.0f;			//
 	bool						m_isWaitFadeout = false;	//フェード
 	Fade*						m_fade = nullptr;			//フェード
+	Retry* retryCounter = nullptr;
 
 	LevelRender					m_levelRender;				//レベルレンダー。
 };

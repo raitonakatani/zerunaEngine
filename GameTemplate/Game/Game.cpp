@@ -14,6 +14,7 @@
 #include "Fade.h"
 #include "index.h"
 #include "GameClear.h"
+#include "Retry.h"
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 
@@ -81,7 +82,7 @@ bool Game::Start()
 			return true;
 		}
 		
-/*		if (objData.EqualObjectName(L"index") == true) {
+		if (objData.EqualObjectName(L"index") == true) {
 
 			m_index = NewGO<index>(0, "index");
 			m_index->SetPosition(objData.position);
@@ -90,7 +91,7 @@ bool Game::Start()
 			//trueにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
-*/
+
 		if (objData.ForwardMatchName(L"tank") == true) {
 			//エネミーのインスタンスを生成する。
 			m_tank = NewGO<TankEnemy>(0, "TankEnemy");
@@ -141,28 +142,9 @@ bool Game::Start()
 
 
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
+	retryCounter = FindGO<Retry>("retry");
 
 	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
-
-
-//	m_pressButton.Init("Assets/sprite/button.dds", 400, 225, AlphaBlendMode_Trans);
-//	m_targetRender.Init("Assets/sprite/TENEBRIS.dds", 50, 50);
-
-
-//	g_camera3D->SetViewAngle(Math::DegToRad(60.0f));
-//	g_camera3D->SetPosition(0.0f, 1000.0f, 1000.0f);
-
-//	g_camera3D->SetTarget(0.0f, 400.0f, 0.0f);
-//	g_camera3D->SetFar(20000.0f);
-
-//	m_charaRender.Init("Assets/modelData/unityChan.tkm");
-//	m_charaRender.SetScale(1.2f, 1.2f, 1.2f);
-//	m_targetPointRender.Init("Assets/modelData/light.tkm");
-//	m_targetPointRender.SetScale(2.0f, 2.0f, 2.0f);
-//	m_targetPointRender.SetShadowCasterFlag(false);
-//	m_charaCon.Init(10.0f, 10.0f, m_targetPointPosition);
-//	m_targetPointPointLight.Init();
-
 
 //	SkyCube* sky = NewGO<SkyCube>(0);
 //	sky->SetLuminance(0.2f);
@@ -198,8 +180,18 @@ void Game::Update()
 		}
 	}
 
-	
-
+	if (retryCounter->retryCounter == 1)
+	{
+		m_player->m_hp = 0;
+		retryCounter->retryCounter = 0;
+		siboutimer += 2.0f;
+	}
+	if (retryCounter->retryCounter == 2)
+	{
+		m_player->m_hp = 0;
+	//	retryCounter->retryCounter = 2;
+		siboutimer += 2.0f;
+	}
 	if (m_player->m_hp <= 0)
 	{
 /*		sibou = true;

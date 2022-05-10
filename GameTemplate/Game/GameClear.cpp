@@ -17,8 +17,7 @@ GameClear::~GameClear()
 bool GameClear::Start()
 {
 	//ゲームクリアの画像を読み込む。
-	m_spriteRender.Init("Assets/sprite/GameClear.dds", 2100, 1100);
-	m_spriteRender.SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+	m_spriteRender.Init("Assets/sprite/Title/result.dds", 1600, 900);
 
 
 	m_fade = FindGO<Fade>("fade");
@@ -46,7 +45,6 @@ void GameClear::Update()
 			}
 		}
 
-	m_spriteRender.Update();
 	
 }
 

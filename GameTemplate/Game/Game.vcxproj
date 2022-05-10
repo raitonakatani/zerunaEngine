@@ -234,7 +234,9 @@
     <ClCompile Include="index.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="PAUSE.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Retry.cpp" />
     <ClCompile Include="SpeedEnemy.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -257,7 +259,9 @@
     <ClInclude Include="GameClear.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="PAUSE.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Retry.h" />
     <ClInclude Include="SpeedEnemy.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />

@@ -1,5 +1,7 @@
 #pragma once
 
+class PAUSE;
+
 class Menu :public IGameObject
 {
 public:
@@ -13,8 +15,20 @@ public:
 	void Render(RenderContext& rc);
 
 private:
-	SpriteRender m_menuRender;
-	SpriteRender m_mapRender;
-
+	int m_menu = 0;
+	int m_skill = 0;
+	int m_audio = 0;
+	SpriteRender m_itemRender;
+	SpriteRender m_skillRender;
+	SpriteRender m_skillRender2;
+	SpriteRender m_configRender;
+	SpriteRender m_audioRender;
+	SpriteRender m_audioRender2;
+	SpriteRender m_seRender;
+	SpriteRender m_BGMRender;
+	PAUSE* m_pause;
+	float m_timer = 0.0f;
+	float m_se = 1.0f;
+	float m_bgm = 1.0f;
 };
 
