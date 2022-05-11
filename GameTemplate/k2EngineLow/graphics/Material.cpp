@@ -254,7 +254,7 @@ namespace nsK2EngineLow {
 			//半透明合成のブレンドステートを作成する。
 			psoDesc.BlendState.RenderTarget[0].BlendEnable = true;
 			psoDesc.BlendState.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-			psoDesc.BlendState.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+			psoDesc.BlendState.RenderTarget[0].DestBlend = D3D12_BLEND_BLEND_FACTOR;
 			psoDesc.BlendState.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 		}
 		else if (alphaBlendMode == AlphaBlendMode_Add) {

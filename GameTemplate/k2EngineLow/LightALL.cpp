@@ -16,64 +16,60 @@ namespace nsK2EngineLow {
 		// アンビエントライトを初期化する
 		InitAmbientLight(m_light);
 */
-		// ライトは右側から当たっている
+		//ディレクションライト
+		//ライトは左側から当たっている
 		m_light.directionlight.dirDirection.x = 1.0f;
 		m_light.directionlight.dirDirection.y = -1.0f;
 		m_light.directionlight.dirDirection.z = 1.0f;
 		m_light.directionlight.dirDirection.Normalize();
+		// ライトのカラーは灰色
+		m_light.directionlight.dirColor.x = 0.8f;
+		m_light.directionlight.dirColor.y = 0.8f;
+		m_light.directionlight.dirColor.z = 0.8f;
 
-		// ライトのカラーは(*･ω･)/ﾊｰｲ
-		m_light.directionlight.dirColor.x = 0.5f;
-		m_light.directionlight.dirColor.y = 0.5f;
-		m_light.directionlight.dirColor.z = 0.5f;
+
 
 		// 視点の位置を設定する
-		m_light.eyePos =g_camera3D->GetPosition(); 
+		//m_light.eyePos =g_camera3D->GetPosition(); 
 
+
+		//ポイントライト
 		// ポイントライトの座標を設定する
 		m_light.pointlight.ptPosition.x = 0.0f;
 		m_light.pointlight.ptPosition.y = 50.0f;
 		m_light.pointlight.ptPosition.z = 50.0f;
-
 		// ポイントライトのカラーを設定する
 		m_light.pointlight.ptColor.x = 0.0f;
 		m_light.pointlight.ptColor.y = 0.0f;
 		m_light.pointlight.ptColor.z = 0.0f;
-
 		// ポイントライトの影響範囲を設定する
-		m_light.pointlight.ptRange = 0.0f;
+		m_light.pointlight.ptRange = 100.0f;
 
-		// アンビエントライト
-		m_light.ambientlight.ambientLight.x = 0.3f;
-		m_light.ambientlight.ambientLight.y = 0.3f;
-		m_light.ambientlight.ambientLight.z = 0.3f;
-
-
-		// 視点の位置を設定する
-		m_light.eyePos = g_camera3D->GetPosition();
-
+		//スポットライト
 		//スポットライトのデータを初期化する
-	  //初期座標はX = 0、Y = 50、Z = 0にする。
+		//初期座標はX = 0、Y = 50、Z = 0にする。
 		m_light.spotlight.spPosition.x = 0.0f;
-		m_light.spotlight.spPosition.y = 100.0f;
-		m_light.spotlight.spPosition.z = 50.0f;
+		m_light.spotlight.spPosition.y = 00.0f;
+		m_light.spotlight.spPosition.z = 00.0f;
 		//スポットライトのカラーを設定。R = 10、G = 10、B = 10にする。
 		m_light.spotlight.spColor.x = 0.0f;
 		m_light.spotlight.spColor.y = 0.0f;
 		m_light.spotlight.spColor.z = 0.0f;
-
+		//射出範囲は300
+		m_light.spotlight.spRange = 300.0f;
 		//初期方向は斜め下にする。
 		m_light.spotlight.spDirection.x = 0.0f;
-		m_light.spotlight.spDirection.y = -0.5f;
-		m_light.spotlight.spDirection.z = -0.5f;
+		m_light.spotlight.spDirection.y = -1.0f;
+		m_light.spotlight.spDirection.z = 0.0f;
 		//方向データなので、大きさを１にする必要があるので正規化する。
 		m_light.spotlight.spDirection.Normalize();
-
-		//射出範囲は300
-		m_light.spotlight.spRange = 0.0f;
 		//射出角度は25度。
-		m_light.spotlight.spAngle = Math::DegToRad(25.0f);
+		m_light.spotlight.spAngle = Math::DegToRad(50.0f);
 
+		//環境光
+		SetAmbientLight({ 0.5f,0.5f,0.5f });
+
+		m_light.eyePos = g_camera3D->GetPosition();
 	}
 
 
@@ -85,7 +81,7 @@ namespace nsK2EngineLow {
 	void LightALL::Update()
 	{
 		// 視点の位置を設定する
-		m_light.eyePos = g_camera3D->GetPosition();
+	//	m_light.eyePos = g_camera3D->GetPosition();
 
 /*		if (g_pad[0]->IsPress(enButtonX))
 		{

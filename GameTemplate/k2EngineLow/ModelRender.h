@@ -15,8 +15,19 @@ namespace nsK2EngineLow {
 			int numAnimationClips = 0,
 			EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
 			bool isShadowReciever = true,
-			int maxInstance =1
+			int maxInstance = 1
 		);
+
+		void touka();
+		void Drawtwo(RenderContext& rc);
+	private:
+		RenderTarget albedRT;
+		RenderTarget normalRT;
+		RenderTarget worldPosRT;
+		SpriteInitData spriteInitData;
+		Sprite defferdLightinSpr;
+	public:
+
 
 		void InitModel(const char* filePath);
 		void modelUpdate();
@@ -26,11 +37,9 @@ namespace nsK2EngineLow {
 		Vector3 planePos = { 0.0f, 160.0f, 20.0f };
 
 
-	//	void InitModel(const char* filePath);
+		//	void InitRendering(ModelInitData& initData);
 
-	//	void InitRendering(ModelInitData& initData);
-
-	//	void InitInstancingDraw(int maxInstance);
+		//	void InitInstancingDraw(int maxInstance);
 
 		void Draw(RenderContext& rc);
 
@@ -85,7 +94,7 @@ namespace nsK2EngineLow {
 
 		void Update();
 
-	
+
 		/// <summary>
 		/// アニメーションの初期化。
 		/// </summary>
@@ -206,10 +215,10 @@ namespace nsK2EngineLow {
 
 
 	private:
-		Model						m_model;	
+		Model						m_model;
 		Skeleton					m_skeleton;							// スケルトン
 		float						m_animationSpeed = 1.0f;
-		AnimationClip*				m_animationClips = nullptr;			// アニメーションクリップ。
+		AnimationClip* m_animationClips = nullptr;			// アニメーションクリップ。
 		int							m_numAnimationClips = 0;			// アニメーションクリップの数。
 		Animation					m_animation;						// アニメーション。
 		Vector3 					m_position;			// 座標。
@@ -222,6 +231,6 @@ namespace nsK2EngineLow {
 		bool						m_isEnableInstancingDraw = false;	// インスタンシング描画が有効？
 		std::unique_ptr<Matrix[]>	m_worldMatrixArray;					// ワールド行列の配列。
 		StructuredBuffer			m_worldMatrixArraySB;				// ワールド行列の配列のストラクチャードバッファ。
-		
+
 	};
 }

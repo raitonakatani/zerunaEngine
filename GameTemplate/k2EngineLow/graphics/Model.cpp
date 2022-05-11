@@ -52,6 +52,12 @@ namespace nsK2EngineLow {
 		m_isInited = true;
 
 	}
+
+	void Model::Update(AlphaBlendMode m_alphaBlendMode)
+	{
+		m_alpha = m_alphaBlendMode;
+	}
+
 	void Model::ReInitMaterials(MaterialReInitData& reInitData)
 	{
 		m_meshParts.ReInitMaterials(reInitData);

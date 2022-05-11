@@ -14,7 +14,7 @@ namespace nsK2EngineLow {
 	class Texture;
 	class Font;
 
-	class K2EngineLow {
+	class K2EngineLow : public NodeArray{
 	public:
 		/// <summary>
 		/// フレームレートモード

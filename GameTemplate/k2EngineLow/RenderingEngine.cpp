@@ -20,7 +20,7 @@ namespace nsK2EngineLow {
     void RenderingEngine::Update()
     {
         // シーンライトの更新。
-        g_Light.Update();
+       // g_Light.Update();
     }
 
 }
