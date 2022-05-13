@@ -199,6 +199,7 @@ private:
 	Player* m_player = nullptr;                         //プレイヤー
 	int state = 0;
 	bool					m_isSearchPlayer = false;
+	Vector3						Weak;
 	SphereCollider			m_sphereCollider;
 	float                   m_idleTimer = 0.0f;                         //待機タイマー
 	float                   m_chaseTimer = 0.0f;                        //追跡タイマー

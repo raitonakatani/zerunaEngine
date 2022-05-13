@@ -119,6 +119,7 @@ void TankEnemy2::Update()
 	//サーチ
 	SearchPlayer();
 
+	Weak = m_player->GetPosition() - m_position;
 
 	if (m_state == 0 && m_isSearchPlayer == false) {
 
@@ -628,9 +629,11 @@ const bool TankEnemy2::IsCanAttack() const
 
 void TankEnemy2::Render(RenderContext& rc)
 {
-
-	//モデルを描画する。
-	m_modelRender.Draw(rc);
+	if (Weak.Length() <= 3000.0f)
+	{
+		//モデルを描画する。
+		m_modelRender.Draw(rc);
+	}
 }
 
 

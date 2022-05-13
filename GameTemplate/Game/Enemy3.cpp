@@ -100,6 +100,8 @@ void Enemy3::Update()
 		//サーチ
 		SearchPlayer();
 
+		Weak = m_player->GetPosition() - m_position;
+
 	//モデルの更新。
 	m_modelRender.Update();
 }
@@ -522,8 +524,11 @@ const bool Enemy3::IsCanAttack() const
 
 void Enemy3::Render(RenderContext& rc)
 {
+	if (Weak.Length() <= 3000.0f)
+	{
 		//モデルを描画する。
 		m_modelRender.Draw(rc);
+	}
 }
 
 ///経路

@@ -194,6 +194,7 @@ private:
 	Point* m_point2;
 	Point* m_point3;
 	Point* m_point4;
+	Vector3						Weak;
 };
 
 

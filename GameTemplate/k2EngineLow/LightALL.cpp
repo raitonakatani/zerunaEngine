@@ -23,9 +23,9 @@ namespace nsK2EngineLow {
 		m_light.directionlight.dirDirection.z = 1.0f;
 		m_light.directionlight.dirDirection.Normalize();
 		// ライトのカラーは灰色
-		m_light.directionlight.dirColor.x = 0.8f;
-		m_light.directionlight.dirColor.y = 0.8f;
-		m_light.directionlight.dirColor.z = 0.8f;
+		m_light.directionlight.dirColor.x = 0.6f;
+		m_light.directionlight.dirColor.y = 0.6f;
+		m_light.directionlight.dirColor.z = 0.6f;
 
 
 

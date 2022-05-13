@@ -87,6 +87,19 @@ bool Player::Start()
 	m_staminaRender.SetPivot({ 0.0f, 0.5f });
 	m_staminaRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_staminaRender.Update();
+
+	m_senseberRender.Init("Assets/sprite/ft.dds", 1600, 900);
+	//表示する座標を設定する。
+	m_senseberRender.SetPivot({ 0.0f, 0.5f });
+	m_senseberRender.SetPosition({ -800.0f,-45.0f ,0.0f });
+	m_senseberRender.Update();
+
+	m_senseRender.Init("Assets/sprite/stmn.dds", 1600, 900);
+	//表示する座標を設定する。
+	m_senseRender.SetPivot({ 0.0f, 0.5f });
+	m_senseRender.SetPosition({ -800.0f,-45.0f ,0.0f });
+	m_senseRender.Update();
+
 	return true;
 }
 
@@ -685,13 +698,17 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 
 void Player::Render(RenderContext& rc)
 {
-	//画像を描写する。
-	m_HPRender.Draw(rc);
-	m_staminaRender.Draw(rc);
+	if (m_menu == false) {
+		//画像を描写する。
+		m_HPRender.Draw(rc);
+		m_staminaRender.Draw(rc);
+		m_senseRender.SetMulColor({ 0.0f, 1.0f, 0.0f, 1.0f });
+		m_senseRender.Draw(rc);
 
-	m_HPberRender.Draw(rc);
-	m_stmnberRender.Draw(rc);
-
+		m_HPberRender.Draw(rc);
+		m_stmnberRender.Draw(rc);
+		m_senseberRender.Draw(rc);
+	}
 	//ドロー。
 	m_modelRender.Draw(rc);
 }

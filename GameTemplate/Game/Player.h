@@ -178,8 +178,10 @@ public:
 	PAUSE*					m_pause = nullptr;
 	SpriteRender			m_HPRender;							        //画像。
 	SpriteRender			m_staminaRender;
+	SpriteRender			m_senseRender;
 	SpriteRender			m_HPberRender;						        //画像。
 	SpriteRender			m_stmnberRender;
+	SpriteRender			m_senseberRender;
 	float					life = 100.0f;								//フルHPバー
 	float					m_sutamina = 150.0f;						//スタミナ。
 	float					m_hurusutamina = 150.0f;					//フルスタミナ。

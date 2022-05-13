@@ -215,6 +215,7 @@ private:
 	int Bstate = 0;
 	float m_timer = 0.0f;
 	float m_timer2 = 0.0f;
+	Vector3						Weak;
 
 private:
 	TknFile m_tknFile;

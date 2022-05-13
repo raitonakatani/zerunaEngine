@@ -116,7 +116,7 @@ void TankEnemy::Update()
 	if (g_pad[0]->IsPress(enButtonY))
 	{
 		g_Light.SetLigPoint({ m_position.x,100.0f,m_position.z });
-		g_Light.SetPointRange(400.0f);
+		g_Light.SetPointRange(300.0f);
 		g_Light.SetLigPointColor({ 10.0f,0.0f,0.0f });
 	}
 	else {
@@ -314,10 +314,10 @@ void TankEnemy::Chase()
 			if (alertLevel == 0) {
 				alertLevel = 1;
 			}
-			if (alertLevel == 3)
-			{
-				return;
-			}
+		//	if (alertLevel == 3)
+		//	{
+		//		return;
+		//	}
 		}
 		else if (alertLevel == 0 || alertLevel == 3) {
 			m_EnemyState = enEnemyState_Chase;
@@ -570,9 +570,16 @@ void TankEnemy::ProcessCommonStateTransition()
 		}
 	}
 	else if (mikke == true) {
+		Vector3 diff2 = targetpos - m_position;
+		if (diff2.LengthSq() <= 500.0f * 500.0f * g_gameTime->GetFrameDeltaTime()) {
+			if (m_isSearchPlayer == false) {
+				mikke = false;
+			}
+		}
+
 		//エネミーからプレイヤーに向かうベクトルを計算する。
 		Vector3 diff1 = targetpos - m_position;
-
+		huntertimer += g_gameTime->GetFrameDeltaTime();
 		//ベクトルを正規化する。
 		diff1.Normalize();
 		//移動速度を設定する。
@@ -583,15 +590,11 @@ void TankEnemy::ProcessCommonStateTransition()
 
 		m_rotation.SetRotationY(atan2(m_forward.x, m_forward.z));
 		m_modelRender.SetRotation(m_rotation);
-		if (targetpos.x < m_position.x +10.0f && targetpos.x > m_position.x - 10.0f) {
-			if(m_isSearchPlayer == false)
-			mikke = false;
-		}
 	}
 	//プレイヤーを見つけられなければ。
 	else
 	{
-		if (alertLevel >= 2)
+		if (alertLevel == 2)
 		{
 			alertLevel = 3;
 		}
@@ -612,7 +615,7 @@ void TankEnemy::ProcessIdleStateTransition()
 {
 	m_idleTimer += g_gameTime->GetFrameDeltaTime();
 	//待機時間がある程度経過したら。
-	if (m_idleTimer >= 2.0f)
+	if (m_idleTimer >= 0.1f)
 	{
 	//	alertLevel = 0;
 		//他のステートへ遷移する。
@@ -912,45 +915,60 @@ void TankEnemy::Aroute()
 					//Y座標の移動速度を0にする
 					m_moveSpeed.y = 0.0f;
 				}
-				//m_pathFiding.Execute(
-				//	m_path,							// 構築されたパスの格納先
-				//	m_nvmMesh,						// ナビメッシュ
-				//	m_position,						// 開始座標
-				//	targetpos,						// 移動目標座標
-				//	PhysicsWorld::GetInstance(),	// 物理エンジン	
-				//	50.0f,							// AIエージェントの半径
-				//	200.0f
-				//);
-				//// パス上を移動する。
-				//m_position = m_path.Move(
-				//	m_position,
-				//	100.0f,
-				//	isEnd
-				//);
-
-				//Vector3 zero = Vector3::Zero;
-				//m_charaCon.SetPosition(m_position);
-				//m_charaCon.Execute(zero, 1.0f);
-				//m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
-				//m_modelRender.SetPosition(m_position);
 			
 		}
 	}
 	if (m_tankNumber == 1)
 	{
+		//目標地点までのベクトル
 		Vector3 diff = m_point2->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1) {
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
 				m_point2 = m_enemypath2.GetFirstPoint();
 			}
-			else {
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
+				m_point = m_enemypath2.GetNextPoint(m_point->s_number);
+			}
+		}
+		//目標地点に近くなかったら
+		else
+		{
+			btTransform start, end;
+			start.setIdentity();
+			end.setIdentity();
+			//始点はエネミーの座標。
+			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
+			//終点は次のパスの座標。
+			end.setOrigin(btVector3(m_point2->s_position.x, m_point2->s_position.y + 70.0f, m_point2->s_position.z));
+
+			SweepResultWall callback;
+			//コライダーを始点から終点まで動かして。
+			//衝突するかどうかを調べる。
+			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
+			//壁と衝突した！
+			if (callback.isHit == true)
+			{
 				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
+				return;
+			}
+			else {
+				//正規化
+				diff.Normalize();
+				//目標地点に向かうベクトル×移動速度
+				m_moveSpeed = diff * 120.0f;
+				//Y座標の移動速度を0にする
+				m_moveSpeed.y = 0.0f;
 			}
 
 		}
-		Vector3 range = m_point2->s_position - m_position;
-		m_moveSpeed = range * 12.5f * g_gameTime->GetFrameDeltaTime();
-		m_moveSpeed.y = 0.0f;
 	}
 	if (m_tankNumber == 2)
 	{
@@ -995,7 +1013,11 @@ void TankEnemy::Broute()
 
 void TankEnemy::Render(RenderContext& rc)
 {
-	alertSprite.Draw(rc);
-	//モデルを描画する。
-	m_modelRender.Draw(rc);
+	if (Weak.Length() <= 3000.0f)
+	{
+		alertSprite.Draw(rc);
+		//モデルを描画する。
+		m_modelRender.Draw(rc);
+	}
+
 }

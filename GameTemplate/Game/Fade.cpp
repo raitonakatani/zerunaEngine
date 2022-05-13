@@ -18,8 +18,8 @@ Fade::~Fade()
 
 bool Fade::Start()
 {
-	m_spriteRender.Init("Assets/sprite/fade.dds", 1600, 900);
-	m_spriteRender.SetScale(SCALE);
+	m_spriteRender.Init("Assets/sprite/fade2.dds", 1600, 900);
+	//m_spriteRender.SetScale(SCALE);
 	m_spriteRender.SetPosition(POSITIOIN);
 	//m_spriteRender.Update();
 	return true;

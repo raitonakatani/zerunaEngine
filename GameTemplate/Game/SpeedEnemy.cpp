@@ -114,6 +114,8 @@ void SpeedEnemy::Update()
 	m_modelRender.SetScale(m_scale);
 	m_modelRender.SetRotation(m_rotation);
 
+	Weak = m_player->GetPosition() - m_position;
+
 	//モデルの更新
 	m_modelRender.Update();
 }
@@ -548,8 +550,11 @@ void SpeedEnemy::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventN
 
 void SpeedEnemy::Render(RenderContext& rc)
 {
-	//モデルの描画
-	m_modelRender.Draw(rc);
+	if (Weak.Length() <= 3000.0f)
+	{
+		//モデルの描画
+		m_modelRender.Draw(rc);
+	}
 }
 
 ///経路

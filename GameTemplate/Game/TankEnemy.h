@@ -70,17 +70,17 @@ public:
 		m_scale = scale;
 	}
 	/// <summary>
-	/// ‹Rm‚Ì”Ô†‚ğİ’è‚·‚éB
+	/// “G‚Ì”Ô†‚ğİ’è‚·‚éB
 	/// </summary>
-	/// <param name="kisiNumber">‹Rm‚Ì”Ô†B</param>
+	/// <param name="kisiNumber">“G‚Ì”Ô†B</param>
 	void SettankNumber(const int kisiNumber)
 	{
 		m_tankNumber = kisiNumber;
 	}
 	/// <summary>
-	/// ‹Rm‚Ì”Ô†‚ğæ“¾‚·‚éB
+	/// “G‚Ì”Ô†‚ğæ“¾‚·‚éB
 	/// </summary>
-	/// <returns>‹Rm‚Ì”Ô†B</returns>
+	/// <returns>“G‚Ì”Ô†B</returns>
 	const int GettankNumber() const
 	{
 		return m_tankNumber;
@@ -238,6 +238,7 @@ private:
 	float m_range =1000.0f;
 	Vector3 targetpos;
 	bool mikke;
+	float huntertimer = 0.0f;
 
 private:
 	TknFile m_tknFile;
