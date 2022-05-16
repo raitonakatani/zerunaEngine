@@ -1,5 +1,7 @@
 #pragma once
 
+class Player;
+
 class Background : public IGameObject
 {
 
@@ -35,6 +37,7 @@ private:
 	ModelRender m_modelRender;					//モデル
 	ModelRender m_modelRender2;					//モデル
 	Model m_model;
+	Player* m_player;
 	PhysicsStaticObject m_physicsStaticObject;	//静的物理オブジェクト・
 //	BoxCollider m_boxCollider;
 //	RigidBody m_rigidBody;

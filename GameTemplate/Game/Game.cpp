@@ -63,6 +63,8 @@ bool Game::Start()
 
 	m_player = NewGO<Player>(0, "player");
 
+	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
+
 	m_floor = NewGO<Floor>(0, "floor");
 	m_floor->SetPosition({1.0f,1.0f,1.0f});
 	m_floor->SetRotation({ 0.0f,0.0f,0.0f ,0.0f});
@@ -70,7 +72,7 @@ bool Game::Start()
 
 
 	//レベルを構築する。
-	m_levelRender.Init("Assets/Level/BackGround.tkl", [&](LevelObjectData& objData) {
+	m_levelRender.Init("Assets/Level/BackGround2.tkl", [&](LevelObjectData& objData) {
 		
 		if (objData.EqualObjectName(L"stage") == true) {
 
@@ -107,7 +109,7 @@ bool Game::Start()
 		if (objData.ForwardMatchName(L"secondtank") == true) {
 			//エネミーのインスタンスを生成する。
 			m_tank2 = NewGO<TankEnemy2>(0, "TankEnemy2");
-			m_tank2->SetPosition({0.0f,800.0f,0.0f});// { objData.position });
+			m_tank2->SetPosition( { objData.position });
 			m_tank2->SetRotation(objData.rotation);
 			m_tank2->SetScale(objData.scale);
 			//番号を設定する。
@@ -116,7 +118,7 @@ bool Game::Start()
 			return true;
 		}
 
-/*		if (objData.ForwardMatchName(L"enemy") == true) {
+		if (objData.ForwardMatchName(L"enemy") == true) {
 			//エネミーのインスタンスを生成する。
 			m_enemy3 = NewGO<Enemy3>(0,"m_enemy3");
 			m_enemy3->SetPosition({ objData.position });
@@ -137,11 +139,9 @@ bool Game::Start()
 			m_speed->SetspeedNumber(objData.number);
 			return true;
 		}
-	*/	return true;
+		return true;
 	});
 
-
-	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 	retryCounter = FindGO<Retry>("retry");
 
 	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();

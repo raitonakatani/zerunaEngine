@@ -122,6 +122,24 @@ void GameCamera::Update()
 		//カメラの更新。
 		g_camera3D->Update();
 	
+
+		m_forward = Vector3::AxisZ;
+		m_rotation.Apply(m_forward);
+		Vector3 playerPosition = m_player->GetPosition();
+		playerPosition.y += 200.0f;
+		Vector3 diff = playerPosition - pos2;
+		diff.Normalize();
+		float angle = acosf(diff.Dot(m_forward));
+
+		//プレイヤーが視界内に居なかったら。
+		if (Math::PI * 0.50f >= fabsf(angle))
+		{
+			drow = 1;
+		}
+		else {
+			drow = 0;
+		}
+
 }
 
 void GameCamera::Render(RenderContext& rc)

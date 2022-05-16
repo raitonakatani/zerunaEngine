@@ -45,13 +45,13 @@ bool Enemy3::Start()
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
 	//m_modelRender.SetScale(m_scale);
-	m_modelRender.SetScale(m_scale);
+	m_modelRender.SetScale({2.8f,2.8f,2.8f});
 	m_modelRender.Update();
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
-		50.0f,			//半径。
-		70.0f,			//高さ。
+		40.0f,			//半径。
+		100.0f,			//高さ。
 		m_position		//座標。
 	);
 
@@ -68,11 +68,13 @@ bool Enemy3::Start()
 	m_enemypath2.Init("Assets/path/enemy/enemypath2.tkl");
 	m_enemypath3.Init("Assets/path/enemy/enemypath3.tkl");
 	m_enemypath4.Init("Assets/path/enemy/enemypath4.tkl");
+	m_enemypath5.Init("Assets/path/enemy/enemypath5.tkl");
 
 	m_point = m_enemypath.GetFirstPoint();
 	m_point2 = m_enemypath2.GetFirstPoint();
 	m_point3 = m_enemypath3.GetFirstPoint();
 	m_point4 = m_enemypath4.GetFirstPoint();
+	m_point5 = m_enemypath5.GetFirstPoint();
 
 	//乱数を初期化。
 	srand((unsigned)time(NULL));
@@ -538,71 +540,149 @@ void Enemy3::Aroute()
 
 	if (m_enemyNumber == 0)
 	{
+		//目標地点までのベクトル
 		Vector3 diff = m_point->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point->s_number == m_enemypath.GetPointListSize() - 1) {
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point->s_number == m_enemypath.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
 				m_point = m_enemypath.GetFirstPoint();
 			}
-			else {
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
 				m_point = m_enemypath.GetNextPoint(m_point->s_number);
 			}
-
 		}
-
-		Vector3 range = m_point->s_position - m_position;
-		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
-		m_moveSpeed.y = 0.0f;
+		else {
+			//正規化
+			diff.Normalize();
+			//目標地点に向かうベクトル×移動速度
+			m_moveSpeed = diff * 200.0f;
+			//Y座標の移動速度を0にする
+			m_moveSpeed.y = 0.0f;
+		}
 	}
 
 	if (m_enemyNumber == 1)
 	{
+		//目標地点までのベクトル
 		Vector3 diff = m_point2->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1) {
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
 				m_point2 = m_enemypath2.GetFirstPoint();
 			}
-			else {
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
 				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
 			}
-
 		}
-		Vector3 range = m_point2->s_position - m_position;
-		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
-		m_moveSpeed.y = 0.0f;
+		else {
+			//正規化
+			diff.Normalize();
+			//目標地点に向かうベクトル×移動速度
+			m_moveSpeed = diff * 200.0f;
+			//Y座標の移動速度を0にする
+			m_moveSpeed.y = 0.0f;
+		}
 	}
 	if (m_enemyNumber == 2)
 	{
+		//目標地点までのベクトル
 		Vector3 diff = m_point3->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point3->s_number == m_enemypath3.GetPointListSize() - 1) {
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point3->s_number == m_enemypath3.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
 				m_point3 = m_enemypath3.GetFirstPoint();
 			}
-			else {
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
 				m_point3 = m_enemypath3.GetNextPoint(m_point3->s_number);
 			}
-
 		}
-
-		Vector3 range = m_point3->s_position - m_position;
-		m_moveSpeed = range * 20.0f * g_gameTime->GetFrameDeltaTime();;
-		m_moveSpeed.y = 0.0f;
+		else {
+			//正規化
+			diff.Normalize();
+			//目標地点に向かうベクトル×移動速度
+			m_moveSpeed = diff * 200.0f;
+			//Y座標の移動速度を0にする
+			m_moveSpeed.y = 0.0f;
+		}
 	}
 	if (m_enemyNumber == 3)
 	{
+		//目標地点までのベクトル
 		Vector3 diff = m_point4->s_position - m_position;
-		if (diff.Length() <= 50.0f) {
-			if (m_point4->s_number == m_enemypath4.GetPointListSize() - 1) {
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point4->s_number == m_enemypath4.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
 				m_point4 = m_enemypath4.GetFirstPoint();
 			}
-			else {
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
 				m_point4 = m_enemypath4.GetNextPoint(m_point4->s_number);
 			}
-
 		}
-
-		Vector3 range = m_point4->s_position - m_position;
-		m_moveSpeed = range * 15.0f * g_gameTime->GetFrameDeltaTime();;
-		m_moveSpeed.y = 0.0f;
+		else {
+			//正規化
+			diff.Normalize();
+			//目標地点に向かうベクトル×移動速度
+			m_moveSpeed = diff * 200.0f;
+			//Y座標の移動速度を0にする
+			m_moveSpeed.y = 0.0f;
+		}
+	}
+	if (m_enemyNumber == 4)
+	{
+		//目標地点までのベクトル
+		Vector3 diff = m_point5->s_position - m_position;
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point5->s_number == m_enemypath5.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
+				m_point5 = m_enemypath5.GetFirstPoint();
+			}
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
+				m_point5 = m_enemypath5.GetNextPoint(m_point5->s_number);
+			}
+		}
+		else {
+			//正規化
+			diff.Normalize();
+			//目標地点に向かうベクトル×移動速度
+			m_moveSpeed = diff * 200.0f;
+			//Y座標の移動速度を0にする
+			m_moveSpeed.y = 0.0f;
+		}
 	}
 
 }

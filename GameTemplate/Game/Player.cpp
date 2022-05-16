@@ -72,7 +72,7 @@ bool Player::Start()
 	m_HPberRender.SetPivot({ 0.0f, 0.5f });
 	m_HPberRender.SetPosition({ 0.0f,0.0f ,0.0f });
 
-	m_HPRender.Init("Assets/sprite/HP.dds", 1600, 900);
+	m_HPRender.Init("Assets/sprite/HP.dds", 500, 27);
 	//表示する座標を設定する。
 	m_HPRender.SetPivot({ 0.0f, 0.5f });
 	m_HPRender.SetPosition({ 0.0f,0.0f ,0.0f });
@@ -82,7 +82,7 @@ bool Player::Start()
 	m_stmnberRender.SetPivot({ 0.0f, 0.5f });
 	m_stmnberRender.SetPosition({ 0.0f,0.0f ,0.0f });
 
-	m_staminaRender.Init("Assets/sprite/stmn.dds", 1600, 900);
+	m_staminaRender.Init("Assets/sprite/stmn.dds", 500, 27);
 	//表示する座標を設定する。
 	m_staminaRender.SetPivot({ 0.0f, 0.5f });
 	m_staminaRender.SetPosition({ 0.0f,0.0f ,0.0f });
@@ -94,10 +94,10 @@ bool Player::Start()
 	m_senseberRender.SetPosition({ -800.0f,-45.0f ,0.0f });
 	m_senseberRender.Update();
 
-	m_senseRender.Init("Assets/sprite/stmn.dds", 1600, 900);
+	m_senseRender.Init("Assets/sprite/sp.dds", 500, 27);
 	//表示する座標を設定する。
 	m_senseRender.SetPivot({ 0.0f, 0.5f });
-	m_senseRender.SetPosition({ -800.0f,-45.0f ,0.0f });
+	m_senseRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_senseRender.Update();
 
 	return true;
@@ -118,10 +118,13 @@ void Player::Update()
 	}
 
 
-	if(m_menu == true)
+	if (m_menu == true)
 	{
 		return;
 	}
+
+
+
 	//移動処理
 	Move();
 	//回転処理
@@ -161,7 +164,7 @@ void Player::Update()
 	life = m_hp / 100.0f;
 	m_HPRender.SetScale({ life, 1.0f, 0.0f });
 //	m_HPRender.SetPivot({ 0.0f, 0.5f });
-	m_HPRender.SetPosition({ -800.0f,0.0f ,0.0f });
+	m_HPRender.SetPosition({ -748.0f,420.0f ,0.0f });
 	m_HPRender.Update();
 
 
@@ -193,9 +196,22 @@ void Player::Update()
 
 	m_hurusutamina = m_sutamina / 150.0f;
 	m_staminaRender.SetScale({ m_hurusutamina,1.0f,0.0f });
-	m_staminaRender.SetPosition({ -800.0f,0.0f ,0.0f });
+	m_staminaRender.SetPosition({ -748.0f,372.0f ,0.0f });
 	//m_staminaRender.SetPivot({ 0.0f, 0.5f });
 	m_staminaRender.Update();
+
+	if (g_pad[0]->IsPress(enButtonY) && m_sp >= 1) {
+		--m_sp;
+	}
+	else if(m_sp <= 700){
+		m_sp += 0.3f;
+	}
+
+	m_hurusp = m_sp / 700.0f;
+	m_senseRender.SetScale({ m_hurusp,1.0f,0.0f });
+	m_senseRender.SetPosition({ -748.0f,325.0f ,0.0f });
+	//m_staminaRender.SetPivot({ 0.0f, 0.5f });
+	m_senseRender.Update();
 
 
 	m_HPberRender.SetPosition({ -800.0f,45.0f ,0.0f });
@@ -682,7 +698,7 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 		SoundSource* stepse = NewGO<SoundSource>(0);
 		stepse->Init(9);
 		stepse->Play(false);
-		stepse->SetVolume(2.5f);
+		stepse->SetVolume(1.2f);
 	}
 
 	if (wcscmp(eventName, L"Walk_step") == 0) {
@@ -691,7 +707,7 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 		SoundSource* stepse = NewGO<SoundSource>(0);
 		stepse->Init(9);
 		stepse->Play(false);
-		stepse->SetVolume(1.0f);
+		stepse->SetVolume(0.7f);
 	}
 
 }
@@ -702,7 +718,6 @@ void Player::Render(RenderContext& rc)
 		//画像を描写する。
 		m_HPRender.Draw(rc);
 		m_staminaRender.Draw(rc);
-		m_senseRender.SetMulColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 		m_senseRender.Draw(rc);
 
 		m_HPberRender.Draw(rc);

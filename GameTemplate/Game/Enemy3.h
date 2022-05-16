@@ -190,10 +190,12 @@ private:
 	EnemyPath m_enemypath2;
 	EnemyPath m_enemypath3;
 	EnemyPath m_enemypath4;
+	EnemyPath m_enemypath5;
 	Point* m_point;
 	Point* m_point2;
 	Point* m_point3;
 	Point* m_point4;
+	Point* m_point5;
 	Vector3						Weak;
 };
 

@@ -64,7 +64,7 @@ public:
 
 	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
 	float m_hp = 100.0f;
-
+	float					m_sp = 700.0f;						//sp。
 
 	/// <summary>
 	/// アニメーションの初期化
@@ -185,6 +185,8 @@ public:
 	float					life = 100.0f;								//フルHPバー
 	float					m_sutamina = 150.0f;						//スタミナ。
 	float					m_hurusutamina = 150.0f;					//フルスタミナ。
+//	float					m_sp = 500.0f;						//sp。
+	float					m_hurusp = 700.0f;					//フルsp。
 	float					cooltime = 0.0f;
 	bool					m_menu = false;
 	bool					COOLtime = false;

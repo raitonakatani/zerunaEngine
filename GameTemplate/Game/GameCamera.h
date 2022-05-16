@@ -34,6 +34,7 @@ public:
 	Vector3 posi;
 	float m_timer = 0.0f;
 	int rook = 0;
+	int drow = 0;
 
 private:
 	Vector3 toCameraPosOld;
@@ -43,6 +44,9 @@ private:
 	Vector3 m_Pos;	//注視点から視点に向かうベクトル。
 //	Vector3 target;
 	TankEnemy* m_tank;
+	Vector3 m_position;
+	Vector3 m_forward;
+	Quaternion              m_rotation;                                 //回転
 
 
 	

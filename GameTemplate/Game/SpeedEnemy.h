@@ -211,9 +211,28 @@ private:
 	EnemyPath m_enemypath2;
 	EnemyPath m_enemypath3;
 	EnemyPath m_enemypath4;
+	EnemyPath m_enemypath5;
+	EnemyPath m_enemypath6;
+	EnemyPath m_enemypath7;
+	EnemyPath m_enemypath8;
+	EnemyPath m_enemypath9;
+	EnemyPath m_enemypath10;
+	EnemyPath m_enemypath11;
+	EnemyPath m_enemypath12;
+	EnemyPath m_enemypath13;
 	Point* m_point;
 	Point* m_point2;
 	Point* m_point3;
 	Point* m_point4;
+	Point* m_point5;
+	Point* m_point6;
+	Point* m_point7;
+	Point* m_point8;
+	Point* m_point9;
+	Point* m_point10;
+	Point* m_point11;
+	Point* m_point12;
+	Point* m_point13;
+	SpriteRender				alertSprite;				//Œx‰úƒŒƒxƒ‹
 };
 

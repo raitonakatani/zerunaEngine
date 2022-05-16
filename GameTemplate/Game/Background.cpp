@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Background.h"
+#include "Player.h"
 
 bool Background::Start()
 {
@@ -29,9 +30,11 @@ bool Background::Start()
 	m_modelRender2.SetScale(m_scale);
 	//モデルの更新処理。
 	m_modelRender2.Update();
-
 	//当たり判定の可視化。
 //	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+
+	m_player = FindGO<Player>("player");
+
 	return true;
 }
 void Background::Update()
@@ -44,7 +47,7 @@ void Background::Update()
 }
 void Background::Render(RenderContext& rc)
 {
-	if (g_pad[0]->IsPress(enButtonY))
+	if (g_pad[0]->IsPress(enButtonY) && m_player->m_sp >= 1)
 	{
 		m_modelRender2.Draw(rc);
 		g_Light.SetAmbientLight({ .1f,.1f,.1f });

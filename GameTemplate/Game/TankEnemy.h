@@ -210,13 +210,15 @@ private:
 	GameCamera*					m_camera;
 	//EnemyPath					m_pathposi;
 	EnemyPath					m_enemypath;
-	EnemyPath					m_enemypath2;
 	EnemyPath					m_enemypath3;
-	EnemyPath					m_enemypath4;
+	EnemyPath					m_enemypath5;
+	EnemyPath					m_enemypath6;
+	EnemyPath					m_enemypath7;
 	Point*						m_point;
-	Point*						m_point2;
 	Point*						m_point3;
-	Point*						m_point4;
+	Point*						m_point5;
+	Point*						m_point6;
+	Point*						m_point7;
 	SpriteRender				alertSprite;				//警戒レベル
 	float						m_chaseTimer = 0.0f;		//追跡タイマー。
 	float						m_idleTimer = 0.0f;			//待機タイマー。
