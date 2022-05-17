@@ -160,7 +160,9 @@ void Player::Update()
 	{
 		m_hp = 100.0f;
 	}
-
+	if (m_hp <= 0) {
+		m_hp = 0;
+	}
 	life = m_hp / 100.0f;
 	m_HPRender.SetScale({ life, 1.0f, 0.0f });
 //	m_HPRender.SetPivot({ 0.0f, 0.5f });

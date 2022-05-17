@@ -239,7 +239,7 @@ private:
 	float m_angl =0.40f;
 	float m_range =1000.0f;
 	Vector3 targetpos;
-	bool mikke;
+	bool mikke = false;
 	float huntertimer = 0.0f;
 
 private:

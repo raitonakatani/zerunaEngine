@@ -194,12 +194,12 @@ void TankEnemy::Update()
 
 
 	if (state == 0 &&m_isSearchPlayer == false) {
-
+	
 		m_timer += g_gameTime->GetFrameDeltaTime();
-		if (m_timer < 2.0f) {
+		if (m_timer < 0.5f) {
 			m_EnemyState = enEnemyState_Idle;
 		}
-		if (m_timer >= 2.0f) {
+		if (m_timer >= 0.5f) {
 			m_EnemyState = enEnemyState_Chase;
 			state = 1;
 		}
@@ -207,7 +207,7 @@ void TankEnemy::Update()
 
 	if (m_camera->m_camera == 1)
 	{
-		m_EnemyState = enEnemyState_Idle;
+	//	m_EnemyState = enEnemyState_Idle;
 	}
 
 	Vector3 diff = m_player->GetPosition() - m_position;
@@ -366,19 +366,19 @@ void TankEnemy::Collision()
 
 	{
 
-		//プレイヤーの攻撃用のコリジョンを取得する。
-		const auto& collisions5 = g_collisionObjectManager->FindCollisionObjects("player");
-		//コリジョンの配列をfor文で回す。
-		for (auto collision : collisions5)
-		{
-			state = 2;
-			//コリジョンとキャラコンが衝突したら。
-			if (collision->IsHit(collisionObject))
-			{
-			//	m_camera->m_camera = 1;
-				return;
-			}
-		}
+	//	//プレイヤーの攻撃用のコリジョンを取得する。
+	//	const auto& collisions5 = g_collisionObjectManager->FindCollisionObjects("player");
+	//	//コリジョンの配列をfor文で回す。
+	//	for (auto collision : collisions5)
+	//	{
+	//		state = 2;
+	//		//コリジョンとキャラコンが衝突したら。
+	//		if (collision->IsHit(collisionObject))
+	//		{
+	//		//	m_camera->m_camera = 1;
+	//			return;
+	//		}
+	//	}
 
 
 		//プレイヤーの攻撃用のコリジョンを取得する。
@@ -643,7 +643,7 @@ void TankEnemy::ProcessAttackStateTransition()
 	{
 		m_idleTimer += g_gameTime->GetFrameDeltaTime();
 		//待機時間がある程度経過したら。
-		if (m_idleTimer >= 1.0f)
+		if (m_idleTimer >= 0.3f)
 		{
 			//他のステートに遷移する。
 			ProcessCommonStateTransition();
@@ -903,8 +903,8 @@ void TankEnemy::Aroute()
 					//Y座標の移動速度を0にする
 					m_moveSpeed.y = 0.0f;
 				}
-			
-		}
+
+			}
 
 	}
 	if (m_tankNumber == 2)

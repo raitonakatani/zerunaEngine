@@ -21,6 +21,7 @@ public:
 		enSpeedEnemyState_Shout,          //叫びステート
 		enSpeedEnemyState_ReceiveDamage,  //被ダメージステート
 		enSpeedEnemyState_Down,           //ダウンステート
+		enSpeedEnemyState_alert,
 	};
 
 public:
@@ -155,6 +156,9 @@ private:
 	/// </summary>
 	void ProcessDownStateTransition();
 
+	void alertTransition();
+//	void lookTransition();
+
 	/// <summary>
 	/// プレイヤーを発見したか？
 	/// </summary>
@@ -183,6 +187,7 @@ private:
 		enAnimClip_Shout,          //叫びアニメーション
 		enAnimClip_ReceiveDamage,  //被ダメージステート
 		enAnimClip_Down,           //ダウンステート
+		enAnimationClip_alert,
 		enAnimClip_Num             //アニメーションの数
 	};
 
@@ -205,8 +210,16 @@ private:
 	float                   m_chaseTimer = 0.0f;                        //追跡タイマー
 	int                     m_hp = 100;                                 //HP
 	int                     m_punchBoneId = -1;                         //パンチのボーン
+	int							alertLevel = 0; //警戒
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
 	int m_speedNumber = 0;
+	float m_angl = 0.40f;
+	float m_range = 1000.0f;
+	float						m_timer = 0.0f;
+	float						alertTimet = 0.0f;					//拡大率
+	bool mikke = false;
+	Vector3 targetpos;
+
 	EnemyPath m_enemypath;
 	EnemyPath m_enemypath2;
 	EnemyPath m_enemypath3;
