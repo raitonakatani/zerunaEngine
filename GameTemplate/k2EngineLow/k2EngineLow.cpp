@@ -5,8 +5,6 @@
 namespace nsK2EngineLow {
 	K2EngineLow* g_engine = nullptr;
 	GameTime* g_gameTime = nullptr;
-//	LightALL* g_sceneLight = nullptr;
-	RenderingEngine* g_renderingEngine = nullptr;
 	CollisionObjectManager* g_collisionObjectManager = nullptr;
 
 	K2EngineLow::~K2EngineLow()
@@ -72,7 +70,7 @@ namespace nsK2EngineLow {
 		for (auto& pad : m_pad) {
 			pad.BeginFrame();
 		}
-		g_Light.SeteyePosition(g_camera3D->GetPosition());
+
 	}
 	void K2EngineLow::EndFrame()
 	{
@@ -109,12 +107,6 @@ namespace nsK2EngineLow {
 	void K2EngineLow::ExecuteRender()
 	{
 		auto& renderContext = g_graphicsEngine->GetRenderContext();
-
-		// レンダリングエンジンの更新。
-//		m_renderingEngine.Update();
-		//レンダリングエンジンを実行。		
-//		m_renderingEngine.Execute(renderContext);
-
 		// ゲームオブジェクトマネージャーの描画処理を実行。
 		GameObjectManager::GetInstance()->ExecuteRender(renderContext);
 		

@@ -1,17 +1,63 @@
 #pragma once
-
 namespace nsK2EngineLow {
-
-	class SpriteRender
+	/// <summary>
+	/// スプライトレンダラー。
+	/// </summary>
+	class SpriteRender : public IRenderer
 	{
 	public:
-		void Init(const char* filePath,const float w,const float h,AlphaBlendMode alphaBlendMode = AlphaBlendMode_Trans);
-		void Draw(RenderContext& rc);
-		
+		SpriteRender();
 		/// <summary>
-	/// 座標を設定。zは0.0fで。
-	/// </summary>
-	/// <param name="pos">座標。</param>
+		/// 初期化。
+		/// </summary>
+		/// <param name="filePath">ファイルパス。</param>
+		/// <param name="w">画像の横幅。</param>
+		/// <param name="h">画像の縦幅。</param>
+		/// <param name="alphaBlendMode">デフォルトは半透明合成。</param>
+		void Init(const char* filePath, const float w, const float h, AlphaBlendMode alphaBlendMode = AlphaBlendMode_Trans);
+
+		void Draw(RenderContext& rc);
+
+		/// <summary>
+		/// 画像を描画する割合。
+		/// </summary>
+		/// <param name="x">描画する割合。1.0fが最大。</param>
+		void SetLimitedX(const float x)
+		{
+			m_sprite.SetX(x);
+		}
+		void SetLimitedY(const float y)
+		{
+			m_sprite.SetY(y);
+		}
+
+		/// <summary>
+		/// 原点を設定。原点を元として引数の分だけ画像を生成する。
+		/// Left 0.5だと左から五割だけ画像が描写される。
+		/// </summary>
+		/// <param name="isLeft">原点。</param>
+		void SetIsDisplayRestrictionLeftSide(const bool isLeft)
+		{
+			m_sprite.SetIsDisplayRestrictionLeftSide(isLeft);
+		}
+		void SetIsDisplayRestrictionRightSide(const bool isRight)
+		{
+			m_sprite.SetIsDisplayRestrictionRightSide(isRight);
+		}
+
+		void SetIsDisplayRestrictionUpSide(const bool isUp)
+		{
+			m_sprite.SetIsDisplayRestrictionUpSide(isUp);
+		}
+		void SetIsDisplayRestrictionDownSide(const bool isDown)
+		{
+			m_sprite.SetIsDisplayRestrictionDownSide(isDown);
+		}
+
+		/// <summary>
+		/// 座標を設定。zは0.0fで。
+		/// </summary>
+		/// <param name="pos">座標。</param>
 		void SetPosition(const Vector3& pos)
 		{
 			m_position = pos;
@@ -98,17 +144,23 @@ namespace nsK2EngineLow {
 				m_scale,
 				m_pivot);
 		}
-		void OnRender2D(RenderContext& rc)
+
+		
+		void OnRenderSprite2D(RenderContext& rc) override
 		{
+			if (m_isInit == false)
+			{
+				return;
+			}
 			m_sprite.Draw(rc);
 		}
 
-		Sprite			m_sprite;
+	private:
+		Sprite			m_sprite;								//スプライト。
 		Vector3			m_position = Vector3::Zero;				//座標。
 		Quaternion		m_rotation = Quaternion::Identity;		//回転。
 		Vector3			m_scale = Vector3::One;					//大きさ。
 		Vector2			m_pivot = Sprite::DEFAULT_PIVOT;		//ピボット。
-
+		bool m_isInit = false;
 	};
-
 }

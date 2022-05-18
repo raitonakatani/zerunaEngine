@@ -60,6 +60,7 @@ bool SpeedEnemy::Start()
 
 	//ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
 	m_modelRender.Init("Assets/modelData/speedenemy/speedenemy.tkm",
+		false,
 		m_animationClipArray,
 		enAnimClip_Num);
 	//À•W‚ğİ’è‚·‚éB

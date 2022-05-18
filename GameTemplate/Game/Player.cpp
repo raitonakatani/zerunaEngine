@@ -47,7 +47,7 @@ bool Player::Start()
 
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/player/player2.tkm"
-		, m_animationClipArray, enAnimClip_Num
+		, false, m_animationClipArray, enAnimClip_Num
 	);
 
 	//アニメーションイベント用の関数を設定する

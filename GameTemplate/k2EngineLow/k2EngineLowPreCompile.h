@@ -36,6 +36,7 @@
 
 #include "graphics/d3dx12.h"
 
+
 const int MAX_RENDERING_TARGET = D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;	//レンダリングターゲットの最大数。
 
 using namespace Microsoft::WRL;
@@ -73,23 +74,24 @@ using namespace Microsoft::WRL;
 
 #include "graphics/Sprite.h"
 #include "graphics/Model.h"
+#include "IRenderer.h"
 #include "ModelRender.h"
+#include "LightALL.h"
+#include "SpriteRender.h"
+#include "FontRender.h"
+#include "PostEffect.h"
+
 #include "HID/GamePad.h"
-//#include "CollisionObject.h"
-//#include "DirectionalLight.h"
-//#include "PointLight.h"
 
 #include "graphics/GaussianBlur.h"
-
-#include "LightALL.h"
-#include "PostEffect.h"
-#include "SpriteRender.h"
+#include "Bloom.h"
+#include "ShadowMapRender.h"
 #include "RenderingEngine.h"
 
 const UINT FRAME_BUFFER_W = 1600;	// フレームバッファの幅。
 const UINT FRAME_BUFFER_H = 900;	// フレームバッファの高さ。
-const UINT UI_SPACE_WIDTH = 1920;	// UI空間の幅。
-const UINT UI_SPACE_HEIGHT = 1080;	// UI空間の高さ。
+const UINT UI_SPACE_WIDTH = 1600;	// UI空間の幅。
+const UINT UI_SPACE_HEIGHT = 900;	// UI空間の高さ。
 static const int MAX_BONE = 512;	// ボーンの最大数。
 
 #define USE_FPS_LIMITTER	// 有効でFPSに上限を設ける。
@@ -106,6 +108,7 @@ static const int MAX_BONE = 512;	// ボーンの最大数。
 #include "physics/CharacterController.h"
 #include "physics/PhysicsStaticObject.h"
 
+
 #include "gameObject/GameObjectManager.h"
 #include "gameObject/IGameObject.h"
 
@@ -119,9 +122,5 @@ static const int MAX_BONE = 512;	// ボーンの最大数。
 #include "sound/SoundSource.h"
 #include "graphics/effect/EffectEmitter.h"
 
-using namespace nsK2EngineLow;
 #include "CollisionObject.h"
-//#include "MapChipRender.h"
-//#include "LevelRender.h"
-//#include "level3D/MapChip.h""
 #include "k2EngineLow.h"

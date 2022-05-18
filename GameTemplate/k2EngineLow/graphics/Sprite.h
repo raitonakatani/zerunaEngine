@@ -116,6 +116,61 @@ namespace nsK2EngineLow {
 		{
 			return m_textures[texNo].GetHeight();
 		}
+
+		void SetX(const float x)
+		{
+			m_x = x;
+		}
+		void SetY(const float y)
+		{
+			m_y = y;
+		}
+
+		void SetIsDisplayRestrictionLeftSide(const bool isLeft)
+		{
+			if (isLeft)
+			{
+				m_isDisplayRestrictionRightSide = 0;
+			}
+			else
+			{
+				m_isDisplayRestrictionRightSide = 1;
+			}
+		}
+		void SetIsDisplayRestrictionRightSide(const bool isRight)
+		{
+			if (isRight)
+			{
+				m_isDisplayRestrictionRightSide = 1;
+			}
+			else
+			{
+				m_isDisplayRestrictionRightSide = 0;
+			}
+		}
+
+		void SetIsDisplayRestrictionUpSide(const bool isUp)
+		{
+			if (isUp)
+			{
+				m_isDisplayRestrictionUpSide = 1;
+			}
+			else
+			{
+				m_isDisplayRestrictionUpSide = 0;
+			}
+		}
+		void SetIsDisplayRestrictionDownSide(const bool isDown)
+		{
+			if (isDown)
+			{
+				m_isDisplayRestrictionUpSide = 0;
+			}
+			else
+			{
+				m_isDisplayRestrictionUpSide = 1;
+			}
+		}
 	private:
 		/// <summary>
 		/// テクスチャを初期化。
@@ -157,10 +212,18 @@ namespace nsK2EngineLow {
 		Quaternion m_rotation;			//回転。
 		Matrix m_world;					//ワールド行列。
 
+		float m_x = 1.0f;
+		float m_y = 1.0f;
+		int m_isDisplayRestrictionRightSide = 1;
+		int m_isDisplayRestrictionUpSide = 1;
+
 		struct LocalConstantBuffer {
 			Matrix mvp;
 			Vector4 mulColor;
 			Vector4 screenParam;
+			Vector2 imageParam;
+			int isRight = 0;
+			int isUp = 0;
 		};
 		LocalConstantBuffer m_constantBufferCPU;	//CPU側の定数バッファ。
 		ConstantBuffer		m_constantBufferGPU;	//GPU側の定数バッファ。
@@ -172,5 +235,6 @@ namespace nsK2EngineLow {
 		Shader				m_vs;					//頂点シェーダー。
 		Shader				m_ps;					//ピクセルシェーダー。
 		Vector4				m_mulColor = Vector4::White;	//乗算カラー。
+		Vector2				m_pivot;
 	};
 }

@@ -37,7 +37,7 @@ bool Enemy3::Start()
 	m_animationClips[enAnimationClip_Down].Load("Assets/animData/enemy/sibou.tka");
 	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
 	//モデルを読み込む。
-	m_modelRender.Init("Assets/modelData/Enemy/enemy.tkm", m_animationClips, enAnimationClip_Num);
+	m_modelRender.Init("Assets/modelData/Enemy/enemy.tkm", false, m_animationClips, enAnimationClip_Num);
 
 	//座標を設定する。
 	m_modelRender.SetPosition(m_position);

@@ -72,9 +72,6 @@ namespace nsK2EngineLow {
 			m_worldMatrix = CalcWorldMatrix(pos, rot, scale);
 		}
 
-
-		void Update(AlphaBlendMode m_alphaBlendMode);// アルファブレンディングモード。
-
 		/// <summary>
 		/// ワールド行列を計算
 		/// </summary>
@@ -185,6 +182,5 @@ namespace nsK2EngineLow {
 		Skeleton m_skeleton;							//スケルトン。
 		MeshParts m_meshParts;							//メッシュパーツ。
 		EnModelUpAxis m_modelUpAxis = enModelUpAxisY;	//モデルの上方向。
-		AlphaBlendMode m_alpha;
 	};
 }

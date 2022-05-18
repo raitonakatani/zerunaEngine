@@ -9,7 +9,7 @@ namespace nsK2EngineLow {
 	}
 
 	ModelRender::~ModelRender()
-	{
+	{	
 	}
 
 	void ModelRender::InitSkeleton(const char* filePath)
@@ -21,60 +21,68 @@ namespace nsK2EngineLow {
 		m_skeleton.Init(skeletonFilePath.c_str());
 	}
 
-	void ModelRender::InitAnimation(AnimationClip* animationClips, int numAnimationClips, EnModelUpAxis enModelUpAxis)
+	void ModelRender::InitAnimation(
+		AnimationClip* animationClips,
+		int numAnimationClips, 
+		EnModelUpAxis enModelUpAxis)
 	{
 		m_animationClips = animationClips;
 		m_numAnimationClips = numAnimationClips;
 		if (m_animationClips != nullptr) {
-			m_animation.Init(m_skeleton,
+			m_animation.Init
+			(	m_skeleton,
 				m_animationClips,
-				numAnimationClips);
+				m_numAnimationClips);
 		}
 	}
-	void ModelRender::Init(const char* filePath,
+	void ModelRender::Init(	const char* filePath,
+		bool shadowRecieve,
 		AnimationClip* animationClips,
 		int numAnimationClips,
 		EnModelUpAxis enModelUpAxis,
 		bool isShadowReciever,
 		int maxInstance
-	)
+		)
 	{
-		ModelInitData m_InitData;
+		ModelInitData initData;
 
-		//tkmファイルのファイルパスを指定する。
-		m_InitData.m_tkmFilePath = filePath;
+		//シェーダーファイルのファイルパス。
+		initData.m_fxFilePath = "Assets/shader/model.fx";
 
-
-		//シェーダーファイルのファイルパスを指定する。
-		m_InitData.m_fxFilePath = "Assets/shader/model.fx";
-
-		m_animationClips = animationClips;
-
-		// スケルトンを初期化。
-		InitSkeleton(filePath);
-
-		// アニメーションを初期化。
-		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
-
-		if (m_animationClips != nullptr) {
-			//スケルトンを指定する。
-			m_InitData.m_skeleton = &m_skeleton;
-			//スキンメッシュ用の頂点シェーダーのエントリーポイントを指定。
-			m_InitData.m_vsSkinEntryPointFunc = "VSSkinMain";
-
-			m_InitData.m_modelUpAxis = enModelUpAxis;
+		//モデルの定数バッファ用の情報をモデルの初期化情報として渡す。
+		initData.m_expandConstantBuffer = &g_renderingEngine.GetModelRenderCB();
+		initData.m_expandConstantBufferSize = sizeof(g_renderingEngine.GetModelRenderCB());
+		if (animationClips == nullptr)
+		{
+			//ノンスキンメッシュ用の頂点シェーダーのエントリーポイントを指定する。
+			initData.m_vsEntryPointFunc = "VSMain";
 		}
 		else
 		{
-			//ノンスキンメッシュ用の頂点シェーダーのエントリーポイントを指定する。
-			m_InitData.m_vsEntryPointFunc = "VSMain";
+			//スキンメッシュ用の頂点シェーダーのエントリーポイントを指定。
+			initData.m_vsSkinEntryPointFunc = "VSSkinMain";
+			InitSkeleton(filePath);
+			//スケルトンを指定する。
+			initData.m_skeleton = &m_skeleton;
+			InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
 		}
 
-		m_InitData.m_expandConstantBuffer = &g_Light.GetDirectionalLight();
-		m_InitData.m_expandConstantBufferSize = sizeof(g_Light.GetDirectionalLight());
+		if (shadowRecieve) {
+			initData.m_psEntryPointFunc = "PSMainShadowReciever";
+			m_isShadowCaster = false;
+		}
+		else
+		{
+			m_isShadowCaster = true;
+		}
+		//シャドウマップを拡張SRVに設定する。
+		initData.m_expandShaderResoruceView[0] = &g_renderingEngine.GetShadowMap();
+		initData.m_tkmFilePath = filePath;
 
-		//作成した初期化データをもとにモデルを初期化する
-		m_model.Init(m_InitData);
+		m_enFbxUpAxis = enModelUpAxis;
+		initData.m_modelUpAxis = m_enFbxUpAxis;
+		m_model.Init(initData);
+		InitShadowModel(filePath, m_enFbxUpAxis);
 	}
 
 	void ModelRender::InitModel(const char* filePath)
@@ -83,8 +91,8 @@ namespace nsK2EngineLow {
 		transModelInitData.m_tkmFilePath = filePath;
 		transModelInitData.m_fxFilePath = "Assets/shader/model.fx";
 		//半透明モデルはモデルを描くときにライティングを行うので、ライトの情報を渡す。
-		transModelInitData.m_expandConstantBuffer = &g_Light.GetDirectionalLight();
-		transModelInitData.m_expandConstantBufferSize = sizeof(g_Light.GetDirectionalLight());
+		transModelInitData.m_expandConstantBuffer = &g_Light.GetLight();
+		transModelInitData.m_expandConstantBufferSize = sizeof(g_Light.GetLight());
 		//ピクセルシェーダのエントリーポイントが不透明モデルとは異なる。
 		//不透明モデルはPSMain、半透明モデルはPSMainTransを使用する。
 		//ピクセルシェーダの実装は後で確認。
@@ -97,64 +105,7 @@ namespace nsK2EngineLow {
 
 	void ModelRender::modelUpdate()
 	{
-		if (g_pad[0]->IsPress(enButtonRight))
-		{
-			planePos.x -= 1.0f;
-		}
-		if (g_pad[0]->IsPress(enButtonLeft))
-		{
-			planePos.x += 1.0f;
-		}
-		if (g_pad[0]->IsPress(enButtonUp))
-		{
-			planePos.z -= 1.0f;
-		}
-		if (g_pad[0]->IsPress(enButtonDown))
-		{
-			planePos.z += 1.0f;
-		}
 		sphereModel.UpdateWorldMatrix(planePos, g_quatIdentity, g_vec3One);
-	}
-
-	void ModelRender::touka()
-	{
-		// G-Bufferを作成
-	   // アルベドカラー書き込み用のレンダリングターゲット
-		albedRT.Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
-		// 法線書き込み用のレンダリングターゲット
-		normalRT.Create(
-			FRAME_BUFFER_W,
-			FRAME_BUFFER_H,
-			1,
-			1,
-			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			DXGI_FORMAT_UNKNOWN
-		);
-		worldPosRT.Create(
-			FRAME_BUFFER_W,
-			FRAME_BUFFER_H,
-			1,
-			1,
-			DXGI_FORMAT_R32G32B32A32_FLOAT, // ワールド座標を記録するので、32ビット浮動小数点バッファーを利用する
-			DXGI_FORMAT_UNKNOWN
-		);
-
-		// ポストエフェクト的にディファードライティングを行うためのスプライトを初期化
-		// 画面全体にレンダリングするので幅と高さはフレームバッファーの幅と高さと同じ
-		spriteInitData.m_width = FRAME_BUFFER_W;
-		spriteInitData.m_height = FRAME_BUFFER_H;
-		// ディファードライティングで使用するテクスチャを設定
-		spriteInitData.m_textures[0] = &albedRT.GetRenderTargetTexture();
-		spriteInitData.m_textures[1] = &normalRT.GetRenderTargetTexture();
-
-		// ディファードライティングで使用するテクスチャにワールド座標テクスチャを追加
-		spriteInitData.m_textures[2] = &worldPosRT.GetRenderTargetTexture();
-
-		spriteInitData.m_fxFilePath = "Assets/shader/sprite.fx";
-		spriteInitData.m_expandConstantBuffer = &g_Light.GetDirectionalLight();
-		spriteInitData.m_expandConstantBufferSize = sizeof(g_Light.GetDirectionalLight());
-		// 初期化データを使ってスプライトを作成
-		defferdLightinSpr.Init(spriteInitData);
 	}
 
 
@@ -193,6 +144,7 @@ namespace nsK2EngineLow {
 
 		//アニメーションを進める。
 		m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
+		m_shadowmodel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
 	}
 
 
@@ -201,42 +153,41 @@ namespace nsK2EngineLow {
 		m_model.Draw(rc);
 		//半透明オブジェクトを描画！
 		sphereModel.Draw(rc);
+
+		g_renderingEngine.AddRenderObject(this);
 	}
 
-	void ModelRender::Drawtwo(RenderContext& rc)
+	void ModelRender::InitShadowModel(const char* tkmFilePath, EnModelUpAxis modelUpAxis)
 	{
-		// レンダリングターゲットをG-Bufferに変更して書き込む
-		RenderTarget* rts[] = {
-			&albedRT, // 0番目のレンダリングターゲット
-			&normalRT, // 1番目のレンダリングターゲット
-			&worldPosRT // 2番目のレンダリングターゲット
-		};
+		ModelInitData ShadowModelInitData;
 
-		// まず、レンダリングターゲットとして設定できるようになるまで待つ
-		rc.WaitUntilToPossibleSetRenderTargets(ARRAYSIZE(rts), rts);
-		// レンダリングターゲットを設定
-		rc.SetRenderTargets(ARRAYSIZE(rts), rts);
-		// レンダリングターゲットをクリア
-		rc.ClearRenderTargetViews(ARRAYSIZE(rts), rts);
+		// シャドウマップ描画用のシェーダーを指定する
+		ShadowModelInitData.m_fxFilePath = "Assets/shader/DrawShadowMap.fx";
+		ShadowModelInitData.m_tkmFilePath = tkmFilePath;
+		if (m_animationClips != nullptr) {
+			//スケルトンを指定する。
+			ShadowModelInitData.m_skeleton = &m_skeleton;
+			//スキンメッシュ用の頂点シェーダーのエントリーポイントを指定。
+			ShadowModelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
+		}
+		else
+		{
+			ShadowModelInitData.m_vsSkinEntryPointFunc = "VSMain";
+		}
+		ShadowModelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT,
+			m_shadowmodel.Init(ShadowModelInitData);
 
 
-		//humanModel.Draw(rc);
-		//bgModel.Draw(rc);
+	}
+	void ModelRender::OnRenderShadowMap(RenderContext& rc, const Matrix& lvpMatrix)
+	{
+		if (m_isShadowCaster)
+		{
+			m_shadowmodel.Draw(
+				rc,
+				g_matIdentity,
+				lvpMatrix);
 
-
-		// レンダリングターゲットへの書き込み待ち
-		rc.WaitUntilFinishDrawingToRenderTargets(ARRAYSIZE(rts), rts);
-
-		// レンダリング先をフレームバッファーに戻してスプライトをレンダリングする
-		g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
-		// G-Bufferの内容を元にしてディファードライティング
-		defferdLightinSpr.Draw(rc);
-
-		// step-2 深度ステンシルビューをG-Bufferを作成したときのものに変更する
-		//深度ステンシルビューはG-Bufferを作成したときのものに変更する。
-		rc.SetRenderTarget(
-			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
-			rts[0]->GetDSVCpuDescriptorHandle()
-		);
+		}
 	}
 }

@@ -45,7 +45,7 @@ bool TankEnemy::Start()
 	m_animationClips[enAnimationClip_alert].Load("Assets/animData/tankenemy/alert.tka");
 	m_animationClips[enAnimationClip_alert].SetLoopFlag(false);
 	//モデルを読み込む。
-	m_modelRender.Init("Assets/modelData/tankEnemy/tank.tkm", m_animationClips, enAnimationClip_Num);
+	m_modelRender.Init("Assets/modelData/tankEnemy/tank.tkm", false, m_animationClips, enAnimationClip_Num);
 
 	//座標を設定する。
 	m_modelRender.SetPosition(m_position);

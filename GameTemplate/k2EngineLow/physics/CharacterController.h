@@ -32,6 +32,12 @@ namespace nsK2EngineLow {
 			*/
 		void Init(float radius, float height, const Vector3& position);
 		/*!
+			* @brief	初期化。
+			*@param[in]	size		ボックスコライダーのサイズ。
+			*@param[in]	position	初期位置。
+			*/
+		void BoxInit(const Vector3& size, const Vector3& position, const float& restitution);
+		/*!
 			* @brief	実行。
 			*@param[in, out]	moveSpeed		移動速度。
 			*@param[in]	deltaTime		経過時間。単位は秒。デフォルトでは、１フレームの経過時間が渡されています。
@@ -91,8 +97,12 @@ namespace nsK2EngineLow {
 		bool 				m_isJump = false;				//!<ジャンプ中？
 		bool				m_isOnGround = true;			//!<地面の上にいる？
 		CCapsuleCollider	m_collider;						//!<コライダー。
+		BoxCollider			m_boxCollider;					//!<ボックスコライダー。
 		float				m_radius = 0.0f;				//!<カプセルコライダーの半径。
 		float				m_height = 0.0f;				//!<カプセルコライダーの高さ。
+		float				m_boxheight = 0.0f;				//!<ボックスコライダーの高さ。
+		float				m_restitution = 0.0f;			//!<反発力。
+		Vector3				m_size = Vector3::Zero;			//!<サイズ。
 		RigidBody			m_rigidBody;					//剛体。
 	};
 }

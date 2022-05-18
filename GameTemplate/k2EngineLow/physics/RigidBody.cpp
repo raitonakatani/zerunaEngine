@@ -11,7 +11,10 @@ namespace nsK2EngineLow {
 
 		m_myMotionState = std::make_unique<btDefaultMotionState>();
 		m_myMotionState->setWorldTransform(transform);
-		btVector3 btLocalInteria(0.0f, 0.0f, 0.0f);
+		btVector3 btLocalInteria;
+		btLocalInteria.setX(initData.localInteria.x);
+		btLocalInteria.setY(initData.localInteria.y);
+		btLocalInteria.setZ(initData.localInteria.z);
 		btCollisionShape* shape = initData.collider->GetBody();
 		if (initData.mass != 0.0f) {
 			shape->calculateLocalInertia(initData.mass, btLocalInteria);

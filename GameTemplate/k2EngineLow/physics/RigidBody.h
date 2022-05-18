@@ -6,6 +6,7 @@ namespace nsK2EngineLow {
 	struct RigidBodyInitData {
 		Vector3 pos;						//座標。
 		Quaternion rot;					//回転。
+		Vector3 localInteria;
 		ICollider* collider = nullptr;	//コライダー。
 		float mass = 0;					//質量。
 		float restitution = 0.0f;			//反発力、(数値を上げれば、物体が跳ね返るようになる)。
@@ -87,6 +88,7 @@ namespace nsK2EngineLow {
 			m_rigidBody->setLinearVelocity(btVel);
 			m_rigidBody->activate();
 		}
+
 		/// <summary>
 		/// 現在の速度を取得。
 		/// </summary>
@@ -96,6 +98,17 @@ namespace nsK2EngineLow {
 			auto& btVel = m_rigidBody->getLinearVelocity();
 			Vector3 vel;
 			vel.Set(btVel.x(), btVel.y(), btVel.z());
+			return vel;
+		}
+		/// <summary>
+		/// 現在のXZ平面の速度を取得
+		/// </summary>
+		/// <returns></returns>
+		Vector3 GetLinearXZVelocity() const
+		{
+			Vector3 vel;
+			vel = GetLinearVelocity();
+			vel.y = 0.0f;
 			return vel;
 		}
 		/// <summary>

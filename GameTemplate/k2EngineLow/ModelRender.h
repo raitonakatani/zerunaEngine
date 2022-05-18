@@ -2,7 +2,7 @@
 
 namespace nsK2EngineLow {
 
-	class ModelRender
+	class ModelRender : public IRenderer
 	{
 	public:
 
@@ -11,15 +11,19 @@ namespace nsK2EngineLow {
 
 		void Init(
 			const char* filePath,
+			bool shadowRecieve,
 			AnimationClip* animationClips = nullptr,
 			int numAnimationClips = 0,
 			EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
 			bool isShadowReciever = true,
-			int maxInstance = 1
+			int maxInstance =1
 		);
 
-		void touka();
-		void Drawtwo(RenderContext& rc);
+		void SetCasterShadow(const bool castershadow)
+		{
+			m_isShadowCaster = castershadow;
+		}
+
 	private:
 		RenderTarget albedRT;
 		RenderTarget normalRT;
@@ -35,11 +39,6 @@ namespace nsK2EngineLow {
 		ModelInitData transModelInitData;
 		Model sphereModel;
 		Vector3 planePos = { 0.0f, 160.0f, 20.0f };
-
-
-		//	void InitRendering(ModelInitData& initData);
-
-		//	void InitInstancingDraw(int maxInstance);
 
 		void Draw(RenderContext& rc);
 
@@ -94,7 +93,7 @@ namespace nsK2EngineLow {
 
 		void Update();
 
-
+	
 		/// <summary>
 		/// アニメーションの初期化。
 		/// </summary>
@@ -213,12 +212,27 @@ namespace nsK2EngineLow {
 		/// <param name="filePath">ファイルパス。</param>
 		void InitSkeleton(const char* filePath);
 
+		void InitShadowModel(
+			const char* tkmFilePath,
+			EnModelUpAxis modelUpAxis);
+		/// <summary>
+		/// シャドウマップへの描画パスから呼ばれる処理。
+		/// </summary>
+		/// <param name="rc">レンダリングコンテキスト</param>
+		/// <param name="ligNo">ライト番号</param>
+		/// <param name="lvpMatrix">ライトビュープロジェクション行列</param>
+		void OnRenderShadowMap(
+			RenderContext& rc,
+			const Matrix& lvpMatrix
+		);
+
 
 	private:
-		Model						m_model;
+		Model						m_model;	
+		Model					m_shadowmodel;							//シャドウモデル。
 		Skeleton					m_skeleton;							// スケルトン
 		float						m_animationSpeed = 1.0f;
-		AnimationClip* m_animationClips = nullptr;			// アニメーションクリップ。
+		AnimationClip*				m_animationClips = nullptr;			// アニメーションクリップ。
 		int							m_numAnimationClips = 0;			// アニメーションクリップの数。
 		Animation					m_animation;						// アニメーション。
 		Vector3 					m_position;			// 座標。
@@ -231,6 +245,10 @@ namespace nsK2EngineLow {
 		bool						m_isEnableInstancingDraw = false;	// インスタンシング描画が有効？
 		std::unique_ptr<Matrix[]>	m_worldMatrixArray;					// ワールド行列の配列。
 		StructuredBuffer			m_worldMatrixArraySB;				// ワールド行列の配列のストラクチャードバッファ。
+		EnModelUpAxis			m_enFbxUpAxis = enModelUpAxisZ;			// FBXの上方向。
+		bool					m_isShadowCaster = true;
+
+//		ModelRenderCB* m_modelCB;
 
 	};
 }

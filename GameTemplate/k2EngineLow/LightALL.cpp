@@ -16,16 +16,16 @@ namespace nsK2EngineLow {
 		// アンビエントライトを初期化する
 		InitAmbientLight(m_light);
 */
-		//ディレクションライト
-		//ライトは左側から当たっている
+//ディレクションライト
+//ライトは左側から当たっている
 		m_light.directionlight.dirDirection.x = 1.0f;
 		m_light.directionlight.dirDirection.y = -1.0f;
 		m_light.directionlight.dirDirection.z = 1.0f;
 		m_light.directionlight.dirDirection.Normalize();
 		// ライトのカラーは灰色
-		m_light.directionlight.dirColor.x = 0.6f;
-		m_light.directionlight.dirColor.y = 0.6f;
-		m_light.directionlight.dirColor.z = 0.6f;
+		m_light.directionlight.dirColor.x = 0.8f;
+		m_light.directionlight.dirColor.y = 0.8f;
+		m_light.directionlight.dirColor.z = 0.8f;
 
 
 
@@ -43,7 +43,7 @@ namespace nsK2EngineLow {
 		m_light.pointlight.ptColor.y = 0.0f;
 		m_light.pointlight.ptColor.z = 0.0f;
 		// ポイントライトの影響範囲を設定する
-		m_light.pointlight.ptRange = 100.0f;
+		m_light.pointlight.ptRange = 0.0f;
 
 		//スポットライト
 		//スポットライトのデータを初期化する
@@ -70,6 +70,7 @@ namespace nsK2EngineLow {
 		SetAmbientLight({ 0.5f,0.5f,0.5f });
 
 		m_light.eyePos = g_camera3D->GetPosition();
+
 	}
 
 
@@ -81,7 +82,7 @@ namespace nsK2EngineLow {
 	void LightALL::Update()
 	{
 		// 視点の位置を設定する
-	//	m_light.eyePos = g_camera3D->GetPosition();
+		m_light.eyePos = g_camera3D->GetPosition();
 
 /*		if (g_pad[0]->IsPress(enButtonX))
 		{

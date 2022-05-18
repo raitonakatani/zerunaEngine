@@ -7,7 +7,7 @@ bool Background::Start()
 
 	//	m_modelRender.Init("Assets/modelData/stage/RPG.stage.tkm");
 
-	m_modelRender.Init("Assets/modelData/stage1/syougai.tkm");
+	m_modelRender.Init("Assets/modelData/stage1/syougai.tkm",true);
 	//モデルの座標を設定。
 	m_modelRender.SetPosition(m_position);
 	//モデルの回転を設定。

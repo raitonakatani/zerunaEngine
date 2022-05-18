@@ -30,7 +30,6 @@ PSInput VSMain(VSInput In)
     psIn.uv = In.uv;
     return psIn;
 }
-
 Texture2D<float4> mainRenderTargetTexture : register(t0); // メインレンダリングターゲットのテクスチャ
 sampler Sampler : register(s0);
 
@@ -66,7 +65,6 @@ cbuffer CBBlur : register(b1)
 PS_BlurInput VSXBlur(VSInput In)
 {
     // step-13 横ブラー用の頂点シェーダーを実装
-
     PS_BlurInput Out;
 
     // 座標変換
@@ -84,7 +82,6 @@ PS_BlurInput VSXBlur(VSInput In)
     Out.tex0.xy = float2(1.0f / texSize.x, 0.0f);
 
     // 基準テクセルからU座標を+3テクセルずらすためのオフセットを計算する
-
     Out.tex1.xy = float2(3.0f / texSize.x, 0.0f);
 
     // 基準テクセルからU座標を+5テクセルずらすためのオフセットを計算する
@@ -135,6 +132,7 @@ PS_BlurInput VSXBlur(VSInput In)
 PS_BlurInput VSYBlur(VSInput In)
 {
     // step-14 Yブラー用の頂点シェーダーを実装
+
     PS_BlurInput Out;
 
     // 座標変換
@@ -222,6 +220,35 @@ float4 PSBlur(PS_BlurInput In) : SV_Target0
     Color += weight[1].y * sceneTexture.Sample(Sampler, In.tex5.zw);
     Color += weight[1].z * sceneTexture.Sample(Sampler, In.tex6.zw);
     Color += weight[1].w * sceneTexture.Sample(Sampler, In.tex7.zw);
-
     return float4(Color.xyz, 1.0f);
+}
+/*!
+ * @brief ブラーピクセルシェーダー(αチャンネルにもブラーをかける。)
+ */
+float4 PSBlur_Alpha(PS_BlurInput In) : SV_Target0
+{
+    // step-15 X,Yブラー用のピクセルシェーダーを実装
+    float4 Color;
+
+    // 基準テクセルからプラス方向に8テクセル、重み付きでサンプリング
+    Color  = weight[0].x * sceneTexture.Sample(Sampler, In.tex0.xy);
+    Color += weight[0].y * sceneTexture.Sample(Sampler, In.tex1.xy);
+    Color += weight[0].z * sceneTexture.Sample(Sampler, In.tex2.xy);
+    Color += weight[0].w * sceneTexture.Sample(Sampler, In.tex3.xy);
+    Color += weight[1].x * sceneTexture.Sample(Sampler, In.tex4.xy);
+    Color += weight[1].y * sceneTexture.Sample(Sampler, In.tex5.xy);
+    Color += weight[1].z * sceneTexture.Sample(Sampler, In.tex6.xy);
+    Color += weight[1].w * sceneTexture.Sample(Sampler, In.tex7.xy);
+
+    // 基準テクセルにマイナス方向に8テクセル、重み付きでサンプリング
+    Color += weight[0].x * sceneTexture.Sample(Sampler, In.tex0.zw);
+    Color += weight[0].y * sceneTexture.Sample(Sampler, In.tex1.zw);
+    Color += weight[0].z * sceneTexture.Sample(Sampler, In.tex2.zw);
+    Color += weight[0].w * sceneTexture.Sample(Sampler, In.tex3.zw);
+    Color += weight[1].x * sceneTexture.Sample(Sampler, In.tex4.zw);
+    Color += weight[1].y * sceneTexture.Sample(Sampler, In.tex5.zw);
+    Color += weight[1].z * sceneTexture.Sample(Sampler, In.tex6.zw);
+    Color += weight[1].w * sceneTexture.Sample(Sampler, In.tex7.zw);
+
+    return Color;
 }

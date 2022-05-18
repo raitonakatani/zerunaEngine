@@ -105,7 +105,30 @@ namespace nsK2EngineLow {
 			}
 		};
 	}
+	void CharacterController::BoxInit(const Vector3& size, const Vector3& position, const float& restitution)
+	{
+		m_restitution = restitution;
+		m_position = position;
+		//コリジョン作成。
+		m_size = size;
+		m_boxCollider.Create(m_size);
 
+		//剛体を初期化。
+		RigidBodyInitData rbInfo;
+		rbInfo.collider = &m_boxCollider;
+		rbInfo.mass = 0.0f;
+		rbInfo.restitution = m_restitution;
+		m_rigidBody.Init(rbInfo);
+		btTransform& trans = m_rigidBody.GetBody()->getWorldTransform();
+		//剛体の位置を更新。
+		//m_boxheight = m_size.y;
+		trans.setOrigin(btVector3(position.x, position.y + m_boxheight * 0.5f + m_radius, position.z));
+		//@todo 未対応。trans.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z));
+		m_rigidBody.GetBody()->setUserIndex(enCollisionAttr_Character);
+		m_rigidBody.GetBody()->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
+
+		m_isInited = true;
+	}
 
 	void CharacterController::Init(float radius, float height, const Vector3& position)
 	{

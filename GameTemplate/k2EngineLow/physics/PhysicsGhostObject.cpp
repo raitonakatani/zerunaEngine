@@ -10,6 +10,8 @@ namespace nsK2EngineLow {
 		btTrans.setRotation({ rot.x, rot.y, rot.z, rot.w });
 		m_ghostObject.setWorldTransform(btTrans);
 
+		m_ghostObject.setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
 		//•¨—ƒGƒ“ƒWƒ“‚É“o˜^B
 		PhysicsWorld::GetInstance()->AddCollisionObject(m_ghostObject);
 		m_isRegistPhysicsWorld = true;

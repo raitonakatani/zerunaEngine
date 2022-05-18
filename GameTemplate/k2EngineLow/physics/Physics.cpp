@@ -132,7 +132,10 @@ namespace nsK2EngineLow {
 	}
 	void PhysicsWorld::Update(float deltaTime)
 	{
-		m_dynamicWorld->stepSimulation(deltaTime);
+		m_dynamicWorld->stepSimulation(1.0f / 240.0f, 1.0f, 1.0f / 240.0f);
+		m_dynamicWorld->stepSimulation(1.0f / 240.0f, 1.0f, 1.0f / 240.0f);
+		m_dynamicWorld->stepSimulation(1.0f / 240.0f, 1.0f, 1.0f / 240.0f);
+		m_dynamicWorld->stepSimulation(1.0f / 240.0f, 1.0f, 1.0f / 240.0f);
 	}
 
 	void PhysicsWorld::ContactTest(
@@ -158,6 +161,9 @@ namespace nsK2EngineLow {
 		std::function<void(const btCollisionObject& contactCollisionObject)> cb
 	)
 	{
+		ContactTest(*charaCon.GetRigidBody(), cb);
+		ContactTest(*charaCon.GetRigidBody(), cb); 
+		ContactTest(*charaCon.GetRigidBody(), cb);
 		ContactTest(*charaCon.GetRigidBody(), cb);
 	}
 }

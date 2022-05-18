@@ -98,4 +98,4 @@ namespace nsK2EngineLow {
 		D3D12_RESOURCE_DESC m_textureDesc;	//テクスチャ情報
 		bool m_isCubemap = false;				//キューブマップ？
 	};
-};
+}

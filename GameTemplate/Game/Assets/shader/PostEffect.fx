@@ -4,20 +4,20 @@
 
 cbuffer cb : register(b0)
 {
-    float4x4 mvp; // MVP行列
-    float4 mulColor; // 乗算カラー
+    float4x4 mvp;       // MVP行列
+    float4 mulColor;    // 乗算カラー
 };
 
 struct VSInput
 {
     float4 pos : POSITION;
-    float2 uv : TEXCOORD0;
+    float2 uv  : TEXCOORD0;
 };
 
 struct PSInput
 {
     float4 pos : SV_POSITION;
-    float2 uv : TEXCOORD0;
+    float2 uv  : TEXCOORD0;
 };
 
 /*!
@@ -42,7 +42,6 @@ sampler Sampler : register(s0);
  */
 float4 PSSamplingLuminance(PSInput In) : SV_Target0
 {
-    // step-14 輝度を抽出するピクセルシェーダーを実装
     // メインレンダリングターゲットからカラーをサンプリング
     float4 color = mainRenderTargetTexture.Sample(Sampler, In.uv);
 
@@ -55,4 +54,22 @@ float4 PSSamplingLuminance(PSInput In) : SV_Target0
     clip(t - 1.0f);
 
     return color;
+}
+
+// step-5 ボケ画像にアクセスするための変数を追加
+Texture2D<float4> g_bokeTexture_0 : register(t0);
+Texture2D<float4> g_bokeTexture_1 : register(t1);
+Texture2D<float4> g_bokeTexture_2 : register(t2);
+Texture2D<float4> g_bokeTexture_3 : register(t3);
+
+float4 PSBloomFinal(PSInput In) : SV_Target0
+{
+    // step-6 ボケ画像をサンプリングして、平均をとって出力する
+    float4 combineColor = g_bokeTexture_0.Sample(Sampler, In.uv);
+    combineColor += g_bokeTexture_1.Sample(Sampler, In.uv);
+    combineColor += g_bokeTexture_2.Sample(Sampler, In.uv);
+    combineColor += g_bokeTexture_3.Sample(Sampler, In.uv);
+    combineColor /= 4.0f;
+    combineColor.a = 1.0f;
+    return combineColor;
 }

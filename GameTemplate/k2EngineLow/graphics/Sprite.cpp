@@ -240,6 +240,8 @@ namespace nsK2EngineLow {
         m_world = mPivotTrans * mScale;
         m_world = m_world * mRot;
         m_world = m_world * mTrans;
+        m_position = pos;
+        m_pivot = pivot;
     }
     void Sprite::Draw(RenderContext& renderContext)
     {
@@ -254,8 +256,21 @@ namespace nsK2EngineLow {
         m_constantBufferCPU.mulColor = m_mulColor;
         m_constantBufferCPU.screenParam.x = g_camera3D->GetNear();
         m_constantBufferCPU.screenParam.y = g_camera3D->GetFar();
-        m_constantBufferCPU.screenParam.z = FRAME_BUFFER_W;
-        m_constantBufferCPU.screenParam.w = FRAME_BUFFER_H;
+        m_constantBufferCPU.screenParam.z = 1600;
+        m_constantBufferCPU.screenParam.w = 900;
+
+        Vector2 pos;
+        pos.x = m_position.x - (m_pivot.x * m_size.x);
+        pos.y = m_position.y - (m_pivot.y * m_size.y);
+        pos.x = pos.x + (m_x * m_size.x);
+        pos.y = pos.y + (m_y * m_size.y);
+        pos.y = -pos.y;
+
+        m_constantBufferCPU.imageParam.x = pos.x + 1600 / 2;
+        m_constantBufferCPU.imageParam.y = pos.y + 900 / 2;
+
+        m_constantBufferCPU.isRight = m_isDisplayRestrictionRightSide;
+        m_constantBufferCPU.isUp = m_isDisplayRestrictionUpSide;
 
         //定数バッファを更新。
         //renderContext.UpdateConstantBuffer(m_constantBufferGPU, &m_constantBufferCPU);

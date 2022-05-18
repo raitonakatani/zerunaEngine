@@ -148,7 +148,7 @@ namespace nsK2EngineLow {
 			//ボーンを積む。
 			m_bonelist.push_back(std::move(bone));
 			//コピー終わり。
-		});
+			});
 
 	}
 

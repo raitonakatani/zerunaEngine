@@ -9,6 +9,7 @@
 namespace nsK2EngineLow {
 	PhysicsStaticObject::PhysicsStaticObject()
 	{
+
 	}
 	PhysicsStaticObject::~PhysicsStaticObject()
 	{
@@ -22,4 +23,5 @@ namespace nsK2EngineLow {
 		rbInfo.restitution = restitution;
 		m_rigidBody.Init(rbInfo);
 	}
+	
 }

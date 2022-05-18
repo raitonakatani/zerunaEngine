@@ -18,7 +18,7 @@ index::~index()
 bool index::Start()
 {
 	//™‚Ìƒ‚ƒfƒ‹‚ğ“Ç‚İ‚ŞB
-	m_modelRender.Init("Assets/modelData/Portion/Portion.tkm");
+	m_modelRender.Init("Assets/modelData/Portion/Portion.tkm",false);
 	m_modelRender.SetScale({ 2.0f,2.0f,2.0f });
 	m_modelRender.SetPosition(m_position);
 	m_modelRender.Update();

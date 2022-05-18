@@ -13,8 +13,9 @@ namespace nsK2EngineLow {
 	class GameTime;
 	class Texture;
 	class Font;
+	class RenderingEngine;
 
-	class K2EngineLow : public NodeArray{
+	class K2EngineLow {
 	public:
 		/// <summary>
 		/// フレームレートモード
@@ -217,7 +218,6 @@ namespace nsK2EngineLow {
 		GameTime m_gameTime;
 		FPSLimitter m_fpsLimitter;						// FPSに制限をかける処理。
 		FrameRateInfo m_frameRateInfo = { enFrameRateMode_Variable , 60};
-		RenderingEngine m_renderingEngine;					// レンダリングエンジン。
 		CollisionObjectManager m_collisionObjectManager;	// 
 	};
 
