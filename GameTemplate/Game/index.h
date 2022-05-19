@@ -50,5 +50,9 @@ private:
 	Quaternion rotation;                //クォータニオン。
 	Player* m_player;                   //プレイヤー。
 	SoundSource* se;                    //se
+
+	SpriteRender m_sprite;
+	PhysicsStaticObject m_physicsStaticObject;	//静的物理オブジェクト・
+	int win = 0;
 };
 

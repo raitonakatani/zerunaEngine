@@ -6,7 +6,7 @@
 
 namespace
 {
-	const float CHARACON_RADIUS = 25.0f;            //キャラコンの半径
+	const float CHARACON_RADIUS = 50.0f;            //キャラコンの半径
 	const float CHARACON_HEIGHT = 100.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
 	const float WALK_MOVESPEED = 200.0f;            //歩きステートの移動速度
@@ -26,6 +26,8 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_Walk].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Run].Load("Assets/animData/player2/run.tka");
 	m_animationClipArray[enAnimClip_Run].SetLoopFlag(true);
+	m_animationClipArray[enAnimClip_snake].Load("Assets/animData/player2/snakes.tka");
+	m_animationClipArray[enAnimClip_snake].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_StealthySteps].Load("Assets/animData/player2/stealthysteps.tka");
 	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_Rolling].Load("Assets/animData/player2/rolling.tka");
@@ -38,6 +40,8 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_ReceiveDamage].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_Down].Load("Assets/animData/player2/down.tka");
 	m_animationClipArray[enAnimClip_Down].SetLoopFlag(false);
+	m_animationClipArray[enAnimClip_Win].Load("Assets/animData/player2/win.tka");
+	m_animationClipArray[enAnimClip_Win].SetLoopFlag(false);
 }
 
 bool Player::Start()
@@ -62,6 +66,11 @@ bool Player::Start()
 
 	//サウンドを読み込む。
 	g_soundEngine->ResistWaveFileBank(9, "Assets/sound/11yoroi.wav");
+	g_soundEngine->ResistWaveFileBank(11, "Assets/sound/audio/kiru.wav");
+	g_soundEngine->ResistWaveFileBank(12, "Assets/sound/audio/tuki.wav");
+	g_soundEngine->ResistWaveFileBank(13, "Assets/sound/audio/playerdamage.wav");
+	g_soundEngine->ResistWaveFileBank(14, "Assets/sound/audio/playerdown.wav");
+	g_soundEngine->ResistWaveFileBank(15, "Assets/sound/audio/kaiten2.wav");
 
 	//キャラコン
 	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, g_vec3Zero);
@@ -105,6 +114,11 @@ bool Player::Start()
 
 void Player::Update()
 {
+	if (index == 1)
+	{
+		m_playerState = enPlayerState_Win;
+	}
+
 	if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
 		&& m_menu == false)					//かつm_menu==falseの時。
 	{
@@ -228,6 +242,7 @@ void Player::Move()
 	if (m_playerState != enPlayerState_Run &&
 		m_playerState != enPlayerState_Walk &&
 		m_playerState != enPlayerState_StealthySteps &&
+		m_playerState != enPlayerState_snake&&
 		m_playerState != enPlayerState_Idle)
 	{
 		//なにもしない
@@ -311,7 +326,7 @@ void Player::Collision()
 		return;
 	}
 
-	//エネミー（ボス）の攻撃用のコリジョンを取得する。
+	//エネミー（タンク）の攻撃用のコリジョンを取得する。
 	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_attack");
 	//コリジョンの配列をfor文で回す。
 	for (auto collision : collisions)
@@ -333,7 +348,29 @@ void Player::Collision()
 		}
 	}
 
-	//エネミー（ボス）の攻撃用のコリジョンを取得する。
+	//エネミー（スピード）の攻撃用のコリジョンを取得する。
+	const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("Speedenemy_attack");
+	//コリジョンの配列をfor文で回す。
+	for (auto collision2 : collisions2)
+	{
+		//コリジョンとキャラコンが衝突したら。
+		if (collision2->IsHit(m_charaCon))
+		{
+			m_hp -= 18.0f;
+
+			if (m_hp <= 0)
+			{
+				m_playerState = enPlayerState_Down;
+			}
+			else {
+				//被ダメージステートに遷移する。
+				m_playerState = enPlayerState_ReceiveDamage;
+			}
+			return;
+		}
+	}
+
+	//エネミー（3）の攻撃用のコリジョンを取得する。
 	const auto& collisions3 = g_collisionObjectManager->FindCollisionObjects("enemy3_attack");
 	//コリジョンの配列をfor文で回す。
 	for (auto collision : collisions3)
@@ -341,10 +378,14 @@ void Player::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-			m_hp -= 80.0f;
+			m_hp -= 40.0f;
 			if (m_hp <= 0)
 			{
 				m_playerState = enPlayerState_Down;
+				//SoundSource* downse = NewGO<SoundSource>(0);
+				//downse->Init(14);
+				//downse->Play(false);
+				//downse->SetVolume(0.6f);
 			}
 			else {
 				//被ダメージステートに遷移する。
@@ -416,18 +457,23 @@ void Player::PlayAnimation()
 	{
 		//待機ステートの時
 	case Player::enPlayerState_Idle:
-		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.5f);
+		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.3f);
 		m_modelRender.SetAnimationSpeed(1.0f);
 		break;
 		//歩きステートの時
 	case Player::enPlayerState_Walk:
 		m_modelRender.PlayAnimation(enAnimClip_Walk, 0.1f);
-		m_modelRender.SetAnimationSpeed(1.2f);
+		m_modelRender.SetAnimationSpeed(1.3f);
 		break;
 		//走りステートの時
 	case Player::enPlayerState_Run:
 		m_modelRender.PlayAnimation(enAnimClip_Run, 0.1f);
 		m_modelRender.SetAnimationSpeed(1.3f);
+		break;
+		//しゃがみステートの時
+	case Player::enPlayerState_snake:
+		m_modelRender.PlayAnimation(enAnimClip_snake, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
 		//忍び足ステートの時
 	case Player::enPlayerState_StealthySteps:
@@ -439,7 +485,7 @@ void Player::PlayAnimation()
 		m_modelRender.PlayAnimation(enAnimClip_Rolling, 0.1f);
 		m_modelRender.SetAnimationSpeed(1.5f);
 		break;
-		//1撃目の攻撃ステートの時
+		//攻撃ステートの時
 	case Player::enPlayerState_FirstAttack:
 		m_modelRender.PlayAnimation(enAnimClip_FirstAttack, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.3f);
@@ -457,6 +503,11 @@ void Player::PlayAnimation()
 		//ダウンステートの時
 	case Player::enPlayerState_Down:
 		m_modelRender.PlayAnimation(enAnimClip_Down, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.2f);
+		break;
+		//ダウンステートの時
+	case Player::enPlayerState_Win:
+		m_modelRender.PlayAnimation(enAnimClip_Win, 0.2f);
 		m_modelRender.SetAnimationSpeed(1.2f);
 		break;
 	default:
@@ -479,6 +530,10 @@ void Player::ManageState()
 		//走りステートの時
 	case Player::enPlayerState_Run:
 		ProcessRunStateTransition();
+		break;
+		//しゃがみステートの時
+	case Player::enPlayerState_snake:
+		ProcesssnakeStateTransition();
 		break;
 		//忍び足ステートの時
 	case Player::enPlayerState_StealthySteps:
@@ -504,6 +559,10 @@ void Player::ManageState()
 	case Player::enPlayerState_Down:
 		ProcessDownStateTransition();
 		break;
+		//勝利ステートの時
+	case Player::enPlayerState_Win:
+		ProcessWinStateTransition();
+		break;
 	default:
 		break;
 	}
@@ -512,8 +571,15 @@ void Player::ManageState()
 void Player::ProcessCommonStateTransition()
 {
 	//Bボタンが押されたら
-	if (g_pad[0]->IsTrigger(enButtonB))
+	if (g_pad[0]->IsTrigger(enButtonB)&& m_sutamina >= 30.0f && COOLtime == false)
 	{
+		SoundSource* stepse = NewGO<SoundSource>(0);
+		stepse->Init(15);
+		stepse->Play(false);
+		stepse->SetVolume(0.6f);
+
+		m_sutamina -= 30.0f;
+
 		st = 2;
 		//回避ステートへ移行する
 		m_playerState = enPlayerState_Avoidance;
@@ -524,7 +590,8 @@ void Player::ProcessCommonStateTransition()
 	//RB1ボタンが押されたら＆攻撃ステート１だったら
 	if (g_pad[0]->IsPress(enButtonRB1))
 	{
-		//１撃目の攻撃ステートに移行する
+
+		//攻撃ステートに移行する
 		m_playerState = enPlayerState_FirstAttack;
 		m_isUnderAttack = false;
 		return;
@@ -533,6 +600,7 @@ void Player::ProcessCommonStateTransition()
 	//RB2ボタンが押されたら
 	if (g_pad[0]->IsTrigger(enButtonRB2))
 	{
+
 
 		//コリジョンオブジェクトを作成する。
 		auto collisionObject = NewGO<CollisionObject>(0);
@@ -553,13 +621,7 @@ void Player::ProcessCommonStateTransition()
 		return;
 	}
 
-	//Xボタンが押されたら
-	if (g_pad[0]->IsPress(enButtonX))
-	{
-		//忍び足ステートへ移行する
-		m_playerState = enPlayerState_StealthySteps;
-		return;
-	}
+
 
 	//xかzの移動速度があったら
 	if (fabsf(m_moveSpeed.x) >= MOVE_SPEED_MINIMUMVALUE || fabsf(m_moveSpeed.z) >= MOVE_SPEED_MINIMUMVALUE)
@@ -599,9 +661,19 @@ void Player::ProcessCommonStateTransition()
 	//xかzの移動速度がなかったら
 	else
 	{
-		//待機ステートに移行する
-		m_playerState = enPlayerState_Idle;
+		//Xボタンが押されたら
+		if (g_pad[0]->IsPress(enButtonX))
+		{
+			//忍び足ステートへ移行する
+			m_playerState = enPlayerState_snake;
+			return;
+		}
+		else{
+			//待機ステートに移行する
+			m_playerState = enPlayerState_Idle;
+		}
 		st = 0;
+
 		return;
 	}
 }
@@ -619,6 +691,12 @@ void  Player::ProcessWalkStateTransition()
 }
 
 void Player::ProcessRunStateTransition()
+{
+	//他のステートに遷移する
+	ProcessCommonStateTransition();
+}
+
+void Player::ProcesssnakeStateTransition()
 {
 	//他のステートに遷移する
 	ProcessCommonStateTransition();
@@ -652,9 +730,17 @@ void Player::ProcessAttackStateTransition()
 
 void Player::ProcessReceiveDamageStateTransition()
 {
+	if (m_Hitse == 0) {
+		SoundSource* damagese = NewGO<SoundSource>(0);
+		damagese->Init(13);
+		damagese->Play(false);
+		damagese->SetVolume(0.6f);
+		m_Hitse = 1;
+	}
 	//アニメーションの再生が終わったら
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
+		m_Hitse = 0;
 		//他のステートに遷移する
 		ProcessCommonStateTransition();
 	}
@@ -662,11 +748,41 @@ void Player::ProcessReceiveDamageStateTransition()
 
 void Player::ProcessDownStateTransition()
 {
+	m_downtimer += g_gameTime->GetFrameDeltaTime();
 	//アニメーションの再生が終わったら
-//	if (m_modelRender.IsPlayingAnimation() == false)
-//	{
-//		DeleteGO(this);
-//	}
+	if (m_modelRender.IsPlayingAnimation() == true)
+	{
+		m_down = true;
+	}
+	if (m_Hitse == 0) {
+		SoundSource* damagese = NewGO<SoundSource>(0);
+		damagese->Init(13);
+		damagese->Play(false);
+		damagese->SetVolume(0.8f);
+		m_Hitse = 1;
+	}
+	if (m_deathse == 0 && m_downtimer >=1.2f) {
+		SoundSource* downse = NewGO<SoundSource>(0);
+		downse->Init(14);
+		downse->Play(false);
+		downse->SetVolume(0.8f);
+		m_deathse = 1;
+	}
+	if (m_deathse == 1 && m_downtimer >= 2.5f) {
+		SoundSource* downse = NewGO<SoundSource>(0);
+		downse->Init(14);
+		downse->Play(false);
+		downse->SetVolume(0.8f);
+		m_deathse = 2;
+	}
+}
+
+
+void Player::ProcessWinStateTransition()
+{
+	if(m_modelRender.IsPlayingAnimation() == false){
+		index = 2;
+	}
 }
 
 void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
@@ -674,6 +790,10 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 	(void)clipName;
 	if (wcscmp(eventName, L"attack_start") == 0)
 	{
+		SoundSource* slashse = NewGO<SoundSource>(0);
+		slashse->Init(11);
+		slashse->Play(false);
+		slashse->SetVolume(0.6f);
 		//攻撃フラグをtrueにする
 		m_isUnderAttack = true;
 	}
@@ -685,6 +805,10 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 
 	if (wcscmp(eventName, L"porkattack_start") == 0)
 	{
+		SoundSource* slashse = NewGO<SoundSource>(0);
+		slashse->Init(12);
+		slashse->Play(false);
+		slashse->SetVolume(0.6f);
 		//攻撃フラグをtrueにする
 		m_isUnderAttack = true;
 	}
@@ -700,7 +824,7 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 		SoundSource* stepse = NewGO<SoundSource>(0);
 		stepse->Init(9);
 		stepse->Play(false);
-		stepse->SetVolume(1.2f);
+		stepse->SetVolume(0.8f);
 	}
 
 	if (wcscmp(eventName, L"Walk_step") == 0) {
@@ -709,22 +833,47 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 		SoundSource* stepse = NewGO<SoundSource>(0);
 		stepse->Init(9);
 		stepse->Play(false);
-		stepse->SetVolume(0.7f);
+		stepse->SetVolume(0.5f);
+	}
+
+	if (wcscmp(eventName, L"snake_step") == 0) {
+		//足音。
+		 //効果音を再生する。
+		SoundSource* stepse = NewGO<SoundSource>(0);
+		stepse->Init(9);
+		stepse->Play(false);
+		stepse->SetVolume(0.3f);
 	}
 
 }
 
 void Player::Render(RenderContext& rc)
 {
-	if (m_menu == false) {
-		//画像を描写する。
-		m_HPRender.Draw(rc);
-		m_staminaRender.Draw(rc);
-		m_senseRender.Draw(rc);
-
-		m_HPberRender.Draw(rc);
-		m_stmnberRender.Draw(rc);
-		m_senseberRender.Draw(rc);
+	if (taime <= 4.0f) {
+		taime += g_gameTime->GetFrameDeltaTime();
+	}
+	if (taime >= 3.0f) {
+		if (m_alpha < 1.0f) {
+			m_alpha += 0.01f;
+		}
+		if (m_menu == false) {
+			//画像を描写する。
+			//HP
+			m_HPRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+			m_HPberRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+			m_HPRender.Draw(rc);
+			m_HPberRender.Draw(rc);
+			//スタミナ
+			m_staminaRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+			m_stmnberRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+			m_staminaRender.Draw(rc);
+			m_stmnberRender.Draw(rc);
+			//SP
+			m_senseRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+			m_senseberRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+			m_senseRender.Draw(rc);
+			m_senseberRender.Draw(rc);
+		}
 	}
 	//ドロー。
 	m_modelRender.Draw(rc);

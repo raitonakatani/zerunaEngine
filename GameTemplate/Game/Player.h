@@ -15,12 +15,14 @@ public:
 		enPlayerState_Idle,                //待機ステート
 		enPlayerState_Walk,                //歩きステート
 		enPlayerState_Run,                 //走りステート
+		enPlayerState_snake,
 		enPlayerState_StealthySteps,       //忍び足ステート
 		enPlayerState_ReceiveDamage,       //被ダメージステート
 		enPlayerState_Down,                //ダウンステート
 		enPlayerState_Avoidance,           //回避ステート
 		enPlayerState_FirstAttack,         //１撃目の攻撃ステート
-		enPlayerState_PokeAttack           //突き攻撃ステート
+		enPlayerState_PokeAttack,           //突き攻撃ステート
+		enPlayerState_Win
 	};
 public:
 	/// <summary>
@@ -125,6 +127,10 @@ public:
 	/// </summary>
 	void ProcessRunStateTransition();
 	/// <summary>
+	/// しゃがみステートの遷移処理
+	/// </summary>
+	void ProcesssnakeStateTransition();
+	/// <summary>
 	/// 忍び足ステートの遷移処理
 	/// </summary>
 	void ProcessStealthyStepsStateTransition();
@@ -144,18 +150,24 @@ public:
 	/// ダウンステートの遷移処理
 	/// </summary>
 	void ProcessDownStateTransition();
+	/// <summary>
+	/// クリアステートの遷移処理
+	/// </summary>
+	void ProcessWinStateTransition();
 
 	// アニメーションクリップの番号を表す列挙型。
 	enum EnAnimationClip {
 		enAnimClip_Idle,	       //待機アニメーション
 		enAnimClip_Walk,           //歩きアニメーション
 		enAnimClip_Run,		       //走りアニメーション
+		enAnimClip_snake,
 		enAnimClip_StealthySteps,  //忍び足アニメーション
 		enAnimClip_Rolling,        //回転回避アニメーション
 		enAnimClip_FirstAttack,    //１撃目の攻撃アニメーション
 		enAnimClip_PokeAttack,     //突き攻撃アニメーション
 		enAnimClip_ReceiveDamage,  //被ダメージアニメーション
 		enAnimClip_Down,           //ダウンアニメーション
+		enAnimClip_Win,
 		enAnimClip_Num,		       //アニメーションの数
 	};
 
@@ -191,4 +203,11 @@ public:
 	bool					m_menu = false;
 	bool					COOLtime = false;
 	int						index = 0;
+	float taime = 0.0f;
+	float					m_alpha = 0.0f;					//pressbuttonのα値。
+	bool m_down = false;
+	float m_downtimer = 0.0f;
+	int m_Hitse = 0;
+	int m_deathse = 0;
 };
+

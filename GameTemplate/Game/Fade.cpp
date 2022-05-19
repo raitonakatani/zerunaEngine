@@ -18,9 +18,12 @@ Fade::~Fade()
 
 bool Fade::Start()
 {
-	m_spriteRender.Init("Assets/sprite/fade2.dds", 1600, 900);
+	m_spriteRender.Init("Assets/sprite/fade3.dds", 1600, 900);
 	//m_spriteRender.SetScale(SCALE);
 	m_spriteRender.SetPosition(POSITIOIN);
+	m_spriteRender2.Init("Assets/sprite/kuro.dds", 1600, 900);
+	//m_spriteRender.SetScale(SCALE);
+	m_spriteRender2.SetPosition(POSITIOIN);
 	//m_spriteRender.Update();
 	return true;
 }
@@ -46,12 +49,28 @@ void Fade::Update()
 
 		break;
 	}
+
+
+
+	//ƒ¿’l‚ð•Ï‰»‚³‚¹‚éB
+	if (m_state== enState_FadeOut)
+	{
+		m_alpha += g_gameTime->GetFrameDeltaTime() * 5.5f;
+	}
+	else
+	{
+		m_alpha += g_gameTime->GetFrameDeltaTime() * 5.2f;
+	}
+
+	m_spriteRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
 }
 
 void Fade::Render(RenderContext& rc)
 {
 	if (m_currentAlpha > 0.0f) {
-		m_spriteRender.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
+	//	m_spriteRender.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
+		m_spriteRender2.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
+		m_spriteRender2.Draw(rc);
 		m_spriteRender.Draw(rc);
 	}
 }

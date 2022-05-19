@@ -63,19 +63,19 @@ namespace nsK2EngineLow {
 		// レンダリングターゲットをクリア
 		rc.ClearRenderTargetView(g_postEffect.luminnceRenderTarget);
 
-	//	g_bloom.LuminanceSpriteDraw(rc);
+		g_bloom.LuminanceSpriteDraw(rc);
 
 		// レンダリングターゲットへの書き込み終了待ち
 		rc.WaitUntilFinishDrawingToRenderTarget(g_postEffect.luminnceRenderTarget);
 
-	//	g_bloom.Blur(rc);
+		g_bloom.Blur(rc);
 
-	//	g_bloom.Render(rc, mainRenderTarget);
+		g_bloom.Render(rc, mainRenderTarget);
 		// step-5 画面に表示されるレンダリングターゲットに戻す
 		rc.SetRenderTarget(
 			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
 			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
 		);
-	//	g_bloom.Draw(rc);
+		g_bloom.Draw(rc);
 	}
 }

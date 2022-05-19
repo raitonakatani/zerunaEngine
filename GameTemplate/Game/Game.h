@@ -34,6 +34,7 @@ private:
 	SoundSource*				GameBGM;
 	SpriteRender				m_spriteRender;
 	SpriteRender				m_pressButton;
+	float					m_alpha = 0.0f;					//pressbuttonのα値。
 	SpriteRender				m_targetRender;
 	
 	GameCamera*					m_gameCamera = nullptr;		// カメラ
@@ -45,11 +46,14 @@ private:
 	Enemy3*						m_enemy3 = nullptr;			// 敵
 	index*						m_index = nullptr;			//目的物
 	Player*						m_player = nullptr;			// プレイヤー
-	bool						m_fps = false;				//視点	bool						sibou = false;				//死亡関数
+	float						m_sibou = 0;				//死亡関数
+	bool m_deathse = false;
 	float						siboutimer = 0.0f;			//
 	bool						m_isWaitFadeout = false;	//フェード
 	Fade*						m_fade = nullptr;			//フェード
 	Retry* retryCounter = nullptr;
+	FontRender					m_fontRender;					//文字。
+	float						alpha = 0.0f;
 
 	LevelRender					m_levelRender;				//レベルレンダー。
 };

@@ -19,7 +19,7 @@ namespace
 	const float CHASETIMER_DEFAULT = 0.0f;          //追跡タイマーの初期値
 	const float SEARCH_RANGE = 300.0f;              //プレイヤーを発見できる距離
 	const float SEARCH_ANGLE = 130.0f;              //プレイヤーを発見できる角度
-	const float ATTACK_RANGE = 45;					//攻撃できる距離
+	const float ATTACK_RANGE = 100;					//攻撃できる距離
 	const int   ATTACK_PROBABILITY = 0;             //攻撃を行う確率
 	const float RECEIVE_DAMAGE = 50;                 //プレイヤーから受けるダメージ
 }
@@ -80,7 +80,7 @@ bool SpeedEnemy::Start()
 		});
 
 	//パンチのボーン
-	m_punchBoneId = m_modelRender.FindBoneID(L"RightHand");
+	m_punchBoneId = m_modelRender.FindBoneID(L"mixamorig:RightHand");
 
 	m_player = FindGO<Player>("player");
 
@@ -404,7 +404,7 @@ void SpeedEnemy::MakeAttackCollision()
 
 	Matrix matrix = m_modelRender.GetBone(m_punchBoneId)->GetWorldMatrix();
 	//剣のボーンのワールド行列をコリジョンに適用させる
-	collisionObject->SetName("enemy_attack");
+	collisionObject->SetName("Speedenemy_attack");
 	collisionObject->SetWorldMatrix(matrix);
 }
 
@@ -1464,7 +1464,7 @@ void SpeedEnemy::Render(RenderContext& rc)
 	}
 	else {
 
-		if (Weak.Length() <= 3000.0f)
+		if (Weak.Length() <= 1500.0f)
 		{
 			alertSprite.Draw(rc);
 		}

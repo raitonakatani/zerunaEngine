@@ -70,6 +70,7 @@ bool Game::Start()
 	m_floor->SetRotation({ 0.0f,0.0f,0.0f ,0.0f});
 	m_floor->SetScale({ 1.0f,1.0f,1.0f });
 
+	g_soundEngine->ResistWaveFileBank(16, "Assets/sound/16mituketa.wav");
 
 	//レベルを構築する。
 	m_levelRender.Init("Assets/Level/BackGround2.tkl", [&](LevelObjectData& objData) {
@@ -151,6 +152,8 @@ bool Game::Start()
 	
 	g_soundEngine->ResistWaveFileBank(6, "Assets/sound/6GameBGM.wav");
 
+	m_pressButton.Init("Assets/sprite/RETIRE/RETIRE.dds", 1600, 900);
+
 	//効果音を再生する。
 	GameBGM = NewGO<SoundSource>(0);
 	GameBGM->Init(6);
@@ -166,14 +169,14 @@ bool Game::Start()
 
 void Game::Update()
 {
-	if (m_isWaitFadeout && m_player->Getindex() == 1) {
+	if (m_isWaitFadeout && m_player->Getindex() == 2) {
 		if (!m_fade->IsFade()) {
 			NewGO<GameClear>(0, "gameclear");
 			DeleteGO(this);
 		}
 	}
 	else {
-		if (m_player->Getindex() == 1)
+		if (m_player->Getindex() == 2)
 		{
 			m_isWaitFadeout = true;
 			m_fade->StartFadeOut();
@@ -194,35 +197,19 @@ void Game::Update()
 	}
 	if (m_player->m_hp <= 0)
 	{
-/*		sibou = true;
+		m_deathse = true;
+		retryCounter->retryCounter = 2;
 	}
 	else {
-		sibou = false;
+		m_deathse = false;
 	}
-	if (sibou == true)
+	if (m_deathse == true)
 	{
-*/		siboutimer += g_gameTime->GetFrameDeltaTime();
-		/*	m_fontRender.SetText(L"Death");
-			//表示する座標を設定する。
-			m_fontRender.SetPosition(Vector3{ -300.0f,0.0f,0.0f });
-			//文字の大きさを変える。
-			m_fontRender.SetScale(5.0f);
-			if (siboutimer <= 1.5f) {
-				alpha = alpha + 0.02f;
-				if (alpha > 1.0f) {
-					alpha = 1.0f;
-				}
-			}
-
-			else if (siboutimer > 1.5f) {
-				alpha = alpha - 0.02f;
-				if (alpha < 0.0f) {
-					alpha = 0.0f;
-				}
-			}
-			//m_modelRender.Update();
-	*/
-
+		siboutimer += g_gameTime->GetFrameDeltaTime();
+		
+//		if (m_alpha < 1.0f) {
+			m_alpha += g_gameTime->GetFrameDeltaTime() * 0.2f;
+//		}
 
 		if (m_isWaitFadeout && siboutimer >= 3.0f) {
 			if (!m_fade->IsFade()) {
@@ -242,17 +229,12 @@ void Game::Update()
 		return;
 	}
 
-
+	m_pressButton.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
 }
 
 void Game::Render(RenderContext& rc)
 {
-
-	if (m_fps == true)
-	{
-		m_targetRender.Draw(rc);
-	}
-	else {
-		return;
+	if (m_deathse == true) {
+		m_pressButton.Draw(rc);
 	}
 }

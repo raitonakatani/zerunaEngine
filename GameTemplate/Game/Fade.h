@@ -48,7 +48,9 @@ private:
 		enState_Idle,			//アイドル中。
 	};
 	SpriteRender		m_spriteRender;				//スプライトレンダ―。
+	SpriteRender		m_spriteRender2;				//スプライトレンダ―。
 	EnState				m_state = enState_Idle;		//状態。
+	float					m_alpha = 0.0f;					//pressbuttonのα値。
 	float				m_currentAlpha = 1.0f;		//現在のα値。ここを変更すると画像が透明になる。
 };
 

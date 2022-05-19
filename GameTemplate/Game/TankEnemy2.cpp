@@ -49,14 +49,14 @@ bool TankEnemy2::Start()
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
 	//m_modelRender.SetScale(m_scale);
-	m_modelRender.SetScale(m_scale);
+	m_modelRender.SetScale({ 2.6f,2.6f,2.6f });
 	m_modelRender.Update();
 
 	m_firstPosition = m_position;
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
-		50.0f,			//半径。
+		60.0f,			//半径。
 		140.0f,			//高さ。
 		m_position		//座標。
 	);
@@ -135,7 +135,7 @@ void TankEnemy2::Update()
 
 	if (m_camera->m_camera == 1)
 	{
-		m_EnemyState = enEnemyState_Idle;
+	//	m_EnemyState = enEnemyState_Idle;
 	}
 
 	//モデルの更新。

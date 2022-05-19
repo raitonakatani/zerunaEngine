@@ -240,6 +240,7 @@ private:
 	float m_range =1000.0f;
 	Vector3 targetpos;
 	bool mikke = false;
+	int	hakken = 0;
 	float huntertimer = 0.0f;
 
 private:

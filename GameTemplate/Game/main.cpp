@@ -17,7 +17,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 
 	// ÉQÅ[ÉÄÇÃèâä˙âªÅB
-	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Game"));
+	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("SpecialSense"));
 	
 	// k2EngineLowÇÃèâä˙âªÅB
 	g_k2EngineLow = new K2EngineLow();
@@ -28,6 +28,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
     g_postEffect.Init();
     g_Light.Init();
+	g_bloom.Init();
     g_renderingEngine.Init();
 
     auto title = NewGO<Title>(0);

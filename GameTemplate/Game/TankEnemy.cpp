@@ -53,14 +53,14 @@ bool TankEnemy::Start()
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
 	//m_modelRender.SetScale(m_scale);
-	m_modelRender.SetScale({ 2.8f,2.8f,2.8f });
+	m_modelRender.SetScale({ 2.6f,2.6f,2.6f });
 	m_modelRender.Update();
 
 	m_firstPosition = m_position;
 	m_position.y = 15.0f;
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
-		40.0f,			//半径。
+		50.0f,			//半径。
 		140.0f,			//高さ。
 		m_position		//座標。
 	);
@@ -106,6 +106,7 @@ bool TankEnemy::Start()
 
 	g_soundEngine->ResistWaveFileBank(10, "Assets/sound/10houkou.wav");
 
+
 	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
 	//表示する座標を設定する。
 	alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
@@ -115,6 +116,11 @@ bool TankEnemy::Start()
 
 void TankEnemy::Update()
 {
+	if (m_player->m_down == true)
+	{
+		m_EnemyState = enEnemyState_look;
+	}
+
 	Weak = m_player->GetPosition() - m_position;
 	if (Weak.Length() >= 3000.0f)
 	{
@@ -137,15 +143,9 @@ void TankEnemy::Update()
 	if (range.Length() <= 300.0f)
 	{
 		
-		if (m_tank2->m_hp <= 0 && ab==0)
+		if (m_tank2->m_hp <= 0)
 		{
 			m_EnemyState = enEnemyState_look;
-			ab = 1;
-			//効果音を再生する。
-			SE = NewGO<SoundSource>(0);
-			SE->Init(10);
-			SE->Play(false);
-			SE->SetVolume(1.5f);
 		}
 	}
 
@@ -293,7 +293,7 @@ struct SweepResultWall :public btCollisionWorld::ConvexResultCallback
 void TankEnemy::Chase()
 {
 	//プレイヤーを見つけていなかったら。
-	if (state == 1)
+	if (state == 1&& alertLevel != 2)
 	{
 		if (Weak.Length() <= 800.0f && m_player->st == 1 || Weak.Length() <= 800.0f && m_player->st == 2)
 		{
@@ -503,6 +503,7 @@ void TankEnemy::ProcessCommonStateTransition()
 	//各タイマーを初期化。
 	m_idleTimer = 0.0f;
 	m_chaseTimer = 0.0f;
+	hakken = 0;
 
 	//エネミーからプレイヤーに向かうベクトルを計算する。
 	Vector3 diff = m_player->GetPosition() - m_position;
@@ -510,6 +511,14 @@ void TankEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけたら。
 	if (m_isSearchPlayer == true && diff.LengthSq() <= m_range * m_range)
 	{
+		if (hakken == 0) {
+			SE = NewGO<SoundSource>(0);
+			SE->Init(16);
+			SE->Play(false);
+			SE->SetVolume(2.0f);
+			hakken = 1;
+		}
+
 		state = 0;
 		m_timer = 0.0f;
 		alertTimet = 0.0f;
@@ -531,23 +540,9 @@ void TankEnemy::ProcessCommonStateTransition()
 		//攻撃できる距離なら。
 		if (IsCanAttack() == true)
 		{
-			
-			//乱数によって、攻撃するか待機させるかを決定する。	
-			int ram = rand() % 100;
-			if (ram >= 0)
-			{
-				//攻撃ステートに遷移する。
-				m_EnemyState = enEnemyState_Attack;
-				//m_isUnderAttack = false;
-				return;
-			}
-			else
-			{
-				//魔法攻撃ステートに遷移する。
-				m_EnemyState = enEnemyState_Attack;
-				return;
-			}
-
+			//攻撃ステートに遷移する。
+			m_EnemyState = enEnemyState_Attack;
+			return;
 		}
 		//攻撃できない距離なら。
 		else
@@ -582,6 +577,7 @@ void TankEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけられなければ。
 	else
 	{
+		hakken = 0;
 		if (alertLevel == 2)
 		{
 			alertLevel = 3;
@@ -688,6 +684,13 @@ void TankEnemy::ProcessDownStateTransition()
 
 void TankEnemy::lookTransition()
 {
+	if (ab == 0) {
+		SE = NewGO<SoundSource>(0);
+		SE->Init(10);
+		SE->Play(false);
+		SE->SetVolume(1.5f);
+		ab = 1;
+	}
 	//警報アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
@@ -712,9 +715,9 @@ void TankEnemy::alertTransition()
 	//警報アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		if (alertLevel == 1) {
+		//if (alertLevel == 1) {
 			alertLevel = 0;
-		}
+		//}
 			//他のステートに遷移する。
 		ProcessCommonStateTransition();
 	}
@@ -1123,7 +1126,7 @@ void TankEnemy::Broute()
 
 void TankEnemy::Render(RenderContext& rc)
 {
-	if (Weak.Length() <= 3000.0f && m_camera->drow == 1)
+	if (Weak.Length() <= 3000.0f)// && m_camera->drow == 1)
 	{
 		//モデルを描画する。
 		m_modelRender.Draw(rc);
@@ -1153,7 +1156,7 @@ void TankEnemy::Render(RenderContext& rc)
 	//壁と衝突した！
 	if (callback.isHit == false)
 	{
-		if (Weak.Length() <= 3000.0f && m_camera->drow == 1)
+		if (Weak.Length() <= 1500.0f)
 		{
 			alertSprite.Draw(rc);
 		}

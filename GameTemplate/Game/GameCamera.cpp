@@ -132,7 +132,7 @@ void GameCamera::Update()
 		float angle = acosf(diff.Dot(m_forward));
 
 		//プレイヤーが視界内に居なかったら。
-		if (Math::PI * 0.50f >= fabsf(angle))
+		if (Math::PI * 1.0f >= fabsf(angle))
 		{
 			drow = 1;
 		}
