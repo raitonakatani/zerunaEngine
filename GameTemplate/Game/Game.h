@@ -26,6 +26,8 @@ public:
 	void Render(RenderContext& rc);
 
 
+	bool Bgmspeed = false;
+
 private:
 
 	float						m_hp = 100.0f;								//プレイヤーのHP。
@@ -55,5 +57,5 @@ private:
 	FontRender					m_fontRender;					//文字。
 	float						alpha = 0.0f;
 
-	LevelRender					m_levelRender;				//レベルレンダー。
+	LevelRender					m_levelRender;				//レベルレンダー。 
 };

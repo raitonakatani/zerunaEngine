@@ -53,14 +53,14 @@ bool TankEnemy::Start()
 	m_modelRender.SetRotation(m_rotation);
 	//大きさを設定する。
 	//m_modelRender.SetScale(m_scale);
-	m_modelRender.SetScale({ 2.6f,2.6f,2.6f });
+	m_modelRender.SetScale(m_scale);
 	m_modelRender.Update();
 
 	m_firstPosition = m_position;
 	m_position.y = 15.0f;
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
-		50.0f,			//半径。
+		40.0f,			//半径。
 		140.0f,			//高さ。
 		m_position		//座標。
 	);
@@ -191,8 +191,11 @@ void TankEnemy::Update()
 		m_angl = 0.5f;
 		m_range = 1500.0f;
 	}
-
-
+	
+	if (m_EnemyState == enEnemyState_alert)
+	{
+		m_angl = 0.7f;
+	}
 	if (state == 0 &&m_isSearchPlayer == false) {
 	
 		m_timer += g_gameTime->GetFrameDeltaTime();
@@ -343,7 +346,7 @@ void TankEnemy::Collision()
 	//剣のボーンのワールド行列を取得する。
 	Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
 	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(50.0f, 50.0f, 50.0f));
+	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(60.0f, 60.0f, 60.0f));
 	collisionObject->SetWorldMatrix(matrix);
 	collisionObject->SetName("enemy");
 
@@ -366,19 +369,19 @@ void TankEnemy::Collision()
 
 	{
 
-	//	//プレイヤーの攻撃用のコリジョンを取得する。
-	//	const auto& collisions5 = g_collisionObjectManager->FindCollisionObjects("player");
-	//	//コリジョンの配列をfor文で回す。
-	//	for (auto collision : collisions5)
-	//	{
-	//		state = 2;
-	//		//コリジョンとキャラコンが衝突したら。
-	//		if (collision->IsHit(collisionObject))
-	//		{
-	//		//	m_camera->m_camera = 1;
-	//			return;
-	//		}
-	//	}
+		//プレイヤーの攻撃用のコリジョンを取得する。
+		const auto& collisions5 = g_collisionObjectManager->FindCollisionObjects("player");
+		//コリジョンの配列をfor文で回す。
+		for (auto collision5 : collisions5)
+		{
+			//コリジョンとキャラコンが衝突したら。
+			if (collision5->IsHit(collisionObject))
+			{
+				m_EnemyState = enEnemyState_Idle;
+				m_player->critical = 1;
+				return;
+			}
+		}
 
 
 		//プレイヤーの攻撃用のコリジョンを取得する。
@@ -515,7 +518,8 @@ void TankEnemy::ProcessCommonStateTransition()
 			SE = NewGO<SoundSource>(0);
 			SE->Init(16);
 			SE->Play(false);
-			SE->SetVolume(2.0f);
+			SE->SetVolume(0.8f);
+			m_game->Bgmspeed = true;
 			hakken = 1;
 		}
 
@@ -577,6 +581,7 @@ void TankEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけられなければ。
 	else
 	{
+		m_game->Bgmspeed = false;
 		hakken = 0;
 		if (alertLevel == 2)
 		{
@@ -599,7 +604,7 @@ void TankEnemy::ProcessIdleStateTransition()
 {
 	m_idleTimer += g_gameTime->GetFrameDeltaTime();
 	//待機時間がある程度経過したら。
-	if (m_idleTimer >= 0.1f)
+	if (m_idleTimer >= 0.1f && m_player->critical==0)
 	{
 	//	alertLevel = 0;
 		//他のステートへ遷移する。

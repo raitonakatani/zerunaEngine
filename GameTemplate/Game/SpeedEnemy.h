@@ -211,6 +211,7 @@ private:
 	int                     m_hp = 100;                                 //HP
 	int                     m_punchBoneId = -1;                         //パンチのボーン
 	int							alertLevel = 0; //警戒
+	int							m_weakness = -1;			//「m_weakness」ボーンのID。
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
 	int m_speedNumber = 0;
 	float m_angl = 0.40f;

@@ -11,7 +11,7 @@ namespace
 	const float CHARACON_HEIGHT = 45.0f;             //キャラコンの高さ
 	const float MODEL_POSITION_Y = 10.0f;            //モデルのY座標
 	const float MOVESPEED_MINIMUMVALUE = 0.001f;    //移動速度の最低値
-	const float MOVESPEED = 200.0f;                 //移動速度
+	const float MOVESPEED = 300.0f;                 //移動速度
 	const float GRAVITY = 1000.0f;                  //重力
 	const float IDLETIMER_MAX = 0.3f;               //待機タイマーの最大値
 	const float IDLETIMER_DEFAULT = 0.0f;           //待機タイマーの初期値
@@ -81,6 +81,8 @@ bool SpeedEnemy::Start()
 
 	//パンチのボーン
 	m_punchBoneId = m_modelRender.FindBoneID(L"mixamorig:RightHand");
+	m_weakness = m_modelRender.FindBoneID(L"mixamorig:Spine");
+
 
 	m_player = FindGO<Player>("player");
 
@@ -324,10 +326,10 @@ void SpeedEnemy::Collision()
 	//攻撃当たり判定用のコリジョンオブジェクトを作成する。
 	auto collisionObject = NewGO<CollisionObject>(0);
 	//剣のボーンのワールド行列を取得する。
-//	Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
+	Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
 	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(50.0f, 50.0f, 50.0f));
-//	collisionObject->SetWorldMatrix(matrix);
+	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(60.0f, 60.0f, 60.0f));
+	collisionObject->SetWorldMatrix(matrix);
 	collisionObject->SetName("enemy");
 
 
@@ -346,6 +348,21 @@ void SpeedEnemy::Collision()
 			return;
 		}
 	}
+
+	//プレイヤーの攻撃用のコリジョンを取得する。
+	const auto& collisions5 = g_collisionObjectManager->FindCollisionObjects("player");
+	//コリジョンの配列をfor文で回す。
+	for (auto collision5 : collisions5)
+	{
+		//コリジョンとキャラコンが衝突したら。
+		if (collision5->IsHit(collisionObject))
+		{
+			m_speedEnemyState = enSpeedEnemyState_Idle;
+			m_player->critical = 1;
+			return;
+		}
+	}
+
 
 	//プレイヤーの攻撃の当たり判定
 	const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("player_attack");
@@ -420,7 +437,7 @@ void SpeedEnemy::PlayAnimation()
 		//追跡ステートの時
 	case SpeedEnemy::enSpeedEnemyState_Chase:
 		m_modelRender.PlayAnimation(enAnimClip_Run, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.4f);
+		m_modelRender.SetAnimationSpeed(1.6f);
 		break;
 		//攻撃ステートの時
 	case SpeedEnemy::enSpeedEnemyState_Attack:
@@ -514,7 +531,7 @@ void SpeedEnemy::ProcessCommonStateTransition()
 		//ベクトルを正規化する。
 		diff.Normalize();
 		//移動速度を設定する。
-		m_moveSpeed = diff * 150.0f;
+		m_moveSpeed = diff * 350.0f;
 
 		Vector3 toPlayerDir = diff;
 		m_forward = toPlayerDir;
@@ -595,8 +612,8 @@ void SpeedEnemy::ProcessIdleStateTransition()
 	//待機タイマーをカウントさせる
 	m_idleTimer += g_gameTime->GetFrameDeltaTime();
 
-	//待機タイマーが0.7fより大きかったら
-	if (m_idleTimer >= IDLETIMER_MAX)
+	//待機タイマーが0.3fより大きかったら
+	if (m_idleTimer >= IDLETIMER_MAX && m_player->critical == 0)
 	{
 		//共通のステートの遷移処理に移行する
 		ProcessCommonStateTransition();
@@ -836,7 +853,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -886,7 +903,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -935,7 +952,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -984,7 +1001,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1033,7 +1050,7 @@ void SpeedEnemy::Aroute()
 					//正規化
 					diff.Normalize();
 					//目標地点に向かうベクトル×移動速度
-					m_moveSpeed = diff * 200.0f;
+					m_moveSpeed = diff * MOVESPEED;
 					//Y座標の移動速度を0にする
 					m_moveSpeed.y = 0.0f;
 				}
@@ -1082,7 +1099,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1131,7 +1148,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1180,7 +1197,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1229,7 +1246,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1278,7 +1295,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1327,7 +1344,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1376,7 +1393,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}
@@ -1425,7 +1442,7 @@ void SpeedEnemy::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 200.0f;
+				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
 				m_moveSpeed.y = 0.0f;
 			}

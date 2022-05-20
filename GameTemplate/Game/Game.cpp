@@ -62,11 +62,12 @@ bool Game::Start()
 //	m_bgObject.CreateFromModel(m_bgModelRendedr.GetModel(), m_bgModelRendedr.GetWorldMatrix(0));
 
 	m_player = NewGO<Player>(0, "player");
+	m_player->SetPosition({ 0.0f,0.0f,-400.0f });
 
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
 	m_floor = NewGO<Floor>(0, "floor");
-	m_floor->SetPosition({1.0f,1.0f,1.0f});
+	m_floor->SetPosition({0.0f,-1.0f,0.0f});
 	m_floor->SetRotation({ 0.0f,0.0f,0.0f ,0.0f});
 	m_floor->SetScale({ 1.0f,1.0f,1.0f });
 
@@ -110,7 +111,7 @@ bool Game::Start()
 		if (objData.ForwardMatchName(L"secondtank") == true) {
 			//エネミーのインスタンスを生成する。
 			m_tank2 = NewGO<TankEnemy2>(0, "TankEnemy2");
-			m_tank2->SetPosition( { objData.position });
+			m_tank2->SetPosition({ 2000.0f,2000.0f,0.0f });// objData.position});
 			m_tank2->SetRotation(objData.rotation);
 			m_tank2->SetScale(objData.scale);
 			//番号を設定する。
@@ -160,7 +161,6 @@ bool Game::Start()
 	GameBGM->Play(true);
 	GameBGM->SetVolume(0.5f);
 
-
 	m_fade = FindGO<Fade>("fade");
 	m_fade->StartFadeIn();
 
@@ -169,6 +169,18 @@ bool Game::Start()
 
 void Game::Update()
 {
+
+	if (Bgmspeed==true)
+	{
+		GameBGM->SetVolume(0.5f);
+		GameBGM->SetFrequencyRatio(4);
+	}
+	else
+	{
+		GameBGM->SetVolume(0.5f);
+		GameBGM->SetFrequencyRatio(1);
+	}
+
 	if (m_isWaitFadeout && m_player->Getindex() == 2) {
 		if (!m_fade->IsFade()) {
 			NewGO<GameClear>(0, "gameclear");

@@ -49,7 +49,7 @@ bool TankEnemy2::Start()
 	m_modelRender.SetRotation(m_rotation);
 	//‘å‚«‚³‚ğİ’è‚·‚éB
 	//m_modelRender.SetScale(m_scale);
-	m_modelRender.SetScale({ 2.6f,2.6f,2.6f });
+	m_modelRender.SetScale(m_scale);
 	m_modelRender.Update();
 
 	m_firstPosition = m_position;

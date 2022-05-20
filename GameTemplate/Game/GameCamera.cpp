@@ -17,14 +17,14 @@ bool GameCamera::Start()
 
 //	m_toCameraPos.Set(1.0f, 1.0f, 1.0f);
 	//注視点から視点までのベクトルを設定。
-	m_toCameraPos2.Set(0.0f, 100.0f, -200.0f);
+	m_toCameraPos2.Set(0.0f, 80.0f, -220.0f);
 	//プレイヤーのインスタンスを探す。
 	m_player = FindGO<Player>("player");
 	m_tank = FindGO<TankEnemy>("TankEmemy");
 
 	//カメラのニアクリップとファークリップを設定する。
 	g_camera3D->SetNear(1.0f);
-	g_camera3D->SetFar(5000.0f);
+	g_camera3D->SetFar(4000.0f);
 
 
 

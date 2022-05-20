@@ -19,7 +19,6 @@ public:
 		enPlayerState_StealthySteps,       //忍び足ステート
 		enPlayerState_ReceiveDamage,       //被ダメージステート
 		enPlayerState_Down,                //ダウンステート
-		enPlayerState_Avoidance,           //回避ステート
 		enPlayerState_FirstAttack,         //１撃目の攻撃ステート
 		enPlayerState_PokeAttack,           //突き攻撃ステート
 		enPlayerState_Win
@@ -39,6 +38,14 @@ public:
 	void Update();
 	void Render(RenderContext& rc);
 
+	/// <summary>
+	/// 座標を設定する。
+	/// </summary>
+	/// <param name="position">座標。</param>
+	void SetPosition(const Vector3& position)
+	{
+		m_position = position;
+	}
 	/// <summary>
 	/// 座標を取得する。
 	/// </summary>
@@ -68,6 +75,8 @@ public:
 	float m_hp = 100.0f;
 	float					m_sp = 700.0f;						//sp。
 
+	int critical = 0;
+
 	/// <summary>
 	/// アニメーションの初期化
 	/// </summary>
@@ -92,10 +101,6 @@ public:
 	/// 攻撃の当たり判定を作成する処理
 	/// </summary>
 	void MakeAttackCollision();
-	/// <summary>
-	/// 回避処理
-	/// </summary>
-	void Avoidance();
 	/// <summary>
 	/// アニメーションの再生
 	/// </summary>
@@ -135,10 +140,6 @@ public:
 	/// </summary>
 	void ProcessStealthyStepsStateTransition();
 	/// <summary>
-	/// 回避ステートの遷移処理
-	/// </summary>
-	void ProcessAvoidanceStateTransition();
-	/// <summary>
 	/// 攻撃ステートの遷移処理
 	/// </summary>
 	void ProcessAttackStateTransition();
@@ -162,7 +163,6 @@ public:
 		enAnimClip_Run,		       //走りアニメーション
 		enAnimClip_snake,
 		enAnimClip_StealthySteps,  //忍び足アニメーション
-		enAnimClip_Rolling,        //回転回避アニメーション
 		enAnimClip_FirstAttack,    //１撃目の攻撃アニメーション
 		enAnimClip_PokeAttack,     //突き攻撃アニメーション
 		enAnimClip_ReceiveDamage,  //被ダメージアニメーション
@@ -195,19 +195,19 @@ public:
 	SpriteRender			m_stmnberRender;
 	SpriteRender			m_senseberRender;
 	float					life = 100.0f;								//フルHPバー
-	float					m_sutamina = 150.0f;						//スタミナ。
-	float					m_hurusutamina = 150.0f;					//フルスタミナ。
+	float					m_sutamina = 200.0f;						//スタミナ。
+	float					m_hurusutamina = 200.0f;					//フルスタミナ。
 //	float					m_sp = 500.0f;						//sp。
 	float					m_hurusp = 700.0f;					//フルsp。
 	float					cooltime = 0.0f;
 	bool					m_menu = false;
 	bool					COOLtime = false;
 	int						index = 0;
-	float taime = 0.0f;
 	float					m_alpha = 0.0f;					//pressbuttonのα値。
 	bool m_down = false;
 	float m_downtimer = 0.0f;
 	int m_Hitse = 0;
 	int m_deathse = 0;
+	float m_startwalk = 0.0f;
 };
 
