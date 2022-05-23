@@ -17,6 +17,8 @@ index::~index()
 
 bool index::Start()
 {
+	m_position.y = -150.0f;
+
 	//™‚Ìƒ‚ƒfƒ‹‚ğ“Ç‚İ‚ŞB
 	m_modelRender.Init("Assets/modelData/treasure/treasure.tkm",false);
 	m_modelRender.SetScale({ 6.0f,6.0f,6.0f });

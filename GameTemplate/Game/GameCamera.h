@@ -47,7 +47,7 @@ private:
 	Vector3 m_position;
 	Vector3 m_forward;
 	Quaternion              m_rotation;                                 //‰ñ“]
-
+	Vector3 pos2;
 
 	
 

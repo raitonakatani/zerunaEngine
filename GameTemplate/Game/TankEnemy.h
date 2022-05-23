@@ -86,7 +86,7 @@ public:
 		return m_tankNumber;
 	}
 
-	
+	Vector3 tankPosi;
 
 private:
 	/// <summary>
@@ -197,7 +197,6 @@ private:
 	Vector3						m_scale = Vector3::One;						//大きさ。
 	//Vector3					m_moveVector;
 	Vector3						m_toPlayer;
-	SoundSource*				SE;
 	CharacterController			m_charaCon;									//キャラコン。
 	EnEnemyState				m_EnemyState = enEnemyState_Idle;			//エネミーステート。
 	EffectEmitter*				m_effectEmitter = nullptr;			//エフェクト。							//画像。
@@ -241,7 +240,10 @@ private:
 	Vector3 targetpos;
 	bool mikke = false;
 	int	hakken = 0;
+	int fasthakkenn = 0;
 	float huntertimer = 0.0f;
+	float a_timer = 0.0f;
+
 
 private:
 	TknFile m_tknFile;

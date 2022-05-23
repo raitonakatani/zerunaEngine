@@ -11,11 +11,12 @@ GameCamera::GameCamera()
 
 GameCamera::~GameCamera()
 {
+	DeleteGO(this);
 }
 bool GameCamera::Start()
 {
 
-//	m_toCameraPos.Set(1.0f, 1.0f, 1.0f);
+	m_toCameraPos.Set(0.0f, 70.0f, 350.0f);
 	//注視点から視点までのベクトルを設定。
 	m_toCameraPos2.Set(0.0f, 80.0f, -220.0f);
 	//プレイヤーのインスタンスを探す。
@@ -33,9 +34,47 @@ bool GameCamera::Start()
 void GameCamera::Update()
 {
 	// TPS
-		
+//	Vector3 tank = m_tank->tankPosi;
+//	tank.y += 120.0f;
 		//カメラを更新。
 		//注視点を計算する。
+	if (m_player != nullptr) {
+
+		Vector3 target = m_player->GetPosition();
+		//プレイヤの足元からちょっと上を注視点とする。
+		target.y += 150.0f;
+		toCameraPosOld = m_toCameraPos;
+
+		//パッドの入力を使ってカメラを回す。
+		float x = g_pad[0]->GetRStickXF();
+		float y = g_pad[0]->GetRStickYF();
+		//Y軸周りの回転
+		Quaternion qRot;
+		qRot.SetRotationDeg(Vector3::AxisY, 2.0f * x);
+		qRot.Apply(m_toCameraPos);
+		//X軸周りの回転。
+		Vector3 axisX;
+		axisX.Cross(Vector3::AxisY, m_toCameraPos);
+		axisX.Normalize();
+		qRot.SetRotationDeg(axisX, 2.0f * y);
+		qRot.Apply(m_toCameraPos);
+		//カメラの回転の上限をチェックする。
+		//注視点から視点までのベクトルを正規化する。
+		//正規化すると、ベクトルの大きさが１になる。
+		//大きさが１になるということは、ベクトルから強さがなくなり、方向のみの情報となるということ。
+		Vector3 toPosDir = m_toCameraPos;
+		toPosDir.Normalize();
+		if (toPosDir.y < -0.8f) {
+			//カメラが上向きすぎ。
+			m_toCameraPos = toCameraPosOld;
+		}
+		else if (toPosDir.y > 0.8f) {
+			//カメラが下向きすぎ。
+			m_toCameraPos = toCameraPosOld;
+		}
+
+
+
 		Vector3 target2 = m_player->GetPosition();
 		//プレイヤの足元からちょっと上を注視点とする。
 		target2.y += 150.0f;
@@ -70,64 +109,41 @@ void GameCamera::Update()
 		}
 
 
-/*		if (g_pad[0]->IsPress(enButtonA)) {
-			m_camera = 1;
-		}
-		else {
-			m_camera = 0;
-		}
+		//if (g_pad[0]->IsPress(enButtonA)) {
+		//	m_camera = 1;
+		//}
+		//else {
+		//	m_camera = 0;
+		//}
 
-		if (m_camera==1)
+		if (m_camera == 1 || m_player->prok == true)
 		{
-			m_timer += g_gameTime->GetFrameDeltaTime();
-
-			Vector3 kari;
-			m_toCameraPos2 = m_toCameraPos2;
-			if (m_timer < 1.0f)
-			{
-				m_toCameraPos2 += g_camera3D->GetForward() * 3.0f;
-				rook = 1;
-			}
-			//視点を計算する。
-			Vector3 pos2 = target2 + m_toCameraPos2;
-
-			posi = pos2;
-//			posi = posi * 0.8f;
-			g_camera3D->SetPosition(posi);
+			pos2 = target + m_toCameraPos;
+			//		g_camera3D->SetPosition(pos2);
 		}
 		else {
-			m_timer = 0.0f;
-			m_toCameraPos2 = m_toCameraPos2;
-			if (rook == 1) {
-				m_timer += g_gameTime->GetFrameDeltaTime();
-				if (m_timer < 1.0f)
-				{
-					m_toCameraPos2 += g_camera3D->GetForward() * 3.0f;
-					rook = 0;
-				}
-			}
 			//視点を計算する。
-			Vector3 pos2 = target2 + m_toCameraPos2;
+			pos2 = target2 + m_toCameraPos2;
 
-			g_camera3D->SetPosition(pos2);
+			//		g_camera3D->SetPosition(pos2);
 		}
-*/		//メインカメラに注視点と視点を設定する。
+		//メインカメラに注視点と視点を設定する。
 
 			//視点を計算する。
-		Vector3 pos2 = target2 + m_toCameraPos2;
+		Vector3 pos = target2 + m_toCameraPos2;
 
 		g_camera3D->SetPosition(pos2);
 		g_camera3D->SetTarget(target2);
 
 		//カメラの更新。
 		g_camera3D->Update();
-	
+
 
 		m_forward = Vector3::AxisZ;
 		m_rotation.Apply(m_forward);
 		Vector3 playerPosition = m_player->GetPosition();
 		playerPosition.y += 200.0f;
-		Vector3 diff = playerPosition - pos2;
+		Vector3 diff = playerPosition - pos;
 		diff.Normalize();
 		float angle = acosf(diff.Dot(m_forward));
 
@@ -139,7 +155,7 @@ void GameCamera::Update()
 		else {
 			drow = 0;
 		}
-
+	}
 }
 
 void GameCamera::Render(RenderContext& rc)

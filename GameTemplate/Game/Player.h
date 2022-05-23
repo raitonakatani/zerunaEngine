@@ -76,6 +76,7 @@ public:
 	float					m_sp = 700.0f;						//sp。
 
 	int critical = 0;
+	bool prok = false;
 
 	/// <summary>
 	/// アニメーションの初期化
@@ -187,6 +188,7 @@ public:
 	CharacterController     m_charaCon;	                                //キャラコン
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
 	GameCamera*				camera;
+	EffectEmitter*			m_effectEmitter = nullptr;					//エフェクト。
 	PAUSE*					m_pause = nullptr;
 	SpriteRender			m_HPRender;							        //画像。
 	SpriteRender			m_staminaRender;
@@ -209,5 +211,6 @@ public:
 	int m_Hitse = 0;
 	int m_deathse = 0;
 	float m_startwalk = 0.0f;
+
 };
 

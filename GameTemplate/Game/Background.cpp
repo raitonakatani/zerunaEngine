@@ -7,7 +7,7 @@ bool Background::Start()
 
 	//	m_modelRender.Init("Assets/modelData/stage/RPG.stage.tkm");
 
-	m_modelRender.Init("Assets/modelData/stage1/syougai2.tkm",true);
+	m_modelRender.Init("Assets/modelData/stage1/syougai3.tkm",true);
 	//モデルの座標を設定。
 	m_modelRender.SetPosition(m_position);
 	//モデルの回転を設定。
@@ -21,7 +21,7 @@ bool Background::Start()
 	m_physicsStaticObject.GetbtCollisionObject()->setUserIndex(enCollisionAttr_Wall);
 
 
-	m_modelRender2.InitModel("Assets/modelData/stage1/syougai2.tkm");
+	m_modelRender2.InitModel("Assets/modelData/stage1/syougai3.tkm");
 	//モデルの座標を設定。
 	m_modelRender2.SetPosition(m_position);
 	//モデルの回転を設定。
@@ -50,8 +50,8 @@ void Background::Render(RenderContext& rc)
 	if (g_pad[0]->IsPress(enButtonY) && m_player->m_sp >= 1)
 	{
 		m_modelRender2.Draw(rc);
-		g_Light.SetAmbientLight({ .1f,.1f,.1f });
-		g_Light.SetLigColor({ 0.3f,0.3f,0.3f });
+		g_Light.SetAmbientLight({ .15f,.15f,.15f });
+		g_Light.SetLigColor({ 0.4f,0.4f,0.4f });
 	}
 	else {
 		m_modelRender.Draw(rc);

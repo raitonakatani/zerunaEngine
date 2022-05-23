@@ -3,6 +3,8 @@
 #include "GameCamera.h"
 #include "PAUSE.h"
 
+//EffectEmitterを使用するために、ファイルをインクルードする。
+#include "graphics/effect/EffectEmitter.h"
 
 namespace
 {
@@ -105,6 +107,10 @@ bool Player::Start()
 	m_senseRender.SetPivot({ 0.0f, 0.5f });
 	m_senseRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_senseRender.Update();
+
+	camera = FindGO<GameCamera>("gameCamera");
+	EffectEngine::GetInstance()->ResistEffect(2, u"Assets/effect/efk/blood.efk");
+
 
 	return true;
 }
@@ -431,15 +437,17 @@ void Player::MakeAttackCollision()
 		Vector3(20.0f, 20.0f, 120.0f)                              //大きさ。
 	);
 
+	Matrix matrix = m_modelRender.GetBone(m_sword_jointBoneId)->GetWorldMatrix();
+	collisionObject->SetWorldMatrix(matrix);
 
 	if (m_playerState == enPlayerState_PokeAttack){
+
+
 		collisionObject->SetName("player_porkattack");
 	}
 	else {
 		collisionObject->SetName("player_attack");
 	}
-	Matrix matrix = m_modelRender.GetBone(m_sword_jointBoneId)->GetWorldMatrix();
-	collisionObject->SetWorldMatrix(matrix);
 }
 
 
@@ -586,6 +594,31 @@ void Player::ProcessCommonStateTransition()
 		return;
 	}
 
+	if (g_pad[0]->IsPress(enButtonRB2))
+	{
+		//コリジョンオブジェクトを作成する。
+		auto collisionObject = NewGO<CollisionObject>(0);
+
+		Vector3 collisionPosition = m_position;
+		collisionPosition += m_forward * 100.0f;
+		collisionPosition.y += 100.0f;
+		//ボックス状のコリジョンを作成する。
+		collisionObject->CreateBox(collisionPosition,				   //座標。
+			m_rotation,                                      //回転。
+			Vector3(60.0f, 30.0f, 180.0f)                              //大きさ。
+		);
+		collisionObject->SetName("player");
+
+		/*camera = FindGO<GameCamera>("gameCamera");
+		camera->m_camera = 1;*/
+
+		//prok = true;
+
+		//突き攻撃ステートに移行する
+		m_playerState = enPlayerState_PokeAttack;
+
+		return;
+	}
 
 
 	//xかzの移動速度があったら
@@ -680,6 +713,9 @@ void Player::ProcessAttackStateTransition()
 	//アニメーションの再生が終わったら
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
+		if (prok == true) {
+			prok = false;
+		}
 		//他のステートに遷移する
 		ProcessCommonStateTransition();
 	}
@@ -707,7 +743,7 @@ void Player::ProcessDownStateTransition()
 {
 	m_downtimer += g_gameTime->GetFrameDeltaTime();
 	//アニメーションの再生が終わったら
-	if (m_modelRender.IsPlayingAnimation() == true)
+	if (m_modelRender.IsPlayingAnimation() == false)
 	{
 		m_down = true;
 	}
@@ -771,6 +807,19 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 	}
 	else if (wcscmp(eventName, L"porkattack_end") == 0)
 	{
+		if (prok == true) {
+			Matrix matrix = m_modelRender.GetBone(m_sword_jointBoneId)->GetWorldMatrix();
+			Vector3 m_effectPosition = m_position;
+			m_effectPosition.y += 100.0f;
+			//エフェクトのオブジェクトを作成する。
+			m_effectEmitter = NewGO <EffectEmitter>(0);
+			m_effectEmitter->Init(2);
+			m_effectEmitter->SetPosition(m_effectPosition);
+			//エフェクトの大きさを設定する。
+			m_effectEmitter->SetScale(m_scale * 50.0f);
+			m_effectEmitter->Play();
+			m_effectEmitter->SetWorldMatrix(matrix);
+		}
 		//攻撃フラグをfalseにする
 		m_isUnderAttack = false;
 	}

@@ -95,6 +95,23 @@ namespace nsK2EngineLow {
 		{
 			return m_effect.IsPlay();
 		}
+
+		/// <summary>
+		/// 行列を設定。
+		/// </summary>
+		/// <param name="rotation">行列。</param>
+		void SetWorldMatrix(const Matrix& matrix)
+		{
+			Vector3 position;
+			position.x = matrix.m[3][0];
+			position.y = matrix.m[3][1];
+			position.z = matrix.m[3][2];
+			SetPosition(position);
+			Quaternion rotation;
+			rotation.SetRotation(matrix);
+			SetRotation(rotation);
+		}
+
 	private:
 		Effect m_effect;					//エフェクト。
 	};

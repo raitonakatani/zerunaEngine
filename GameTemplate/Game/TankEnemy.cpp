@@ -106,6 +106,9 @@ bool TankEnemy::Start()
 
 	g_soundEngine->ResistWaveFileBank(10, "Assets/sound/10houkou.wav");
 
+	if (m_tankNumber == 4) {
+		tankPosi = m_position;
+	}
 
 	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
 	//表示する座標を設定する。
@@ -116,6 +119,10 @@ bool TankEnemy::Start()
 
 void TankEnemy::Update()
 {
+	if (m_tankNumber == 4) {
+		tankPosi = m_position;
+	}
+
 	if (m_player->m_down == true)
 	{
 		m_EnemyState = enEnemyState_look;
@@ -127,15 +134,15 @@ void TankEnemy::Update()
 		return;
 	}
 
-	if (g_pad[0]->IsPress(enButtonY))
-	{
-		g_Light.SetLigPoint({ m_position.x,100.0f,m_position.z });
-		g_Light.SetPointRange(300.0f);
-		g_Light.SetLigPointColor({ 10.0f,0.0f,0.0f });
-	}
-	else {
-		g_Light.SetLigPointColor({ 0.0f,0.0f,0.0f });
-	}
+	//if (g_pad[0]->IsPress(enButtonY))
+	//{
+	//	g_Light.SetLigPoint({ m_position.x,100.0f,m_position.z });
+	//	g_Light.SetPointRange(300.0f);
+	//	g_Light.SetLigPointColor({ 10.0f,0.0f,0.0f });
+	//}
+	//else {
+	//	g_Light.SetLigPointColor({ 0.0f,0.0f,0.0f });
+	//}
 
 
 	Vector3 range = m_tank2->GetPosition() - m_position;
@@ -208,10 +215,10 @@ void TankEnemy::Update()
 		}
 	}
 
-	if (m_camera->m_camera == 1)
-	{
-	//	m_EnemyState = enEnemyState_Idle;
-	}
+	//if (m_camera->m_camera == 1)
+	//{
+	////	m_EnemyState = enEnemyState_Idle;
+	//}
 
 	Vector3 diff = m_player->GetPosition() - m_position;
 
@@ -346,7 +353,7 @@ void TankEnemy::Collision()
 	//剣のボーンのワールド行列を取得する。
 	Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
 	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(60.0f, 60.0f, 60.0f));
+	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(80.0f, 80.0f, 80.0f));
 	collisionObject->SetWorldMatrix(matrix);
 	collisionObject->SetName("enemy");
 
@@ -359,8 +366,9 @@ void TankEnemy::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(collisionObject))
 		{
+			m_player->prok = true;
 			state = 2;
-			m_camera->m_camera = 0;
+			//m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
 			m_EnemyState = enEnemyState_Death;
 			return;
@@ -377,8 +385,9 @@ void TankEnemy::Collision()
 			//コリジョンとキャラコンが衝突したら。
 			if (collision5->IsHit(collisionObject))
 			{
-				m_EnemyState = enEnemyState_Idle;
+				m_player->prok = true;
 				m_player->critical = 1;
+				m_EnemyState = enEnemyState_Idle;
 				return;
 			}
 		}
@@ -514,15 +523,18 @@ void TankEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけたら。
 	if (m_isSearchPlayer == true && diff.LengthSq() <= m_range * m_range)
 	{
-		if (hakken == 0) {
+
+
+		if (hakken == 0 && m_player->m_hp>0) {
+			SoundSource* SE;
 			SE = NewGO<SoundSource>(0);
 			SE->Init(16);
 			SE->Play(false);
 			SE->SetVolume(0.8f);
-			m_game->Bgmspeed = true;
 			hakken = 1;
 		}
 
+		m_game->Bgmspeed = true;
 		state = 0;
 		m_timer = 0.0f;
 		alertTimet = 0.0f;
@@ -540,6 +552,11 @@ void TankEnemy::ProcessCommonStateTransition()
 
 		m_rotation.SetRotationY(atan2(m_forward.x, m_forward.z));
 		m_modelRender.SetRotation(m_rotation);
+
+	/*	if (fasthakkenn == 0) {
+			m_EnemyState = enEnemyState_look;
+			return;
+		}*/
 
 		//攻撃できる距離なら。
 		if (IsCanAttack() == true)
@@ -689,12 +706,15 @@ void TankEnemy::ProcessDownStateTransition()
 
 void TankEnemy::lookTransition()
 {
+	fasthakkenn = 1;
 	if (ab == 0) {
-		SE = NewGO<SoundSource>(0);
-		SE->Init(10);
-		SE->Play(false);
-		SE->SetVolume(1.5f);
-		ab = 1;
+			SoundSource* SE;
+				SE = NewGO<SoundSource>(0);
+				SE->Init(10);
+				SE->SetVolume(1.5f);	
+				SE->Play(false);
+				SE->SetFrequencyRatio(0.5);
+				ab = 1;
 	}
 	//警報アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
@@ -818,6 +838,7 @@ void TankEnemy::PlayAnimation()
 	case enEnemyState_look:
 		//呼ぶアニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_look, 0.1f);
+		m_modelRender.SetAnimationSpeed(1.3f);
 		break;
 		//警戒ステートの時。
 	case enEnemyState_alert:

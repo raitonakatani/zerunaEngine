@@ -133,10 +133,10 @@ void TankEnemy2::Update()
 		}
 	}
 
-	if (m_camera->m_camera == 1)
-	{
-	//	m_EnemyState = enEnemyState_Idle;
-	}
+	//if (m_camera->m_camera == 1)
+	//{
+	////	m_EnemyState = enEnemyState_Idle;
+	//}
 
 	//モデルの更新。
 	m_modelRender.Update();
@@ -240,7 +240,7 @@ void TankEnemy2::Collision()
 		{
 			m_state = 2;
 			m_hp = 0;
-			m_camera->m_camera = 0;
+		//	m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
 			m_EnemyState = enEnemyState_Death;
 			return;

@@ -56,6 +56,6 @@ private:
 	Retry* retryCounter = nullptr;
 	FontRender					m_fontRender;					//文字。
 	float						alpha = 0.0f;
-
+	SoundSource* m_SE;
 	LevelRender					m_levelRender;				//レベルレンダー。 
 };

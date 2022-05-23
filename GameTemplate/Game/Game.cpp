@@ -21,6 +21,12 @@
 
 Game::~Game()
 {
+	const auto& m_gameCameras = FindGOs<GameCamera>("gameCamera");
+	for (auto m_gameCamera : m_gameCameras)
+	{
+		DeleteGO(m_gameCamera);
+	}
+
 	const auto& indexs = FindGOs<index>("index");
 	for (auto index : indexs)
 	{
@@ -47,7 +53,7 @@ Game::~Game()
 		DeleteGO(enemy3);
 	}
 
-	DeleteGO(m_gameCamera);
+
 	DeleteGO(m_player);
 	DeleteGO(m_background);
 	DeleteGO(m_floor);
@@ -64,13 +70,13 @@ bool Game::Start()
 	m_player = NewGO<Player>(0, "player");
 	m_player->SetPosition({ 0.0f,0.0f,-400.0f });
 
-	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
 	m_floor = NewGO<Floor>(0, "floor");
 	m_floor->SetPosition({0.0f,-1.0f,0.0f});
 	m_floor->SetRotation({ 0.0f,0.0f,0.0f ,0.0f});
 	m_floor->SetScale({ 1.0f,1.0f,1.0f });
 
+	g_soundEngine->ResistWaveFileBank(6, "Assets/sound/6GameBGM.wav");
 	g_soundEngine->ResistWaveFileBank(16, "Assets/sound/16mituketa.wav");
 
 	//レベルを構築する。
@@ -104,6 +110,11 @@ bool Game::Start()
 			m_tank->SetScale(objData.scale);
 			//番号を設定する。
 			m_tank->SettankNumber(objData.number);
+
+			if (m_tank->GettankNumber() == 4) {
+				m_tank->tankPosi = objData.position;
+			}
+			
 			//falseにすると、レベルの方でモデルが読み込まれない。
 			return true;
 		}
@@ -111,7 +122,7 @@ bool Game::Start()
 		if (objData.ForwardMatchName(L"secondtank") == true) {
 			//エネミーのインスタンスを生成する。
 			m_tank2 = NewGO<TankEnemy2>(0, "TankEnemy2");
-			m_tank2->SetPosition({ 2000.0f,2000.0f,0.0f });// objData.position});
+			m_tank2->SetPosition({  objData.position});
 			m_tank2->SetRotation(objData.rotation);
 			m_tank2->SetScale(objData.scale);
 			//番号を設定する。
@@ -141,6 +152,8 @@ bool Game::Start()
 			m_speed->SetspeedNumber(objData.number);
 			return true;
 		}
+
+		m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 		return true;
 	});
 
@@ -150,8 +163,7 @@ bool Game::Start()
 
 //	SkyCube* sky = NewGO<SkyCube>(0);
 //	sky->SetLuminance(0.2f);
-	
-	g_soundEngine->ResistWaveFileBank(6, "Assets/sound/6GameBGM.wav");
+
 
 	m_pressButton.Init("Assets/sprite/RETIRE/RETIRE.dds", 1600, 900);
 
@@ -169,6 +181,7 @@ bool Game::Start()
 
 void Game::Update()
 {
+
 
 	if (Bgmspeed==true)
 	{
@@ -197,40 +210,42 @@ void Game::Update()
 
 	if (retryCounter->retryCounter == 1)
 	{
-		m_player->m_hp = 0;
+		m_player->m_down = true;
 		retryCounter->retryCounter = 0;
 		siboutimer += 2.0f;
 	}
 	if (retryCounter->retryCounter == 2)
 	{
-		m_player->m_hp = 0;
+		m_player->m_down = true;
 	//	retryCounter->retryCounter = 2;
 		siboutimer += 2.0f;
 	}
-	if (m_player->m_hp <= 0)
+	if (m_player->m_down == true)
 	{
 		m_deathse = true;
-		retryCounter->retryCounter = 2;
+		if (retryCounter->retryCounter == 0) {
+			retryCounter->retryCounter = 2;
+		}
 	}
 	else {
 		m_deathse = false;
 	}
 	if (m_deathse == true)
 	{
-		siboutimer += g_gameTime->GetFrameDeltaTime();
+		siboutimer = siboutimer + 0.0000000001f;
 		
-//		if (m_alpha < 1.0f) {
+		if (siboutimer >= 100.0f) {
 			m_alpha += g_gameTime->GetFrameDeltaTime() * 0.2f;
-//		}
+		}
 
-		if (m_isWaitFadeout && siboutimer >= 3.0f) {
+		if (m_isWaitFadeout && siboutimer >= 150.0f) {
 			if (!m_fade->IsFade()) {
 				NewGO<Title>(0, "title");
 				DeleteGO(this);
 			}
 		}
 		else {
-			if (siboutimer >= 3.0f)
+			if (siboutimer >= 150.0f)
 			{
 				m_isWaitFadeout = true;
 				m_fade->StartFadeOut();
