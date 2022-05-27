@@ -13,6 +13,7 @@
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 
+#include "box.h"
 
 
 TankEnemy::TankEnemy()
@@ -22,6 +23,11 @@ TankEnemy::TankEnemy()
 
 TankEnemy::~TankEnemy()
 {
+	const auto& m_boxs = FindGOs<box>("box");
+	for (auto m_box : m_boxs)
+	{
+		DeleteGO(m_box);
+	}
 
 }
 
@@ -56,7 +62,6 @@ bool TankEnemy::Start()
 	m_modelRender.SetScale(m_scale);
 	m_modelRender.Update();
 
-	m_firstPosition = m_position;
 	m_position.y = 15.0f;
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
@@ -87,20 +92,18 @@ bool TankEnemy::Start()
 	m_forward = Vector3::AxisZ;
 	m_rotation.Apply(m_forward);
 
+	//パス
 	m_enemypath.Init("Assets/path/tank/enemypath1.tkl");
 	m_enemypath3.Init("Assets/path/tank/enemypath3.tkl");
 	m_enemypath5.Init("Assets/path/tank/enemypath5.tkl");
 	m_enemypath6.Init("Assets/path/tank/enemypath6.tkl");
 	m_enemypath7.Init("Assets/path/tank/enemypath7.tkl");
-
+	//ポイント
 	m_point = m_enemypath.GetFirstPoint();
 	m_point3 = m_enemypath3.GetFirstPoint();
 	m_point5 = m_enemypath5.GetFirstPoint();
 	m_point6 = m_enemypath6.GetFirstPoint();
 	m_point7 = m_enemypath7.GetFirstPoint();
-
-	// ナビメッシュを構築。
-	m_nvmMesh.Init("Assets/modelData/nvm/test2.tkn");
 
 	m_timer = 0.0f;
 
@@ -110,15 +113,31 @@ bool TankEnemy::Start()
 		tankPosi = m_position;
 	}
 
-	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
+//	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
 	//表示する座標を設定する。
-	alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
+//	alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
+
+
+	m_box = NewGO<box>(0, "box");
+	m_box->m_position = { m_position.x,250.0f ,m_position.z };
 
 	return true;
 }
 
 void TankEnemy::Update()
 {
+	if (m_hp > 0) {
+		m_box->m_position = { m_position.x,250.0f ,m_position.z };
+
+		if (m_box->m_extract == 1) {
+			m_box->m_question = 0;
+		}
+	}
+	else {
+		m_box->m_extract = 0;
+		m_box->m_question = 0;
+	}
+
 	if (m_tankNumber == 4) {
 		tankPosi = m_position;
 	}
@@ -145,16 +164,16 @@ void TankEnemy::Update()
 	//}
 
 
-	Vector3 range = m_tank2->GetPosition() - m_position;
+	//Vector3 range = m_tank2->GetPosition() - m_position;
 
-	if (range.Length() <= 300.0f)
-	{
-		
-		if (m_tank2->m_hp <= 0)
-		{
-			m_EnemyState = enEnemyState_look;
-		}
-	}
+	//if (range.Length() <= 300.0f)
+	//{
+	//	
+	//	if (m_tank2->m_hp <= 0)
+	//	{
+	//		m_EnemyState = enEnemyState_look;
+	//	}
+	//}
 
 	//追跡処理。
 	Chase();
@@ -176,25 +195,25 @@ void TankEnemy::Update()
 
 	if (alertLevel == 0)
 	{
-		alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		//alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		m_angl = 0.40f;
 		m_range = 1000.0f;
 	}
 	if (alertLevel == 1)
 	{
-		alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+		//alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		m_angl = 0.45f;
 		m_range = 1200.0f;
 	}
 	if (alertLevel == 2)
 	{
-		alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+		//alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 		m_angl = 0.50f;
 		m_range = 1500.0f;
 	}
 	if (alertLevel == 3)
 	{
-		alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+		//alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 		m_angl = 0.5f;
 		m_range = 1500.0f;
 	}
@@ -245,12 +264,12 @@ void TankEnemy::Update()
 		worldPos.y *= FRAME_BUFFER_H / 2;
 
 		//ポジションの設定。
-		alertSprite.SetPosition(Vector3(worldPos.x, worldPos.y, 0.0f));
+		//alertSprite.SetPosition(Vector3(worldPos.x, worldPos.y, 0.0f));
 	}
 	else {
-		alertSprite.SetPosition({2000.0f,2000.0f,0.0f});
+		//alertSprite.SetPosition({2000.0f,2000.0f,0.0f});
 	}
-	alertSprite.Update();
+	//alertSprite.Update();
 	//モデルの更新。
 	m_modelRender.Update();
 }
@@ -310,6 +329,7 @@ void TankEnemy::Chase()
 			m_EnemyState = enEnemyState_alert;	
 			
 			if (alertLevel == 0) {
+				m_box->m_question = 1;
 				alertLevel = 1;
 			}
 		//	if (alertLevel == 3)
@@ -318,6 +338,7 @@ void TankEnemy::Chase()
 		//	}
 		}
 		else if (alertLevel == 0 || alertLevel == 3) {
+			m_box->m_question = 0;
 			m_EnemyState = enEnemyState_Chase;
 			Aroute();
 		}
@@ -367,7 +388,10 @@ void TankEnemy::Collision()
 		if (collision->IsHit(collisionObject))
 		{
 			m_player->prok = true;
+			m_player->m_prokcamera = 1;
 			state = 2;
+
+
 			//m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
 			m_EnemyState = enEnemyState_Death;
@@ -385,7 +409,9 @@ void TankEnemy::Collision()
 			//コリジョンとキャラコンが衝突したら。
 			if (collision5->IsHit(collisionObject))
 			{
-				m_player->prok = true;
+				m_box->m_extract = 0;
+				m_box->m_question = 0;
+			//	m_player->prok = true;
 				m_player->critical = 1;
 				m_EnemyState = enEnemyState_Idle;
 				return;
@@ -515,7 +541,7 @@ void TankEnemy::ProcessCommonStateTransition()
 	//各タイマーを初期化。
 	m_idleTimer = 0.0f;
 	m_chaseTimer = 0.0f;
-	hakken = 0;
+//	hakken = 0;
 
 	//エネミーからプレイヤーに向かうベクトルを計算する。
 	Vector3 diff = m_player->GetPosition() - m_position;
@@ -523,9 +549,9 @@ void TankEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけたら。
 	if (m_isSearchPlayer == true && diff.LengthSq() <= m_range * m_range)
 	{
+		m_box->m_extract = 1;
 
-
-		if (hakken == 0 && m_player->m_hp>0) {
+		if (hakken == 0) {
 			SoundSource* SE;
 			SE = NewGO<SoundSource>(0);
 			SE->Init(16);
@@ -553,10 +579,10 @@ void TankEnemy::ProcessCommonStateTransition()
 		m_rotation.SetRotationY(atan2(m_forward.x, m_forward.z));
 		m_modelRender.SetRotation(m_rotation);
 
-	/*	if (fasthakkenn == 0) {
+		if (fasthakkenn == 0) {
 			m_EnemyState = enEnemyState_look;
 			return;
-		}*/
+		}
 
 		//攻撃できる距離なら。
 		if (IsCanAttack() == true)
@@ -583,7 +609,6 @@ void TankEnemy::ProcessCommonStateTransition()
 
 		//エネミーからプレイヤーに向かうベクトルを計算する。
 		Vector3 diff1 = targetpos - m_position;
-		huntertimer += g_gameTime->GetFrameDeltaTime();
 		//ベクトルを正規化する。
 		diff1.Normalize();
 		//移動速度を設定する。
@@ -598,6 +623,10 @@ void TankEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけられなければ。
 	else
 	{
+		ab = 1;
+		m_box->m_extract = 0;
+		m_box->m_extractanim = 0;
+
 		m_game->Bgmspeed = false;
 		hakken = 0;
 		if (alertLevel == 2)
@@ -689,6 +718,9 @@ void TankEnemy::ProcessDownStateTransition()
 	m_modelRender.SetPosition(m_position);
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
+		if (m_player->prok == true) {
+			m_player->prok = false;
+		}
 		m_hp = 0;
 		state = 3;
 		m_charaCon.RemoveRigidBoby();
@@ -719,7 +751,7 @@ void TankEnemy::lookTransition()
 	//警報アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-	//	alertLevel = 0;
+		//ab = 0;
 		//他のステートに遷移する。
 		ProcessCommonStateTransition();
 	}
@@ -930,7 +962,7 @@ void TankEnemy::Aroute()
 					//目標地点に向かうベクトル×移動速度
 					m_moveSpeed = diff * 120.0f;
 					//Y座標の移動速度を0にする
-					m_moveSpeed.y = 0.0f;
+				//	m_moveSpeed.y = 0.0f;
 				}
 
 			}
@@ -983,7 +1015,7 @@ void TankEnemy::Aroute()
 				//目標地点に向かうベクトル×移動速度
 				m_moveSpeed = diff * 120.0f;
 				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
+			//	m_moveSpeed.y = 0.0f;
 			}
 
 		}
@@ -1035,7 +1067,7 @@ void TankEnemy::Aroute()
 				//目標地点に向かうベクトル×移動速度
 				m_moveSpeed = diff * 120.0f;
 				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
+			//	m_moveSpeed.y = 0.0f;
 			}
 
 		}
@@ -1087,7 +1119,7 @@ void TankEnemy::Aroute()
 				//目標地点に向かうベクトル×移動速度
 				m_moveSpeed = diff * 120.0f;
 				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
+			//	m_moveSpeed.y = 0.0f;
 			}
 
 		}
@@ -1139,7 +1171,7 @@ void TankEnemy::Aroute()
 				//目標地点に向かうベクトル×移動速度
 				m_moveSpeed = diff * 120.0f;
 				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
+			//	m_moveSpeed.y = 0.0f;
 			}
 
 		}
@@ -1159,7 +1191,7 @@ void TankEnemy::Render(RenderContext& rc)
 	}
 	else if (Weak.Length() <= 500.0f && m_camera->drow == 0)
 	{
-		alertSprite.Draw(rc);
+	//	alertSprite.Draw(rc);
 		//モデルを描画する。
 		m_modelRender.Draw(rc);
 	}
@@ -1184,7 +1216,7 @@ void TankEnemy::Render(RenderContext& rc)
 	{
 		if (Weak.Length() <= 1500.0f)
 		{
-			alertSprite.Draw(rc);
+	//		alertSprite.Draw(rc);
 		}
 	}
 

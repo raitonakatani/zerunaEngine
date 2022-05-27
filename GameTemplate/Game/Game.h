@@ -27,6 +27,8 @@ public:
 
 
 	bool Bgmspeed = false;
+	float m_Ambient = 0.15f;
+	float m_Direction = 0.35f;
 
 private:
 
@@ -58,4 +60,5 @@ private:
 	float						alpha = 0.0f;
 	SoundSource* m_SE;
 	LevelRender					m_levelRender;				//レベルレンダー。 
+
 };

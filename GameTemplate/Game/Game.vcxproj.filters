@@ -28,6 +28,8 @@
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="PAUSE.cpp" />
     <ClCompile Include="Retry.cpp" />
+    <ClCompile Include="box.cpp" />
+    <ClCompile Include="ClearCounter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -51,5 +53,7 @@
     <ClInclude Include="Floor.h" />
     <ClInclude Include="PAUSE.h" />
     <ClInclude Include="Retry.h" />
+    <ClInclude Include="box.h" />
+    <ClInclude Include="ClearCounter.h" />
   </ItemGroup>
 </Project>

@@ -83,6 +83,7 @@ namespace nsK2EngineLow {
 		initData.m_modelUpAxis = m_enFbxUpAxis;
 		m_model.Init(initData);
 		InitShadowModel(filePath, m_enFbxUpAxis);
+
 	}
 
 	void ModelRender::InitModel(const char* filePath)
@@ -136,7 +137,7 @@ namespace nsK2EngineLow {
 	void ModelRender::Update()
 	{
 		m_model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
-
+		m_shadowmodel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
 		if (m_skeleton.IsInited()) {
 			//スケルトンを更新。
 			m_skeleton.Update(m_model.GetWorldMatrix());
@@ -144,7 +145,7 @@ namespace nsK2EngineLow {
 
 		//アニメーションを進める。
 		m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
-		m_shadowmodel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+		
 	}
 
 
@@ -175,6 +176,7 @@ namespace nsK2EngineLow {
 			ShadowModelInitData.m_vsSkinEntryPointFunc = "VSMain";
 		}
 		ShadowModelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT,
+			ShadowModelInitData.m_modelUpAxis = modelUpAxis;
 			m_shadowmodel.Init(ShadowModelInitData);
 
 

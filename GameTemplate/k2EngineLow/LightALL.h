@@ -42,6 +42,7 @@ namespace nsK2EngineLow {
         float pad;
         Vector3 eyePos;
         float pad2;
+
     };
 
     class LightALL
@@ -160,6 +161,11 @@ namespace nsK2EngineLow {
             return m_light;
         }
 
+
+        const Vector3& GetAmbientLight()
+        {
+            return m_light.ambientLight;
+        }
 
 
     private:

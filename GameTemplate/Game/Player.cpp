@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "GameCamera.h"
 #include "PAUSE.h"
+#include "Game.h"
 
 //EffectEmitterを使用するために、ファイルをインクルードする。
 #include "graphics/effect/EffectEmitter.h"
@@ -11,7 +12,7 @@ namespace
 	const float CHARACON_RADIUS = 30.0f;            //キャラコンの半径
 	const float CHARACON_HEIGHT = 100.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
-	const float WALK_MOVESPEED = 200.0f;            //歩きステートの移動速度
+	const float WALK_MOVESPEED = 1200.0f;            //歩きステートの移動速度
 	const float RUN_MOVESPEED = 400.0f;            //走りステートの移動速度
 	const float STEALTHYSTEP_MOVESPEED = 100.0f;     //忍び足ステートの移動速度
 	const float GRAVITY = 1000.0f;                  //重力
@@ -61,7 +62,6 @@ bool Player::Start()
 	//「Sword」ボーンのID(番号)を取得する。
 	m_sword_jointBoneId = m_modelRender.FindBoneID(L"Sword_joint");
 
-	camera = FindGO<GameCamera>("GameCamera");
 
 	//サウンドを読み込む。
 	g_soundEngine->ResistWaveFileBank(9, "Assets/sound/11yoroi.wav");
@@ -108,9 +108,9 @@ bool Player::Start()
 	m_senseRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_senseRender.Update();
 
-	camera = FindGO<GameCamera>("gameCamera");
-	EffectEngine::GetInstance()->ResistEffect(2, u"Assets/effect/efk/blood.efk");
+	EffectEngine::GetInstance()->ResistEffect(2, u"Assets/effect/efk/blood2.efk");
 
+	m_game = FindGO<Game>("game");
 
 	return true;
 }
@@ -118,10 +118,6 @@ bool Player::Start()
 void Player::Update()
 {
 
-	if (index == 1)
-	{
-		m_playerState = enPlayerState_Win;
-	}
 
 	if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
 		&& m_menu == false)					//かつm_menu==falseの時。
@@ -221,11 +217,11 @@ void Player::Update()
 	if (g_pad[0]->IsPress(enButtonY) && m_sp >= 1) {
 		--m_sp;
 	}
-	else if(m_sp <= 700){
-		m_sp += 0.3f;
+	else if(m_sp <= 150){
+		m_sp += 0.2f;
 	}
 
-	m_hurusp = m_sp / 700.0f;
+	m_hurusp = m_sp / 150.0f;
 	m_senseRender.SetScale({ m_hurusp,1.0f,0.0f });
 	m_senseRender.SetPosition({ -748.0f,325.0f ,0.0f });
 	//m_staminaRender.SetPivot({ 0.0f, 0.5f });
@@ -265,38 +261,56 @@ void Player::Move()
 	cameraRight.y = 0.0f;
 	cameraRight.Normalize();
 
-	m_startwalk += g_gameTime->GetFrameDeltaTime();
-	if (m_startwalk >= 1.0f &&m_startwalk <=2.5f)
-	{
-		m_moveSpeed.z += 200.0f;
-	}
-	else if (m_startwalk > 2.5f) {
-		if (COOLtime == true)
-		{
-			m_moveSpeed += cameraForward * lStick_y * 100.0f;	//奥方向への移動速度を加算。
-			m_moveSpeed += cameraRight * lStick_x * 100.0f;		//右方向への移動速度を加算。
-			m_sutamina++;
-		}
-		if (COOLtime == false)
-		{
-			//走りステートだったら
-			if (m_playerState == enPlayerState_Run)
-			{
-				m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
-				m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
-				m_sutamina -= 1.5f;
-			}
 
-			else if (m_playerState == enPlayerState_StealthySteps || m_playerState == enPlayerState_snake) {
-				m_moveSpeed += cameraForward * lStick_y * STEALTHYSTEP_MOVESPEED;
-				m_moveSpeed += cameraRight * lStick_x * STEALTHYSTEP_MOVESPEED;
-				m_sutamina -= 0.5f;
-			}
-			//それ以外だったら
-			else {
-				m_moveSpeed += cameraForward * lStick_y * WALK_MOVESPEED;
-				m_moveSpeed += cameraRight * lStick_x * WALK_MOVESPEED;
+	if (index == 2) {
+			m_moveSpeed.z += 200.0f;
+	//		m_playerState = enPlayerState_Walk;
+	//		return;
+	}
+	if (index == 3)
+	{
+		//m_moveSpeed.z = 0.0f;
+		//index = 4;
+		m_playerState = enPlayerState_Win;
+	//	return;
+	}
+
+	if (index == 0 || index == 1) {
+		m_startwalk += g_gameTime->GetFrameDeltaTime();
+		if (m_startwalk >= 1.0f && m_startwalk <= 2.5f)
+		{
+			m_moveSpeed.z += 200.0f;
+			//	m_playerState = enPlayerState_Walk;
+			//	return;
+		}
+		else if (m_startwalk > 2.5f) {
+			if (COOLtime == true)
+			{
+				m_moveSpeed += cameraForward * lStick_y * 100.0f;	//奥方向への移動速度を加算。
+				m_moveSpeed += cameraRight * lStick_x * 100.0f;		//右方向への移動速度を加算。
 				m_sutamina++;
+			}
+			if (COOLtime == false)
+			{
+				//走りステートだったら
+				if (m_playerState == enPlayerState_Run)
+				{
+					m_moveSpeed += cameraForward * lStick_y * RUN_MOVESPEED;
+					m_moveSpeed += cameraRight * lStick_x * RUN_MOVESPEED;
+					m_sutamina -= 1.5f;
+				}
+
+				else if (m_playerState == enPlayerState_StealthySteps || m_playerState == enPlayerState_snake) {
+					m_moveSpeed += cameraForward * lStick_y * STEALTHYSTEP_MOVESPEED;
+					m_moveSpeed += cameraRight * lStick_x * STEALTHYSTEP_MOVESPEED;
+					m_sutamina -= 0.5f;
+				}
+				//それ以外だったら
+				else {
+					m_moveSpeed += cameraForward * lStick_y * WALK_MOVESPEED;
+					m_moveSpeed += cameraRight * lStick_x * WALK_MOVESPEED;
+					m_sutamina++;
+				}
 			}
 		}
 	}
@@ -713,9 +727,9 @@ void Player::ProcessAttackStateTransition()
 	//アニメーションの再生が終わったら
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		if (prok == true) {
+	/*	if (prok == true) {
 			prok = false;
-		}
+		}*/
 		//他のステートに遷移する
 		ProcessCommonStateTransition();
 	}
@@ -774,7 +788,8 @@ void Player::ProcessDownStateTransition()
 void Player::ProcessWinStateTransition()
 {
 	if(m_modelRender.IsPlayingAnimation() == false){
-		index = 2;
+		//ProcessCommonStateTransition();
+		index = 4;
 	}
 }
 
@@ -856,8 +871,12 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 void Player::Render(RenderContext& rc)
 {
 	if (m_startwalk>=2.5f) {
-		if (m_alpha < 1.0f) {
+		if (m_alpha < 1.0f && m_down == false && index <= 2) {
 			m_alpha += 0.01f;
+		}
+		else if (m_alpha > 0.0f && m_down == true ||
+			m_alpha > 0.0f  && index >= 3) {
+			m_alpha -= 0.003f;
 		}
 		if (m_menu == false) {
 			//画像を描写する。

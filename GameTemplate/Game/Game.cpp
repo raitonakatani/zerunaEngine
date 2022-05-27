@@ -19,6 +19,8 @@
 #include "sound/SoundSource.h"
 
 
+#include "box.h"
+
 Game::~Game()
 {
 	const auto& m_gameCameras = FindGOs<GameCamera>("gameCamera");
@@ -42,13 +44,13 @@ Game::~Game()
 	{
 		DeleteGO(tkenemy);
 	}
-	const auto& enemys2 = FindGOs<SpeedEnemy>("m_enemy2");
-	for (auto enemy2 : enemys2)
+	const auto& enemy2s = FindGOs<SpeedEnemy>("m_enemy2");
+	for (auto enemy2 : enemy2s)
 	{
 		DeleteGO(enemy2);
 	}
-	const auto& enemys3 = FindGOs<Enemy3>("m_enemy3");
-	for (auto enemy3 : enemys3)
+	const auto& enemy3s = FindGOs<Enemy3>("m_enemy3");
+	for (auto enemy3 : enemy3s)
 	{
 		DeleteGO(enemy3);
 	}
@@ -63,6 +65,7 @@ bool Game::Start()
 {
 //	g_camera3D->SetPosition({ 0.0f, 100.0f, -600.0f });
 
+	//NewGO<box>(0);
 	
 //	m_bgModelRendedr.Init("Assets/modelData/karisute/stage.yuka.tkm");
 //	m_bgObject.CreateFromModel(m_bgModelRendedr.GetModel(), m_bgModelRendedr.GetWorldMatrix(0));
@@ -70,6 +73,7 @@ bool Game::Start()
 	m_player = NewGO<Player>(0, "player");
 	m_player->SetPosition({ 0.0f,0.0f,-400.0f });
 
+	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
 	m_floor = NewGO<Floor>(0, "floor");
 	m_floor->SetPosition({0.0f,-1.0f,0.0f});
@@ -80,7 +84,7 @@ bool Game::Start()
 	g_soundEngine->ResistWaveFileBank(16, "Assets/sound/16mituketa.wav");
 
 	//レベルを構築する。
-	m_levelRender.Init("Assets/Level/BackGround2.tkl", [&](LevelObjectData& objData) {
+	m_levelRender.Init("Assets/Level/BackGround4.tkl", [&](LevelObjectData& objData) {
 		
 		if (objData.EqualObjectName(L"stage") == true) {
 
@@ -152,8 +156,6 @@ bool Game::Start()
 			m_speed->SetspeedNumber(objData.number);
 			return true;
 		}
-
-		m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 		return true;
 	});
 
@@ -165,7 +167,7 @@ bool Game::Start()
 //	sky->SetLuminance(0.2f);
 
 
-	m_pressButton.Init("Assets/sprite/RETIRE/RETIRE.dds", 1600, 900);
+	m_pressButton.Init("Assets/sprite/RETIRE/Gameover.dds", 1600, 900);
 
 	//効果音を再生する。
 	GameBGM = NewGO<SoundSource>(0);
@@ -181,7 +183,12 @@ bool Game::Start()
 
 void Game::Update()
 {
-
+	if (m_player->index == 4) {
+		m_Ambient += 0.015f;
+		m_Direction += 0.015f;
+		g_Light.SetAmbientLight({m_Ambient,m_Ambient ,m_Ambient });
+		g_Light.SetLigColor({m_Direction,m_Direction ,m_Direction });
+	}
 
 	if (Bgmspeed==true)
 	{
@@ -194,15 +201,16 @@ void Game::Update()
 		GameBGM->SetFrequencyRatio(1);
 	}
 
-	if (m_isWaitFadeout && m_player->Getindex() == 2) {
+	if (m_isWaitFadeout && m_player->index == 4) {
 		if (!m_fade->IsFade()) {
 			NewGO<GameClear>(0, "gameclear");
 			DeleteGO(this);
 		}
 	}
 	else {
-		if (m_player->Getindex() == 2)
+		if (m_Ambient >=2.0f)
 		{
+			m_fade->m_clear = 1;
 			m_isWaitFadeout = true;
 			m_fade->StartFadeOut();
 		}

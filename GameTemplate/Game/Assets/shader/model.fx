@@ -226,7 +226,7 @@ float3 CalcPhongSpecular(float3 normal, float3 worldPos, float3 lightDirection)
     float t = saturate(dot(refVec, toEye));
 
     // 鏡面反射の強さを絞る
-    t = pow(t, 5.0f);
+    t = pow(t, 2.0f) * 17.0f;
 
     //  鏡面反射光を求める
     float3 specularLig = directionlight.dirColor * t;
@@ -247,7 +247,7 @@ float3 CalcLigFromDirectionLight(SPSIn psIn)
     //ディレクションライトによるリムライトを計算する。
     float3 rimDirection = CalcRimLight(psIn, directionlight.dirDirection, directionlight.dirColor);
     
-    return diffDirection + rimDirection; //+ specDirection
+    return diffDirection /*+ rimDirection*/; //+ specDirection
 }
 /// <summary>
 /// ポイントライトによる反射光を計算
@@ -283,7 +283,7 @@ float3 CalcLigFromPointLight(SPSIn psIn)
     float3 distance = length(psIn.worldPos - pointlight.ptPosition);
 
     // 影響率は距離に比例して小さくなっていく
-    float affect = 1.0f - 1.0f / pointlight.ptRange * distance;
+    float affect = 1.0f - 1.0f / max(pointlight.ptRange * distance, 0.001f);
 
     // 影響力がマイナスにならないように補正をかける
     if (affect < 0.0f)
@@ -299,7 +299,7 @@ float3 CalcLigFromPointLight(SPSIn psIn)
   //  specPoint *= affect;
     rimPoint *= affect;
 
-    return diffPoint + rimPoint; //specPoint + rimPoint;
+    return diffPoint /*+ rimPoint*/; //specPoint + rimPoint;
 }
 //スポットライトによる反射光を計算。
 float3 CalcLigFromSpotLight(SPSIn psIn)
@@ -332,7 +332,7 @@ float3 CalcLigFromSpotLight(SPSIn psIn)
     float3 distance = length(psIn.worldPos - spotlight.spPosition);
 
     // 影響率は距離に比例して小さくなっていく
-    float affect = 1.0f - 1.0f / spotlight.spRange * distance;
+    float affect = 1.0f - 1.0f / max(spotlight.spRange * distance, 0.001f);
 
     // 影響力がマイナスにならないように補正をかける
     if (affect < 0.0f)
@@ -350,10 +350,10 @@ float3 CalcLigFromSpotLight(SPSIn psIn)
     //入射光と射出方向の角度を求める。
     float angle = dot(ligDir, spotlight.spDirection);
     
-    angle = abs(acos(angle));
+    angle = abs(acos(min(angle, 1.0f)));
     
     //角度に比例して小さくなっていく影響率を計算
-    affect = 1.0f - 1.0f / spotlight.spAngle * angle;
+    affect = 1.0f - 1.0f / max(spotlight.spAngle * angle, 0.001f);
     //影響率がマイナスにならないように補正。
     if (affect < 0.0f)
     {
@@ -368,7 +368,7 @@ float3 CalcLigFromSpotLight(SPSIn psIn)
   //  specPoint *= affect;
     rimPoint *= affect;
     
-    return diffPoint + rimPoint; //specPoint+
+    return diffPoint /*+ rimPoint*/; //specPoint+
     
 }
 //リムライトの計算。
@@ -424,23 +424,18 @@ float4 PSMainCore(SPSIn psIn, uniform bool shadowreceive) : SV_Target0
     //タンジェントスペースの法線をワールドスペースに変換する
     normal = psIn.tangent * localNormal.x + psIn.biNormal * localNormal.y + normal * localNormal.z;
 
-    
-  // Phong鏡面反射を計算
+    // Phong鏡面反射を計算
     // このサンプルでは鏡面反射の効果を分かりやすくするために10倍にしている
-    float3 specLig = CalcPhongSpecular(normal, psIn.worldPos, directionlight.dirDirection) * 10.0f;
+    float3 specLig = CalcPhongSpecular(normal, psIn.worldPos, directionlight.dirDirection);
     float3 dirLig2 = directionlight.dirDirection;
     dirLig2.xz *= -1.0f;
-    specLig += CalcPhongSpecular(normal, psIn.worldPos, dirLig2) * 10.0f;
+    specLig += CalcPhongSpecular(normal, psIn.worldPos, dirLig2);
      //スペキュラマップからスペキュラ反射の強さをサンプリング
-    float specPower = g_specularMap.Sample(g_sampler, psIn.uv).r;
+    float specPower = max(0.02f, g_specularMap.Sample(g_sampler, psIn.uv).r);
 
     //鏡面反射の強さを鏡面反射光に乗算する
     specLig *= specPower;
 
-    ////鏡面反射の強さを鏡面反射光に乗算する
-    //directionLig *= specPower;
-    //pointLig *= specPower;
-    //spotLig *= specPower;
     
        // step-6 ライトビュースクリーン空間からUV空間に座標変換
     // 【注目】ライトビュースクリーン空間からUV座標空間に変換している
@@ -470,11 +465,12 @@ float4 PSMainCore(SPSIn psIn, uniform bool shadowreceive) : SV_Target0
     float3 lig = 0.0f;
     lig += max(0.0f, dot(normal, -directionlight.dirDirection)) * directionlight.dirColor;
     lig += max(0.0f, dot(normal, -dirLig2)) * directionlight.dirColor * 0.2f;
-    lig += +pointLig
-           + spotLig
+   
+    lig += /*+pointLig
+           + spotLig*/
            + specLig
            + ambientLight;
-    
+   
 	////ライティングの結果をすべて加算する。
  //   float3 lig = directionLig
  //               + pointLig

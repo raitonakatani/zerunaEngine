@@ -224,6 +224,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="box.cpp" />
+    <ClCompile Include="ClearCounter.cpp" />
     <ClCompile Include="Enemy3.cpp" />
     <ClCompile Include="EnemyPath.cpp" />
     <ClCompile Include="Fade.cpp" />
@@ -250,6 +252,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
+    <ClInclude Include="box.h" />
+    <ClInclude Include="ClearCounter.h" />
     <ClInclude Include="Enemy3.h" />
     <ClInclude Include="EnemyPath.h" />
     <ClInclude Include="Fade.h" />

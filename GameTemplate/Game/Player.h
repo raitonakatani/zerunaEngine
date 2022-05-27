@@ -2,6 +2,7 @@
 
 class GameCamera;
 class PAUSE;
+class Game;
 
 // プレイヤークラス。
 class Player : public IGameObject
@@ -73,10 +74,11 @@ public:
 
 	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
 	float m_hp = 100.0f;
-	float					m_sp = 700.0f;						//sp。
+	float					m_sp = 150.0f;						//sp。
 
 	int critical = 0;
 	bool prok = false;
+	int m_prokcamera = 0;
 
 	/// <summary>
 	/// アニメーションの初期化
@@ -187,9 +189,9 @@ public:
 	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
 	CharacterController     m_charaCon;	                                //キャラコン
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
-	GameCamera*				camera;
 	EffectEmitter*			m_effectEmitter = nullptr;					//エフェクト。
 	PAUSE*					m_pause = nullptr;
+	Game* m_game;
 	SpriteRender			m_HPRender;							        //画像。
 	SpriteRender			m_staminaRender;
 	SpriteRender			m_senseRender;
@@ -199,18 +201,17 @@ public:
 	float					life = 100.0f;								//フルHPバー
 	float					m_sutamina = 200.0f;						//スタミナ。
 	float					m_hurusutamina = 200.0f;					//フルスタミナ。
-//	float					m_sp = 500.0f;						//sp。
-	float					m_hurusp = 700.0f;					//フルsp。
+//	float					m_sp = 500.0f;								//sp。
+	float					m_hurusp = 700.0f;							//フルsp。
 	float					cooltime = 0.0f;
 	bool					m_menu = false;
 	bool					COOLtime = false;
 	int						index = 0;
-	float					m_alpha = 0.0f;					//pressbuttonのα値。
-	bool m_down = false;
-	float m_downtimer = 0.0f;
-	int m_Hitse = 0;
-	int m_deathse = 0;
-	float m_startwalk = 0.0f;
-
+	float					m_alpha = 0.0f;								//pressbuttonのα値。
+	bool					m_down = false;
+	float					m_downtimer = 0.0f;
+	int						m_Hitse = 0;
+	int						m_deathse = 0;
+	float					m_startwalk = 0.0f;
 };
 

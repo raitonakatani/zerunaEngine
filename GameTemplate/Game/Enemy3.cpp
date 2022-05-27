@@ -6,7 +6,7 @@
 
 //#include "collision/CollisionObject.h"
 #include "graphics/effect/EffectEmitter.h"
-
+#include "box.h"
 
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
@@ -80,11 +80,28 @@ bool Enemy3::Start()
 	srand((unsigned)time(NULL));
 	m_forward = Vector3::AxisZ;
 	m_rotation.Apply(m_forward);
+
+//	m_box = NewGO<box>(0, "box");
+//	m_box->m_position = { m_position.x,250.0f ,m_position.z };
+
 	return true;
 }
 
 void Enemy3::Update()
 {
+
+//	if (m_hp > 0) {
+//		m_box->m_position = { m_position.x,250.0f ,m_position.z };
+//
+//		if (m_box->m_extract == 1) {
+//			m_box->m_question = 0;
+//		}
+//	}
+//	else {
+//		m_box->m_extract = 0;
+//		m_box->m_question = 0;
+//	}
+
 //	g_Light.SetLigPoint({ m_position.x+100.0f,50.0f,m_position.z });
 	
 		//í«ê’èàóùÅB

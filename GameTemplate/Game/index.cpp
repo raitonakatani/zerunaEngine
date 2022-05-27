@@ -51,31 +51,53 @@ void index::Update()
 	//プレイヤーから☆に向かうベクトルを計算。
 	Vector3 diff = m_player->GetPosition() - m_position;
 	//ベクトルの長さが150.0fより小さかったら。
-	if (diff.Length() <= 150.0f) 
+	if (diff.Length() < 2000.0f && m_player->index <4)
 	{
-		win = 1;
-		if (g_pad[0]->IsTrigger(enButtonA))
-		{
-			//カウントを+1する。
-			m_player->Plusindex();
-			win = 2;
-			g_soundEngine->ResistWaveFileBank(4, "Assets/sound/4get.wav");
-			//効果音を再生する。
-			SoundSource* Getse = NewGO<SoundSource>(0);
-			Getse->Init(4);
-			Getse->Play(false);
-			Getse->SetVolume(0.4f);
+		if (light >= 0.15f) {
+			light -= 0.0025f;
+			light2 -= 0.0025f;
+			light3 += 0.15f;
 		}
+
+		m_player->index = 1;
+		g_Light.SetLigSpot({ m_position.x,200.0f ,m_position.z });
+		g_Light.SetLigSpotColor({light3,light3,light3 });
+		g_Light.SetAmbientLight({ light,light,light });
+		g_Light.SetLigColor({ light2,light2,light2 });
 	}
-	else {
-		win = 0;
+	if(diff.Length() >= 2000.0f){
+			if (light < 0.4f) {
+			light += 0.005f;
+			light2 += 0.005f;
+			light3 -= 0.3f;
+		}
+			if (light >= 0.4f) {
+				m_player->index = 0;
+			}
+		g_Light.SetAmbientLight({ light,light,light });
+		g_Light.SetLigColor({ light2,light2,light2 });
+		g_Light.SetLigSpotColor({ light3,light3,light3 });
 	}
 
-	if (m_player->Getindex() == 2)
+	if (diff.Length() <= 1000.0f && m_player->index == 1)
 	{
-		//自信を削除する。
-		DeleteGO(this);
+		m_player->index = 2;
 	}
+
+	if (diff.Length() <= 200.0f && m_player->index == 2)
+	{
+		m_player->index = 3;
+	}
+
+	//wchar_t wcsbuf[256];
+	//swprintf_s(wcsbuf, 256, L"%d", float(light));
+	//m_font.SetText(wcsbuf);
+	////m_font.SetText(L"Death");
+	////表示する座標を設定する。
+	//m_font.SetPosition(Vector3{ 0.0f,0.0f,0.0f });
+	////文字の大きさを変える。
+	//m_font.SetScale(3.0f);
+
 }
 
 void index::Rotation()
@@ -89,9 +111,10 @@ void index::Rotation()
 
 void index::Render(RenderContext& rc)
 {
+	m_font.Draw(rc);
 	//☆を描画する。
 	m_modelRender.Draw(rc);
-	if (win == 1) {
+	/*if (win == 1) {
 		m_sprite.Draw(rc);
-	}
+	}*/
 }

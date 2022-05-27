@@ -1,6 +1,7 @@
 #pragma once
 
 class Player;
+class GameCamera;
 
 class Background : public IGameObject
 {
@@ -38,10 +39,8 @@ private:
 	ModelRender m_modelRender2;					//モデル
 	Model m_model;
 	Player* m_player;
+	GameCamera* m_camera;
 	PhysicsStaticObject m_physicsStaticObject;	//静的物理オブジェクト・
-//	BoxCollider m_boxCollider;
-//	RigidBody m_rigidBody;
-//	ModelInitData initData;
 	Vector3						m_position;							//座標。
 	Quaternion					m_rotation;
 	Vector3						m_scale;

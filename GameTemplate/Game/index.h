@@ -39,6 +39,9 @@ public:
 		m_scale = scale;
 	}
 
+
+	int win = 0;
+
 private:
 	//ここからメンバ変数。
 	ModelRender m_modelRender;            //モデルレンダー。
@@ -51,8 +54,11 @@ private:
 	Player* m_player;                   //プレイヤー。
 	SoundSource* se;                    //se
 
+	float light = 0.4f;
+	float light2 = 0.6f;
+	float light3 = 0.0f;
+	FontRender m_font;
 	SpriteRender m_sprite;
 	PhysicsStaticObject m_physicsStaticObject;	//静的物理オブジェクト・
-	int win = 0;
 };
 

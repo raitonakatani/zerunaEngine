@@ -3,6 +3,7 @@
 #include "EnemyPath.h"
 
 class Player;
+class box;
 
 /// <summary>
 /// スピードエネミークラス
@@ -190,7 +191,8 @@ private:
 		enAnimationClip_alert,
 		enAnimClip_Num             //アニメーションの数
 	};
-
+	
+	box* m_box;										//警戒、模様
 	ModelRender             m_modelRender;                              //モデルレンダー
 	CharacterController     m_charaCon;                                 //キャラコン
 	EnSpeedEnemyState       m_speedEnemyState = enSpeedEnemyState_Idle; //スピードエネミーステート

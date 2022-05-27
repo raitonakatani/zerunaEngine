@@ -49,14 +49,14 @@ namespace nsK2EngineLow {
 		//スポットライトのデータを初期化する
 		//初期座標はX = 0、Y = 50、Z = 0にする。
 		m_light.spotlight.spPosition.x = 0.0f;
-		m_light.spotlight.spPosition.y = 00.0f;
-		m_light.spotlight.spPosition.z = 00.0f;
+		m_light.spotlight.spPosition.y = 0.0f;
+		m_light.spotlight.spPosition.z = 0.0f;
 		//スポットライトのカラーを設定。R = 10、G = 10、B = 10にする。
-		m_light.spotlight.spColor.x = 0.0f;
-		m_light.spotlight.spColor.y = 0.0f;
-		m_light.spotlight.spColor.z = 0.0f;
+		m_light.spotlight.spColor.x = 5.0f;
+		m_light.spotlight.spColor.y = 5.0f;
+		m_light.spotlight.spColor.z = 5.0f;
 		//射出範囲は300
-		m_light.spotlight.spRange = 300.0f;
+		m_light.spotlight.spRange = 600.0f;
 		//初期方向は斜め下にする。
 		m_light.spotlight.spDirection.x = 0.0f;
 		m_light.spotlight.spDirection.y = -1.0f;

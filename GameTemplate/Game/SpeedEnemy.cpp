@@ -2,6 +2,7 @@
 #include "SpeedEnemy.h"
 
 #include "Player.h"
+#include "box.h"
 
 #include "CollisionObject.h"
 
@@ -117,21 +118,38 @@ bool SpeedEnemy::Start()
 	//スフィアコライダーを初期化。
 	m_sphereCollider.Create(1.0f);
 
-	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
+	//alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
 	//表示する座標を設定する。
-	alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
+	//alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
 
 	//乱数を初期化。
 	srand((unsigned)time(NULL));
 	m_forward = Vector3::AxisZ;
 	m_rotation.Apply(m_forward);
+
+	m_box = NewGO<box>(0, "box");
+	m_box->m_position = { m_position.x,250.0f ,m_position.z };
+
 	return true;
 }
 
 void SpeedEnemy::Update()
 {
+	if (m_hp > 0) {
+		m_box->m_position = { m_position.x,250.0f ,m_position.z };
+
+		if (m_box->m_extract == 1) {
+			m_box->m_question = 0;
+		}
+	}
+	else {
+		m_box->m_extract = 0;
+		m_box->m_question = 0;
+	}
+
+
 	Weak = m_player->GetPosition() - m_position;
-	if (Weak.Length() >= 3000.0f)
+	if (Weak.Length() >= 2500.0f)
 	{
 		return;
 	}
@@ -154,25 +172,25 @@ void SpeedEnemy::Update()
 
 	if (alertLevel == 0)
 	{
-		alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		//alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		m_angl = 0.40f;
 		m_range = 1000.0f;
 	}
 	if (alertLevel == 1)
 	{
-		alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+		//alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		m_angl = 0.45f;
 		m_range = 1200.0f;
 	}
 	if (alertLevel == 2)
 	{
-		alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	//	alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 		m_angl = 0.50f;
 		m_range = 1500.0f;
 	}
 	if (alertLevel == 3)
 	{
-		alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+	//	alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 		m_angl = 0.5f;
 		m_range = 1500.0f;
 	}
@@ -214,12 +232,12 @@ void SpeedEnemy::Update()
 		worldPos.y *= FRAME_BUFFER_H / 2;
 
 		//ポジションの設定。
-		alertSprite.SetPosition(Vector3(worldPos.x, worldPos.y, 0.0f));
+	//	alertSprite.SetPosition(Vector3(worldPos.x, worldPos.y, 0.0f));
 	}
 	else {
-		alertSprite.SetPosition({ 2000.0f,2000.0f,0.0f });
+//		alertSprite.SetPosition({ 2000.0f,2000.0f,0.0f });
 	}
-	alertSprite.Update();
+//	alertSprite.Update();
 
 	//モデルの更新
 	m_modelRender.Update();
@@ -235,6 +253,7 @@ void SpeedEnemy::Chase()
 			m_speedEnemyState = enSpeedEnemyState_alert;
 
 			if (alertLevel == 0) {
+				m_box->m_question = 1;
 				alertLevel = 1;
 			}
 			//	if (alertLevel == 3)
@@ -243,6 +262,7 @@ void SpeedEnemy::Chase()
 			//	}
 		}
 		else if (alertLevel == 0 || alertLevel == 3) {
+			m_box->m_question = 0;
 			m_speedEnemyState = enSpeedEnemyState_Chase;
 			Aroute();
 		}
@@ -357,6 +377,8 @@ void SpeedEnemy::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision5->IsHit(collisionObject))
 		{
+			m_box->m_extract = 0;
+			m_box->m_question = 0;
 			m_speedEnemyState = enSpeedEnemyState_Idle;
 			m_player->critical = 1;
 			return;
@@ -521,6 +543,7 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけたら。
 	if (m_isSearchPlayer == true && diff.LengthSq() <= m_range * m_range)
 	{
+		m_box->m_extract = 1;
 		state = 0;
 		m_timer = 0.0f;
 		alertTimet = 0.0f;
@@ -590,6 +613,8 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけられなければ。
 	else
 	{
+		m_box->m_extract = 0;
+		m_box->m_extractanim = 0;
 		if (alertLevel == 2)
 		{
 			alertLevel = 3;
@@ -1346,7 +1371,7 @@ void SpeedEnemy::Aroute()
 				//目標地点に向かうベクトル×移動速度
 				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
+			//	m_moveSpeed.y = 0.0f;
 			}
 		}
 	}
@@ -1444,7 +1469,7 @@ void SpeedEnemy::Aroute()
 				//目標地点に向かうベクトル×移動速度
 				m_moveSpeed = diff * MOVESPEED;
 				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
+				//m_moveSpeed.y = 0.0f;
 			}
 		}
 	}
@@ -1453,7 +1478,7 @@ void SpeedEnemy::Aroute()
 
 void SpeedEnemy::Render(RenderContext& rc)
 {
-	if (Weak.Length() <= 3000.0f)
+	if (Weak.Length() <=2500.0f)
 	{
 		//モデルの描画
 		m_modelRender.Draw(rc);
@@ -1483,7 +1508,7 @@ void SpeedEnemy::Render(RenderContext& rc)
 
 		if (Weak.Length() <= 1500.0f)
 		{
-			alertSprite.Draw(rc);
+		//	alertSprite.Draw(rc);
 		}
 	}
 }
