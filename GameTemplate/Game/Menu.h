@@ -16,11 +16,8 @@ public:
 
 private:
 	int m_menu = 0;
-	int m_skill = 0;
 	int m_audio = 0;
-	SpriteRender m_itemRender;
 	SpriteRender m_skillRender;
-	SpriteRender m_skillRender2;
 	SpriteRender m_configRender;
 	SpriteRender m_audioRender;
 	SpriteRender m_audioRender2;

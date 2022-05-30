@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "GameCamera.h"
 #include "PAUSE.h"
+//#include "Title.h"
 #include "Game.h"
 
 //EffectEmitterを使用するために、ファイルをインクルードする。
@@ -12,7 +13,7 @@ namespace
 	const float CHARACON_RADIUS = 30.0f;            //キャラコンの半径
 	const float CHARACON_HEIGHT = 100.0f;            //キャラコンの高さ
 	const float MOVE_SPEED_MINIMUMVALUE = 0.001f;   //移動速度の最低値
-	const float WALK_MOVESPEED = 1200.0f;            //歩きステートの移動速度
+	const float WALK_MOVESPEED = 200.0f;            //歩きステートの移動速度
 	const float RUN_MOVESPEED = 400.0f;            //走りステートの移動速度
 	const float STEALTHYSTEP_MOVESPEED = 100.0f;     //忍び足ステートの移動速度
 	const float GRAVITY = 1000.0f;                  //重力
@@ -111,13 +112,16 @@ bool Player::Start()
 	EffectEngine::GetInstance()->ResistEffect(2, u"Assets/effect/efk/blood2.efk");
 
 	m_game = FindGO<Game>("game");
+	//m_title = FindGO<Title>("title");
 
 	return true;
 }
 
 void Player::Update()
 {
-
+	if (m_game->start == 0) {
+		return;
+	}
 
 	if (g_pad[0]->IsTrigger(enButtonStart)		//Startボタンが押された。
 		&& m_menu == false)					//かつm_menu==falseの時。
@@ -262,11 +266,7 @@ void Player::Move()
 	cameraRight.Normalize();
 
 
-	if (index == 2) {
-			m_moveSpeed.z += 200.0f;
-	//		m_playerState = enPlayerState_Walk;
-	//		return;
-	}
+
 	if (index == 3)
 	{
 		//m_moveSpeed.z = 0.0f;
@@ -275,7 +275,7 @@ void Player::Move()
 	//	return;
 	}
 
-	if (index == 0 || index == 1) {
+	if (index <= 2) {
 		m_startwalk += g_gameTime->GetFrameDeltaTime();
 		if (m_startwalk >= 1.0f && m_startwalk <= 2.5f)
 		{
@@ -870,6 +870,9 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 
 void Player::Render(RenderContext& rc)
 {
+	if (m_game->start == 0) {
+		return;
+	}
 	if (m_startwalk>=2.5f) {
 		if (m_alpha < 1.0f && m_down == false && index <= 2) {
 			m_alpha += 0.01f;

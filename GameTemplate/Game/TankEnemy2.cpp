@@ -711,9 +711,9 @@ void TankEnemy2::ProcessDownStateTransition()
 	m_modelRender.SetPosition(m_position);
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		if (m_player->prok == true) {
+		/*if (m_player->prok == true) {
 			m_player->prok = false;
-		}
+		}*/
 		m_hp = 0;
 		state = 3;
 		m_charaCon.RemoveRigidBoby();
@@ -851,8 +851,9 @@ void TankEnemy2::PlayAnimation()
 		break;
 		//即死ステートの時。
 	case enEnemyState_Death:
-		//ダウンアニメーションを再生。
+		//即死アニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Death, 0.1f);
+		m_modelRender.SetAnimationSpeed(0.8f);
 		break;
 		//ダウンステートの時。
 	case enEnemyState_Down:
@@ -1026,35 +1027,6 @@ void TankEnemy2::Render(RenderContext& rc)
 		//モデルを描画する。
 		m_modelRender.Draw(rc);
 	}
-	else if (Weak.Length() <= 500.0f && m_camera->drow == 0)
-	{
-		//	alertSprite.Draw(rc);
-			//モデルを描画する。
-		m_modelRender.Draw(rc);
-	}
 
-
-	Vector3 playerPosition = m_player->GetPosition();
-	Vector3 diff = playerPosition - m_position;
-	btTransform start, end;
-	start.setIdentity();
-	end.setIdentity();
-	//始点はエネミーの座標。
-	start.setOrigin(btVector3(m_position.x, m_position.y + 150.0f, m_position.z));
-	//終点はプレイヤーの座標。
-	end.setOrigin(btVector3(playerPosition.x, playerPosition.y + 150.0f, playerPosition.z));
-
-	SweepResultWall callback;
-	//コライダーを始点から終点まで動かして。
-	//衝突するかどうかを調べる。
-	PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-	//壁と衝突した！
-	if (callback.isHit == false)
-	{
-		if (Weak.Length() <= 1500.0f)
-		{
-			//		alertSprite.Draw(rc);
-		}
-	}
 
 }

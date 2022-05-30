@@ -25,6 +25,7 @@ public:
 	int rook = 0;
 	int drow = 0;
 
+
 private:
 	Vector3					m_toCameraPos = Vector3::One;	//注視点から視点に向かうベクトル。
 	Player*					m_player = nullptr;				//プレイヤー

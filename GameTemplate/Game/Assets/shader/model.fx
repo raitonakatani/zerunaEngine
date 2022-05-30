@@ -332,7 +332,7 @@ float3 CalcLigFromSpotLight(SPSIn psIn)
     float3 distance = length(psIn.worldPos - spotlight.spPosition);
 
     // 影響率は距離に比例して小さくなっていく
-    float affect = 1.0f - 1.0f / max(spotlight.spRange * distance, 0.001f);
+    float affect = 1.0f - 1.0f / spotlight.spRange * distance;
 
     // 影響力がマイナスにならないように補正をかける
     if (affect < 0.0f)
@@ -353,7 +353,7 @@ float3 CalcLigFromSpotLight(SPSIn psIn)
     angle = abs(acos(min(angle, 1.0f)));
     
     //角度に比例して小さくなっていく影響率を計算
-    affect = 1.0f - 1.0f / max(spotlight.spAngle * angle, 0.001f);
+    affect = 1.0f - 1.0f / spotlight.spAngle * angle;
     //影響率がマイナスにならないように補正。
     if (affect < 0.0f)
     {
@@ -466,8 +466,8 @@ float4 PSMainCore(SPSIn psIn, uniform bool shadowreceive) : SV_Target0
     lig += max(0.0f, dot(normal, -directionlight.dirDirection)) * directionlight.dirColor;
     lig += max(0.0f, dot(normal, -dirLig2)) * directionlight.dirColor * 0.2f;
    
-    lig += /*+pointLig
-           + spotLig*/
+    lig += +pointLig
+           + spotLig
            + specLig
            + ambientLight;
    

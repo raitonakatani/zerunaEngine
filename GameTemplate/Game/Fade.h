@@ -46,7 +46,7 @@ public:
 
 	int m_clear = 0;
 
-private:
+//private:
 	enum EnState {
 		enState_FadeIn,			//フェードイン中。
 		enState_FadeOut,		//フェードアウト中。

@@ -233,6 +233,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="GameClear.cpp" />
+    <ClCompile Include="GameStart.cpp" />
     <ClCompile Include="index.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="GameClear.h" />
+    <ClInclude Include="GameStart.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="PAUSE.h" />

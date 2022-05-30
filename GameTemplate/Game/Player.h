@@ -3,6 +3,7 @@
 class GameCamera;
 class PAUSE;
 class Game;
+//class Title;
 
 // プレイヤークラス。
 class Player : public IGameObject
@@ -192,6 +193,7 @@ public:
 	EffectEmitter*			m_effectEmitter = nullptr;					//エフェクト。
 	PAUSE*					m_pause = nullptr;
 	Game* m_game;
+//	Title* m_title;
 	SpriteRender			m_HPRender;							        //画像。
 	SpriteRender			m_staminaRender;
 	SpriteRender			m_senseRender;
@@ -213,5 +215,6 @@ public:
 	int						m_Hitse = 0;
 	int						m_deathse = 0;
 	float					m_startwalk = 0.0f;
+
 };
 

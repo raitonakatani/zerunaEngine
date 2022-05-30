@@ -9,12 +9,12 @@
 #include "TankEnemy.h"
 #include "TankEnemy2.h"
 #include "SpeedEnemy.h"
-#include "Enemy3.h"
 
 #include "Fade.h"
 #include "index.h"
 #include "GameClear.h"
 #include "Retry.h"
+#include "GameStart.h"
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 
@@ -49,11 +49,6 @@ Game::~Game()
 	{
 		DeleteGO(enemy2);
 	}
-	const auto& enemy3s = FindGOs<Enemy3>("m_enemy3");
-	for (auto enemy3 : enemy3s)
-	{
-		DeleteGO(enemy3);
-	}
 
 
 	DeleteGO(m_player);
@@ -84,17 +79,7 @@ bool Game::Start()
 	g_soundEngine->ResistWaveFileBank(16, "Assets/sound/16mituketa.wav");
 
 	//レベルを構築する。
-	m_levelRender.Init("Assets/Level/BackGround4.tkl", [&](LevelObjectData& objData) {
-		
-		if (objData.EqualObjectName(L"stage") == true) {
-
-			m_background = NewGO<Background>(0, "background");
-			m_background->SetPosition(objData.position);
-			m_background->SetRotation(objData.rotation);
-			m_background->SetScale(objData.scale);
-			//trueにすると、レベルの方でモデルが読み込まれて配置される。
-			return true;
-		}
+	m_levelRender.Init("Assets/Level/BackGround5.tkl", [&](LevelObjectData& objData) {
 		
 		if (objData.EqualObjectName(L"index") == true) {
 
@@ -135,17 +120,6 @@ bool Game::Start()
 			return true;
 		}
 
-		if (objData.ForwardMatchName(L"enemy") == true) {
-			//エネミーのインスタンスを生成する。
-			m_enemy3 = NewGO<Enemy3>(0,"m_enemy3");
-			m_enemy3->SetPosition({ objData.position });
-			m_enemy3->SetRotation(objData.rotation);
-			m_enemy3->SetScale(objData.scale);
-			//番号を設定する。
-			m_enemy3->SetenemyNumber(objData.number);
-			return true;
-		}
-
 		if (objData.ForwardMatchName(L"speed") == true) {
 			//エネミーのインスタンスを生成する。
 			m_speed = NewGO<SpeedEnemy>(0,"m_enemy2");
@@ -156,6 +130,17 @@ bool Game::Start()
 			m_speed->SetspeedNumber(objData.number);
 			return true;
 		}
+
+		if (objData.EqualObjectName(L"stage") == true) {
+
+			m_background = NewGO<Background>(0, "background");
+			m_background->SetPosition(objData.position);
+			m_background->SetRotation(objData.rotation);
+			m_background->SetScale(objData.scale);
+			//trueにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
+
 		return true;
 	});
 
@@ -168,38 +153,54 @@ bool Game::Start()
 
 
 	m_pressButton.Init("Assets/sprite/RETIRE/Gameover.dds", 1600, 900);
+	m_spriteRender.Init("Assets/sprite/fade4.dds", 1600, 900);
+	m_spriteRender2.Init("Assets/sprite/kuro.dds", 1600, 900);
 
 	//効果音を再生する。
 	GameBGM = NewGO<SoundSource>(0);
 	GameBGM->Init(6);
-	GameBGM->Play(true);
-	GameBGM->SetVolume(0.5f);
+
 
 	m_fade = FindGO<Fade>("fade");
-	m_fade->StartFadeIn();
+	m_title = FindGO<Title>("title");
+	m_gameStart = FindGO<GameStart>("gameStart");
+
+//	m_fade->StartFadeIn();
 
 	return true;
 }
 
 void Game::Update()
 {
+	if (m_gameStart->gameStart == 0) {
+		return;
+	}
+
+	if (m_gameStart->gameStart == 1) {
+	/*	GameBGM->Play(true);
+		GameBGM->SetVolume(0.5f);*/
+		start = 1;
+		m_gameStart->gameStart = 2;
+	}
+
 	if (m_player->index == 4) {
 		m_Ambient += 0.015f;
 		m_Direction += 0.015f;
 		g_Light.SetAmbientLight({m_Ambient,m_Ambient ,m_Ambient });
 		g_Light.SetLigColor({m_Direction,m_Direction ,m_Direction });
 	}
-
-	if (Bgmspeed==true)
-	{
-		GameBGM->SetVolume(0.5f);
-		GameBGM->SetFrequencyRatio(4);
-	}
-	else
-	{
-		GameBGM->SetVolume(0.5f);
-		GameBGM->SetFrequencyRatio(1);
-	}
+	
+	/*	if (Bgmspeed == true)
+		{
+			GameBGM->SetVolume(0.5f);
+			GameBGM->SetFrequencyRatio(4);
+		}
+		else
+		{
+			GameBGM->SetVolume(0.5f);
+			GameBGM->SetFrequencyRatio(1);
+		}*/
+	
 
 	if (m_isWaitFadeout && m_player->index == 4) {
 		if (!m_fade->IsFade()) {
@@ -236,6 +237,7 @@ void Game::Update()
 		}
 	}
 	else {
+		m_fade->StartFadeIn();
 		m_deathse = false;
 	}
 	if (m_deathse == true)
@@ -269,6 +271,17 @@ void Game::Update()
 
 void Game::Render(RenderContext& rc)
 {
+	if (m_gameStart->gameStart == 2) {
+
+			m_currentAlpha -= 0.2f * g_gameTime->GetFrameDeltaTime();
+			m_spriteRender2.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
+			m_spriteRender2.Draw(rc);
+		if (m_currentAlpha > 0.2f) {
+			m_alpha += g_gameTime->GetFrameDeltaTime() * 5.2f;
+			m_spriteRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+			m_spriteRender.Draw(rc);
+		}
+	}
 	if (m_deathse == true) {
 		m_pressButton.Draw(rc);
 	}

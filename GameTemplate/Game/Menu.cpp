@@ -5,10 +5,8 @@
 bool Menu::Start()
 {
 
-	m_itemRender.Init("Assets/sprite/OPTION/1_ITEM/ITEM_01.dds", 1600.0f, 900.0f);
-	m_skillRender.Init("Assets/sprite/OPTION/2_SKILL/SKILL_01.dds", 1600.0f, 900.0f);
-	m_skillRender2.Init("Assets/sprite/OPTION/2_SKILL/SKILL_02.dds", 1600.0f, 900.0f);
-	m_configRender.Init("Assets/sprite/OPTION/3_CONFIG/CONFIG_01.dds", 1600.0f, 900.0f);
+	m_skillRender.Init("Assets/sprite/OPTION/2_SKILL/SKILL.dds", 1600.0f, 900.0f);
+	m_configRender.Init("Assets/sprite/OPTION/3_CONFIG/CONFIG.dds", 1600.0f, 900.0f);
 	m_audioRender.Init("Assets/sprite/OPTION/4_AUDIO/AUDIO_01.dds", 1600.0f, 900.0f);
 	m_audioRender2.Init("Assets/sprite/OPTION/4_AUDIO/AUDIO_02.dds", 1600.0f, 900.0f);
 	m_seRender.Init("Assets/sprite/OPTION/4_AUDIO/AUDIO.dds", 585.0f, 40.0f);
@@ -35,35 +33,17 @@ void Menu::Update()
 
 void Menu::Render(RenderContext& rc)
 {
-	if (m_menu == 0 &&m_timer >=0.001f) {
-		m_itemRender.Draw(rc);
+	
+	if (m_menu == 0 && m_timer >= 0.001f) {
+		m_skillRender.Draw(rc);
 		if (g_pad[0]->IsTrigger(enButtonRight))
 		{
 			m_menu = 1;
 			m_timer = 0.0f;
 		}
-		if (g_pad[0]->IsTrigger(enButtonLeft))
-		{
-			m_menu = 3;
-			m_timer = 0.0f;
-		}
 	}
 	else if (m_menu == 1 && m_timer >= 0.001f) {
-		if (m_skill == 0) {
-			m_skillRender.Draw(rc);
-			if (g_pad[0]->IsTrigger(enButtonDown))
-			{
-				m_skill = 1;
-			}
-		}
-		else if (m_skill == 1) {
-			m_skillRender2.Draw(rc);
-			if (g_pad[0]->IsTrigger(enButtonUp))
-			{
-				m_skill = 0;
-			}
-		}
-
+		m_configRender.Draw(rc);
 		if (g_pad[0]->IsTrigger(enButtonRight))
 		{
 			m_menu = 2;
@@ -76,19 +56,6 @@ void Menu::Render(RenderContext& rc)
 		}
 	}
 	else if (m_menu == 2 && m_timer >= 0.001f) {
-		m_configRender.Draw(rc);
-		if (g_pad[0]->IsTrigger(enButtonRight))
-		{
-			m_menu = 3;
-			m_timer = 0.0f;
-		}
-		if (g_pad[0]->IsTrigger(enButtonLeft))
-		{
-			m_menu = 1;
-			m_timer = 0.0f;
-		}
-	}
-	else if (m_menu == 3 && m_timer >= 0.001f) {
 
 		if (m_audio == 0) {
 			m_audioRender.Draw(rc);
@@ -127,14 +94,9 @@ void Menu::Render(RenderContext& rc)
 		m_BGMRender.SetScale({ m_bgm,1.0f,0.0f });
 		m_BGMRender.Update();
 		m_BGMRender.Draw(rc);
-		if (g_pad[0]->IsTrigger(enButtonRight))
-		{
-			m_menu = 0;
-			m_timer = 0.0f;
-		}
 		if (g_pad[0]->IsTrigger(enButtonLeft))
 		{
-			m_menu = 2;
+			m_menu = 1;
 			m_timer = 0.0f;
 		}
 	}

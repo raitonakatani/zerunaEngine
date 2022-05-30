@@ -43,8 +43,8 @@ void Background::Update()
 {
 	if (m_player->prok == true && m_player->index == 0)
 	{
-		g_Light.SetLigSpot({ m_player->GetPosition().x,400.0f ,m_player->GetPosition().z });
-		g_Light.SetLigSpotColor({ 10.0f,10.0f,10.0f });
+		g_Light.SetLigSpot({ m_player->GetPosition().x,300.0f ,m_player->GetPosition().z });
+		g_Light.SetLigSpotColor({ 15.0f,15.0f,15.0f });
 
 
 		g_Light.SetAmbientLight({ .15f,.15f,.15f });
@@ -61,7 +61,7 @@ void Background::Update()
 }
 void Background::Render(RenderContext& rc)
 {
-	if (g_pad[0]->IsPress(enButtonY) && m_player->m_sp >= 10)
+	if (g_pad[0]->IsPress(enButtonY) && m_player->m_sp >= 10 || m_player->prok == true)
 	{
 		m_modelRender2.Draw(rc);
 		g_Light.SetAmbientLight({ .2f,.2f,.2f });

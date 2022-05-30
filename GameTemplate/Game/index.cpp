@@ -69,7 +69,7 @@ void index::Update()
 			if (light < 0.4f) {
 			light += 0.005f;
 			light2 += 0.005f;
-			light3 -= 0.3f;
+			light3 -= 0.15f;
 		}
 			if (light >= 0.4f) {
 				m_player->index = 0;

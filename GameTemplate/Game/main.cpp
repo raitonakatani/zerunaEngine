@@ -5,6 +5,7 @@
 #include "Fade.h"
 #include "Retry.h"
 #include "ClearCounter.h"
+#include "GameStart.h"
 
 // K2EngineLowのグローバルアクセスポイント。
 K2EngineLow* g_k2EngineLow = nullptr;
@@ -35,8 +36,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	auto retryCounter = NewGO<Retry>(0, "retry");
 	auto clearCounter = NewGO<ClearCounter>(0, "clearCounter");
 
-    auto title = NewGO<Title>(0);
+    auto title = NewGO<Title>(0,"title");
 	auto fade = NewGO<Fade>(0, "fade");
+	auto gameStart = NewGO<GameStart>(0, "gameStart");
+
 
 
  //   //シャドウマップ描画用のレンダリングターゲットを作成する。

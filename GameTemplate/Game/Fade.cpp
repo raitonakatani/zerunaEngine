@@ -75,7 +75,7 @@ void Fade::Render(RenderContext& rc)
 			//	m_spriteRender.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
 			m_spriteRender2.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
 			m_spriteRender2.Draw(rc);
-			m_spriteRender.Draw(rc);
+	//		m_spriteRender.Draw(rc);
 		}
 	}
 	if (m_clear == 1) {

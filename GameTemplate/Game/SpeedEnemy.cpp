@@ -71,7 +71,7 @@ bool SpeedEnemy::Start()
 	//大きさを設定する。
 	m_modelRender.SetScale(m_scale);
 	m_modelRender.Update();
-	m_position.y = 15.0f;
+	m_position.y = 5.0f;
 	//キャラコンの初期化
 	m_charaCon.Init(CHARACON_RADIUS, CHARACON_HEIGHT, m_position);
 
@@ -622,12 +622,6 @@ void SpeedEnemy::ProcessCommonStateTransition()
 		else {
 			alertLevel = 0;
 		}
-		//	alertLevel = 0;
-		//	alertTimet += g_gameTime->GetFrameDeltaTime();
-		//	if (alertTimet >= 10.0f)
-		//	{
-		//		alertLevel = 0;
-		//	}
 		return;
 	}
 }
@@ -706,7 +700,7 @@ void SpeedEnemy::ProcessReceiveDamageStateTransition()
 
 void SpeedEnemy::ProcessDownStateTransition()
 {
-	m_position.y = 15.0f;
+	//m_position.y = 15.0f;
 	m_modelRender.SetPosition(m_position);
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
@@ -714,13 +708,6 @@ void SpeedEnemy::ProcessDownStateTransition()
 		state = 3;
 		m_charaCon.RemoveRigidBoby();
 	}
-	////アニメーションの再生が終わっていたら
-	//if (m_modelRender.IsPlayingAnimation() == false)
-	//{
-	//	//自身を削除する
-	//	DeleteGO(this);
-	//	return;
-	//}
 }
 
 void SpeedEnemy::alertTransition()
@@ -745,17 +732,6 @@ void SpeedEnemy::alertTransition()
 		ProcessCommonStateTransition();
 	}
 }
-
-//void SpeedEnemy::lookTransition()
-//{
-//	//警報アニメーションの再生が終わったら。
-//	if (m_modelRender.IsPlayingAnimation() == false)
-//	{
-//		//	alertLevel = 0;
-//			//他のステートに遷移する。
-//		ProcessCommonStateTransition();
-//	}
-//}
 
 void SpeedEnemy::SearchPlayer()
 {

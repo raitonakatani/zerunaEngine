@@ -96,14 +96,20 @@ void GameCamera::Update()
 	//	m_player->prok = false;
 	//	m_player->m_prokcamera = 0;
 	//}
+	m_timer += 0.01f;
 
 	if (m_camera == 1 || m_player->prok == true)
 	{
 		pos2 = target + m_toCameraPos;
+		
+		if (m_timer >= 2.5f) {
+			m_player->prok = false;
+		}
 //		Vector3 position = pos2;
 //		g_camera3D->SetPosition(position);
 	}
 	else {
+		m_timer = 0.0f;
 		//Ž‹“_‚ðŒvŽZ‚·‚éB
 		pos2 = target2 + m_toCameraPos2;
 //		g_camera3D->SetPosition(pos2);

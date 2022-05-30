@@ -7,6 +7,7 @@
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 #include "Retry.h"
+#include "GameStart.h"
 
 Title::Title()
 {
@@ -22,7 +23,7 @@ Title::~Title()
 bool Title::Start()
 {
 	//画像を読み込む。
-	m_spriteRender.Init("Assets/sprite/Title/title.dds", 1600, 900);
+	m_spriteRender.Init("Assets/sprite/Title/kuro.dds", 1600, 900);
 	m_senseRender.Init("Assets/sprite/Title/sense.dds", 1600, 900);
 	m_criticalRender.Init("Assets/sprite/Title/critical.dds", 1600, 900);
 	m_pressButton.Init("Assets/sprite/Title/button2.dds", 800, 400);
@@ -34,40 +35,62 @@ bool Title::Start()
 	//BGMを再生する。
 	m_titleBGM = NewGO<SoundSource>(0);
 	m_titleBGM->Init(2);
-	m_titleBGM->Play(true);
-	m_titleBGM->SetVolume(0.3f);
+	//m_titleBGM->Play(true);
+	//m_titleBGM->SetVolume(0.3f);
 
 	retryCounter = FindGO<Retry>("retry");
+	m_gameStart = FindGO<GameStart>("gameStart");
+
 	if (retryCounter->retryCounter == 0)
 	{
 		m_fade = FindGO<Fade>("fade");
 		m_fade->StartFadeIn();
 		m_fade->m_clear = 0;
 	}
+
+	NewGO<Game>(0, "game");
+
 	return true;
 }
 
 void Title::Update()
 {
+	if (a == false) {
+		m_timer += 0.04f;
+	}
 
 	if (retryCounter->retryCounter == 2)
 	{
 		retryCounter->retryCounter = 0;
-		NewGO<Game>(0, "game");
+		m_sense = 2;
 		//自身を削除する。
-		DeleteGO(this);
+//		DeleteGO(this);
 	}
-
+	if (m_sense != 2) {
+		if (g_pad[0]->IsTrigger(enButtonStart)) {
+			m_timer = 0.0f;
+			m_sense = 2;
+			m_isWaitFadeout = true;
+			//音を読み込む。
+			g_soundEngine->ResistWaveFileBank(0, "Assets/sound/0titlebutton.wav");
+			//効果音を再生する。
+			SoundSource* se = NewGO<SoundSource>(0);
+			se->Init(0);
+			se->Play(false);
+			se->SetVolume(0.5f);
+		}
+	}
 	if (m_sense == 0) {
 		if (g_pad[0]->IsTrigger(enButtonA)) {
 			m_A = true;
 			m_sense = 1;
+			m_timer = 0.0f;
 		}
-
 	}
 
 	if (m_sense == 1 && m_senseA <= 0.0f) {
-		if (g_pad[0]->IsTrigger(enButtonA)) {
+		if (m_timer >= 10.0f) {
+			m_timer = 0.0f;
 			m_A = false;
 			m_senseA = 0.0f;
 			m_B = true;
@@ -77,19 +100,15 @@ void Title::Update()
 	}
 
 	if (m_sense == 2) {
-		if (m_isWaitFadeout) {
-			if (!m_fade->IsFade()) {
-				NewGO<Game>(0, "game");
-				//自身を削除する。
-				DeleteGO(this);
-			}
+		if (m_isWaitFadeout && m_timer >= 1.0f) {
+			m_gameStart->gameStart = 1;
+			//自身を削除する。
+			DeleteGO(this);
 		}
 		else {
-			//Aボタンを押したら。
-			if (g_pad[0]->IsTrigger(enButtonA)&& m_senseB<0.1f) {
+			if (m_timer >= 10.0f && m_senseB<0.1f) {
+				m_timer = 0.0f;
 				m_isWaitFadeout = true;
-				m_fade->StartFadeOut();
-
 				//音を読み込む。
 				g_soundEngine->ResistWaveFileBank(0, "Assets/sound/0titlebutton.wav");
 				//効果音を再生する。
@@ -97,7 +116,6 @@ void Title::Update()
 				se->Init(0);
 				se->Play(false);
 				se->SetVolume(0.5f);
-
 			}
 		}
 
@@ -132,8 +150,10 @@ void Title::Update()
 void Title::Render(RenderContext& rc)
 {
 	//画像の描画。
-	m_criticalRender.Draw(rc);
-	m_senseRender.Draw(rc);
+	//m_criticalRender.Draw(rc);
+	//m_senseRender.Draw(rc);
 	m_spriteRender.Draw(rc);
-	m_pressButton.Draw(rc);
+	if (m_sense == 0) {
+		//m_pressButton.Draw(rc);
+	}
 }

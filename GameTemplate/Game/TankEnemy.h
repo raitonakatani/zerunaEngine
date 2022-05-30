@@ -212,11 +212,21 @@ private:
 	EnemyPath				m_enemypath5;								//パス
 	EnemyPath				m_enemypath6;								//パス
 	EnemyPath				m_enemypath7;								//パス
+	EnemyPath				m_enemypath8;								//パス
+	EnemyPath				m_enemypath9;								//パス
+	EnemyPath				m_enemypath10;								//パス
+	EnemyPath				m_enemypath11;								//パス
+	EnemyPath				m_enemypath12;								//パス
 	Point*					m_point;									//ポイント
 	Point*					m_point3;									//ポイント
 	Point*					m_point5;									//ポイント
 	Point*					m_point6;									//ポイント
 	Point*					m_point7;									//ポイント
+	Point*					m_point8;									//ポイント
+	Point*					m_point9;									//ポイント
+	Point*					m_point10;									//ポイント
+	Point*					m_point11;									//ポイント
+	Point*					m_point12;									//ポイント
 	SpriteRender			alertSprite;								//警戒レベル
 	float					m_chaseTimer = 0.0f;						//追跡タイマー。
 	float					m_idleTimer = 0.0f;							//待機タイマー。
