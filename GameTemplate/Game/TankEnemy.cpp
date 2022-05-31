@@ -70,9 +70,6 @@ bool TankEnemy::Start()
 		m_position		//座標。
 	);
 
-	//スフィアコライダーを初期化。
-	m_sphereCollider.Create(1.0f);
-
 	//アニメーションイベント用の関数を設定する
 	m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
 		OnAnimationEvent(clipName, eventName);
@@ -82,15 +79,11 @@ bool TankEnemy::Start()
 	m_Hand = m_modelRender.FindBoneID(L"LeftHand");
 	m_weakness = m_modelRender.FindBoneID(L"Spine");
 
+
 	m_player = FindGO<Player>("player");
 	m_game = FindGO<Game>("game");
-	m_camera = FindGO<GameCamera>("gameCamera");
 	m_tank2 = FindGO<TankEnemy2>("TankEnemy2");
 
-	//乱数を初期化。
-	srand((unsigned)time(NULL));
-	m_forward = Vector3::AxisZ;
-	m_rotation.Apply(m_forward);
 
 	//パス
 	m_enemypath.Init("Assets/path/tank/enemypath1.tkl");
@@ -115,16 +108,15 @@ bool TankEnemy::Start()
 	m_point11 = m_enemypath11.GetFirstPoint();
 	m_point12 = m_enemypath12.GetFirstPoint();
 
-	m_timer = 0.0f;
+
+	//スフィアコライダーを初期化。
+	m_sphereCollider.Create(1.0f);
 
 
-	if (m_tankNumber == 4) {
-		tankPosi = m_position;
-	}
-
-//	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
-	//表示する座標を設定する。
-//	alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
+	//乱数を初期化。
+	srand((unsigned)time(NULL));
+	m_forward = Vector3::AxisZ;
+	m_rotation.Apply(m_forward);
 
 
 	m_box = NewGO<box>(0, "box");
@@ -149,9 +141,7 @@ void TankEnemy::Update()
 		m_box->m_question = 0;
 	}
 
-	if (m_tankNumber == 4) {
-		tankPosi = m_position;
-	}
+
 
 	if (m_player->m_down == true && m_hp >= 1 )
 	{
@@ -163,28 +153,6 @@ void TankEnemy::Update()
 	{
 		return;
 	}
-
-	//if (g_pad[0]->IsPress(enButtonY))
-	//{
-	//	g_Light.SetLigPoint({ m_position.x,100.0f,m_position.z });
-	//	g_Light.SetPointRange(300.0f);
-	//	g_Light.SetLigPointColor({ 10.0f,0.0f,0.0f });
-	//}
-	//else {
-	//	g_Light.SetLigPointColor({ 0.0f,0.0f,0.0f });
-	//}
-
-
-	//Vector3 range = m_tank2->GetPosition() - m_position;
-
-	//if (range.Length() <= 300.0f)
-	//{
-	//	
-	//	if (m_tank2->m_hp <= 0)
-	//	{
-	//		m_EnemyState = enEnemyState_look;
-	//	}
-	//}
 
 	//追跡処理。
 	Chase();
@@ -208,25 +176,25 @@ void TankEnemy::Update()
 	{
 		//alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		m_angl = 0.40f;
-		m_range = 1000.0f;
+		m_range = 1200.0f;
 	}
 	if (alertLevel == 1)
 	{
 		//alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		m_angl = 0.45f;
-		m_range = 1200.0f;
+		m_range = 1500.0f;
 	}
 	if (alertLevel == 2)
 	{
 		//alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 		m_angl = 0.50f;
-		m_range = 1500.0f;
+		m_range = 1800.0f;
 	}
 	if (alertLevel == 3)
 	{
 		//alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 		m_angl = 0.5f;
-		m_range = 1500.0f;
+		m_range = 1800.0f;
 	}
 	
 	if (m_EnemyState == enEnemyState_alert)
@@ -244,11 +212,6 @@ void TankEnemy::Update()
 			state = 1;
 		}
 	}
-
-	//if (m_camera->m_camera == 1)
-	//{
-	////	m_EnemyState = enEnemyState_Idle;
-	//}
 
 	Vector3 diff = m_player->GetPosition() - m_position;
 
@@ -310,26 +273,6 @@ void TankEnemy::Rotation()
 	m_rotation.Apply(m_forward);
 }
 
-//衝突したときに呼ばれる関数オブジェクト(壁用)
-struct SweepResultWall :public btCollisionWorld::ConvexResultCallback
-{
-	bool isHit = false;						//衝突フラグ。
-
-	virtual	btScalar	addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace)
-	{
-		//壁とぶつかってなかったら。
-		if (convexResult.m_hitCollisionObject->getUserIndex() != enCollisionAttr_Wall) {
-			//衝突したのは壁ではない。
-			return 0.0f;
-		}
-
-		//壁とぶつかったら。
-		//フラグをtrueに。
-		isHit = true;
-		return 0.0f;
-	}
-};
-
 void TankEnemy::Chase()
 {
 	//プレイヤーを見つけていなかったら。
@@ -343,10 +286,6 @@ void TankEnemy::Chase()
 				m_box->m_question = 1;
 				alertLevel = 1;
 			}
-		//	if (alertLevel == 3)
-		//	{
-		//		return;
-		//	}
 		}
 		else if (alertLevel == 0 || alertLevel == 3) {
 			m_box->m_question = 0;
@@ -369,6 +308,26 @@ void TankEnemy::Chase()
 	}
 	m_modelRender.SetPosition(m_position);
 }
+
+//衝突したときに呼ばれる関数オブジェクト(壁用)
+struct SweepResultWall :public btCollisionWorld::ConvexResultCallback
+{
+	bool isHit = false;						//衝突フラグ。
+
+	virtual	btScalar	addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace)
+	{
+		//壁とぶつかってなかったら。
+		if (convexResult.m_hitCollisionObject->getUserIndex() != enCollisionAttr_Wall) {
+			//衝突したのは壁ではない。
+			return 0.0f;
+		}
+
+		//壁とぶつかったら。
+		//フラグをtrueに。
+		isHit = true;
+		return 0.0f;
+	}
+};
 
 void TankEnemy::Collision()
 {
@@ -406,7 +365,6 @@ void TankEnemy::Collision()
 			state = 2;
 			m_hp = 0;
 
-			//m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
 			m_EnemyState = enEnemyState_Death;
 			return;
@@ -425,7 +383,6 @@ void TankEnemy::Collision()
 			{
 				m_box->m_extract = 0;
 				m_box->m_question = 0;
-			//	m_player->prok = true;
 				m_player->critical = 1;
 				m_EnemyState = enEnemyState_Idle;
 				return;
@@ -542,9 +499,14 @@ void TankEnemy::MakeAttackCollision()
 	//攻撃当たり判定用のコリジョンオブジェクトを作成する。
 	auto collisionObject = NewGO<CollisionObject>(0);
 	//剣のボーンのワールド行列を取得する。
+	collisionObject->CreateBox(m_position,
+		Quaternion::Identity, 
+		Vector3(100.0f, 100.0f, 100.0f)
+	);
+	
+	
 	Matrix matrix = m_modelRender.GetBone(m_Hand)->GetWorldMatrix();
 	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(100.0f, 100.0f, 100.0f));
 	collisionObject->SetWorldMatrix(matrix);
 	collisionObject->SetName("enemy_attack");
 
@@ -1444,16 +1406,9 @@ void TankEnemy::Broute()
 
 void TankEnemy::Render(RenderContext& rc)
 {
-	if (Weak.Length() <= 3000.0f)// && m_camera->drow == 1)
+	if (Weak.Length() <= 3000.0f)
 	{
 		//モデルを描画する。
 		m_modelRender.Draw(rc);
 	}
-	//else if (Weak.Length() <= 500.0f && m_camera->drow == 0)
-	//{
-	////	alertSprite.Draw(rc);
-	//	//モデルを描画する。
-	//	m_modelRender.Draw(rc);
-	//}
-
 }

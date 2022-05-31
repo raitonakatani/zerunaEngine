@@ -8,7 +8,7 @@ bool Background::Start()
 
 	//	m_modelRender.Init("Assets/modelData/stage/RPG.stage.tkm");
 
-	m_modelRender.Init("Assets/modelData/stage1/syougai5.tkm",true);
+	m_modelRender.Init("Assets/modelData/stage1/syougai4.tkm",true);
 	//モデルの座標を設定。
 	m_modelRender.SetPosition(m_position);
 	//モデルの回転を設定。
@@ -22,7 +22,7 @@ bool Background::Start()
 	m_physicsStaticObject.GetbtCollisionObject()->setUserIndex(enCollisionAttr_Wall);
 
 
-	m_modelRender2.InitModel("Assets/modelData/stage1/syougai5.tkm");
+	m_modelRender2.InitModel("Assets/modelData/stage1/syougai4.tkm");
 	//モデルの座標を設定。
 	m_modelRender2.SetPosition(m_position);
 	//モデルの回転を設定。

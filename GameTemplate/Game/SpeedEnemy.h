@@ -4,6 +4,7 @@
 
 class Player;
 class box;
+class Game;
 
 /// <summary>
 /// スピードエネミークラス
@@ -22,6 +23,7 @@ public:
 		enSpeedEnemyState_Shout,          //叫びステート
 		enSpeedEnemyState_ReceiveDamage,  //被ダメージステート
 		enSpeedEnemyState_Down,           //ダウンステート
+		enSpeedEnemyState_Death,					//即死アニメーション。
 		enSpeedEnemyState_alert,
 	};
 
@@ -188,10 +190,12 @@ private:
 		enAnimClip_Shout,          //叫びアニメーション
 		enAnimClip_ReceiveDamage,  //被ダメージステート
 		enAnimClip_Down,           //ダウンステート
+		enAnimationClip_Death,					//即死アニメーション。
 		enAnimationClip_alert,
 		enAnimClip_Num             //アニメーションの数
 	};
 	
+	Game* m_game;
 	box* m_box;										//警戒、模様
 	ModelRender             m_modelRender;                              //モデルレンダー
 	CharacterController     m_charaCon;                                 //キャラコン
@@ -222,6 +226,10 @@ private:
 	float						alertTimet = 0.0f;					//拡大率
 	bool mikke = false;
 	Vector3 targetpos;
+	int						ab;											//咆哮回数
+	int						hakken = 0;									//プレイヤーを見つけた時のサウンド
+	int						fasthakkenn = 0;							//最初に見つけた時の処理
+
 
 	EnemyPath m_enemypath;
 	EnemyPath m_enemypath2;

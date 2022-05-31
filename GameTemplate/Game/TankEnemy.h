@@ -87,7 +87,7 @@ public:
 		return m_tankNumber;
 	}
 
-	Vector3 tankPosi;
+	
 	float					m_hp = 20;									//HPB
 
 

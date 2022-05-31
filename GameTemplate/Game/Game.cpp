@@ -99,12 +99,7 @@ bool Game::Start()
 			m_tank->SetRotation(objData.rotation);
 			m_tank->SetScale(objData.scale);
 			//番号を設定する。
-			m_tank->SettankNumber(objData.number);
-
-			if (m_tank->GettankNumber() == 4) {
-				m_tank->tankPosi = objData.position;
-			}
-			
+			m_tank->SettankNumber(objData.number);	
 			//falseにすると、レベルの方でモデルが読み込まれない。
 			return true;
 		}

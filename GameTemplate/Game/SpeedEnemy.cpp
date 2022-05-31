@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpeedEnemy.h"
 
+#include "Game.h"
 #include "Player.h"
 #include "box.h"
 
@@ -32,7 +33,11 @@ SpeedEnemy::SpeedEnemy()
 
 SpeedEnemy::~SpeedEnemy()
 {
-
+	const auto& m_boxs = FindGOs<box>("box");
+	for (auto m_box : m_boxs)
+	{
+		DeleteGO(m_box);
+	}
 }
 
 void SpeedEnemy::InitAnimation()
@@ -50,6 +55,8 @@ void SpeedEnemy::InitAnimation()
 	m_animationClipArray[enAnimClip_ReceiveDamage].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_Down].Load("Assets/animData/speedenemy/down.tka");
 	m_animationClipArray[enAnimClip_Down].SetLoopFlag(false);
+	m_animationClipArray[enAnimationClip_Death].Load("Assets/animData/speedenemy/sokusi.tka");
+	m_animationClipArray[enAnimationClip_Death].SetLoopFlag(false);
 	m_animationClipArray[enAnimationClip_alert].Load("Assets/animData/speedenemy/alert.tka");
 	m_animationClipArray[enAnimationClip_alert].SetLoopFlag(false);
 }
@@ -86,7 +93,9 @@ bool SpeedEnemy::Start()
 
 
 	m_player = FindGO<Player>("player");
+	m_game = FindGO<Game>("game");
 
+	//パス
 	m_enemypath.Init("Assets/path/speed/enemypath1.tkl");
 	m_enemypath2.Init("Assets/path/speed/enemypath2.tkl");
 	m_enemypath3.Init("Assets/path/speed/enemypath3.tkl");
@@ -118,9 +127,6 @@ bool SpeedEnemy::Start()
 	//スフィアコライダーを初期化。
 	m_sphereCollider.Create(1.0f);
 
-	//alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
-	//表示する座標を設定する。
-	//alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
 
 	//乱数を初期化。
 	srand((unsigned)time(NULL));
@@ -147,6 +153,10 @@ void SpeedEnemy::Update()
 		m_box->m_question = 0;
 	}
 
+	if (m_player->m_down == true && m_hp >= 1)
+	{
+		m_speedEnemyState = enSpeedEnemyState_Shout;
+	}
 
 	Weak = m_player->GetPosition() - m_position;
 	if (Weak.Length() >= 2500.0f)
@@ -174,27 +184,31 @@ void SpeedEnemy::Update()
 	{
 		//alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		m_angl = 0.40f;
-		m_range = 1000.0f;
+		m_range = 1200.0f;
 	}
 	if (alertLevel == 1)
 	{
 		//alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		m_angl = 0.45f;
-		m_range = 1200.0f;
+		m_range = 1500.0f;
 	}
 	if (alertLevel == 2)
 	{
 	//	alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 		m_angl = 0.50f;
-		m_range = 1500.0f;
+		m_range = 1800.0f;
 	}
 	if (alertLevel == 3)
 	{
 	//	alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 		m_angl = 0.5f;
-		m_range = 1500.0f;
+		m_range = 1800.0f;
 	}
 
+	if (m_speedEnemyState == enSpeedEnemyState_alert)
+	{
+		m_angl = 0.7f;
+	}
 	if (state == 0 && m_isSearchPlayer == false) {
 
 		m_timer += g_gameTime->GetFrameDeltaTime();
@@ -210,7 +224,7 @@ void SpeedEnemy::Update()
 	Vector3 diff = m_player->GetPosition() - m_position;
 
 	//ベクトルの長さが700.0fより小さかったら。
-	if (diff.LengthSq() <= 1500.0f * 1500.0f && m_hp > 0)
+	if (diff.LengthSq() <= m_range * m_range && m_hp > 0)
 	{
 		//ワールド座標に変換。
 		//座標をエネミーの少し上に設定する。
@@ -243,51 +257,6 @@ void SpeedEnemy::Update()
 	m_modelRender.Update();
 }
 
-void SpeedEnemy::Chase()
-{
-	//プレイヤーを見つけていなかったら。
-	if (state == 1)
-	{
-		if (Weak.Length() <= 800.0f && m_player->st == 1 || Weak.Length() <= 800.0f && m_player->st == 2)
-		{
-			m_speedEnemyState = enSpeedEnemyState_alert;
-
-			if (alertLevel == 0) {
-				m_box->m_question = 1;
-				alertLevel = 1;
-			}
-			//	if (alertLevel == 3)
-			//	{
-			//		return;
-			//	}
-		}
-		else if (alertLevel == 0 || alertLevel == 3) {
-			m_box->m_question = 0;
-			m_speedEnemyState = enSpeedEnemyState_Chase;
-			Aroute();
-		}
-	}
-
-	//追跡ステートでないなら、追跡処理はしない。
-	if (m_speedEnemyState != enSpeedEnemyState_Chase)
-	{
-		//何もしない
-		return;
-	}
-	
-	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
-	if (m_charaCon.IsOnGround()) {
-		//地面についた。
-		m_moveSpeed.y = 0.0f;
-	}
-	m_modelRender.SetPosition(m_position);
-
-	//Vector3 modelPosition = m_position;
-	////ちょっとだけモデルの座標を挙げる。
-	//modelPosition.y += MODEL_POSITION_Y;
-	//m_modelRender.SetPosition(modelPosition);
-}
-
 void SpeedEnemy::Rotation()
 {
 	if (fabsf(m_moveSpeed.x) < MOVESPEED_MINIMUMVALUE
@@ -313,6 +282,43 @@ void SpeedEnemy::Rotation()
 	m_rotation.Apply(m_forward);
 }
 
+void SpeedEnemy::Chase()
+{
+	//プレイヤーを見つけていなかったら。
+	if (state == 1 && alertLevel != 2)
+	{
+		if (Weak.Length() <= 800.0f && m_player->st == 1 || Weak.Length() <= 800.0f && m_player->st == 2)
+		{
+			m_speedEnemyState = enSpeedEnemyState_alert;
+
+			if (alertLevel == 0) {
+				m_box->m_question = 1;
+				alertLevel = 1;
+			}
+		}
+		else if (alertLevel == 0 || alertLevel == 3) {
+			m_box->m_question = 0;
+			m_speedEnemyState = enSpeedEnemyState_Chase;
+			Aroute();
+		}
+	}
+
+	//追跡ステートでないなら、追跡処理はしない。
+	if (m_speedEnemyState != enSpeedEnemyState_Chase)
+	{
+		//何もしない
+		return;
+	}
+	
+	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
+	if (m_charaCon.IsOnGround()) {
+		//地面についた。
+		m_moveSpeed.y = 0.0f;
+	}
+	m_modelRender.SetPosition(m_position);
+}
+
+
 //衝突したときに呼ばれる関数オブジェクト(壁用)
 struct SweepResultWall :public btCollisionWorld::ConvexResultCallback
 {
@@ -335,6 +341,9 @@ struct SweepResultWall :public btCollisionWorld::ConvexResultCallback
 
 void SpeedEnemy::Collision()
 {
+	if (m_hp <= 0) {
+		return;
+	}
 	//被ダメージステートとダウンステートだったら
 	if (m_speedEnemyState == enSpeedEnemyState_ReceiveDamage ||
 		m_speedEnemyState == enSpeedEnemyState_Down)
@@ -361,10 +370,15 @@ void SpeedEnemy::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(collisionObject))
 		{
-			//state = 2;
+			m_player->prok = true;
+
+			m_player->m_prokcamera = 1;
+			state = 2;
+			m_hp = 0;
+
 			//m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
-			m_speedEnemyState = enSpeedEnemyState_Down;
+			m_speedEnemyState = enSpeedEnemyState_Death;
 			return;
 		}
 	}
@@ -379,8 +393,8 @@ void SpeedEnemy::Collision()
 		{
 			m_box->m_extract = 0;
 			m_box->m_question = 0;
-			m_speedEnemyState = enSpeedEnemyState_Idle;
 			m_player->critical = 1;
+			m_speedEnemyState = enSpeedEnemyState_Idle;
 			return;
 		}
 	}
@@ -393,19 +407,39 @@ void SpeedEnemy::Collision()
 		//プレイヤーの攻撃とキャラコンが衝突したら
 		if (collision2->IsHit(m_charaCon))
 		{
-			m_hp -= RECEIVE_DAMAGE;
-			//HPが0だったら
-			if (m_hp == 0)
-			{
-				//ダウンステートに移行する
-				m_speedEnemyState = enSpeedEnemyState_Down;
+			state = 2;
+			if (m_isSearchPlayer == false) {
+				m_hp -= RECEIVE_DAMAGE;
+				//HPが0だったら
+				if (m_hp <= 0)
+				{
+					//ダウンステートに移行する
+					m_speedEnemyState = enSpeedEnemyState_Death;
+				}
+				//HPが0ではなかったら
+				else
+				{
+					//被ダメージステートに移行する
+					m_speedEnemyState = enSpeedEnemyState_ReceiveDamage;
+				}
 			}
-			//HPが0ではなかったら
-			else
-			{
-				//被ダメージステートに移行する
-				m_speedEnemyState = enSpeedEnemyState_ReceiveDamage;
+			else {
+				m_hp -= 35;
+				//HPが0だったら
+				if (m_hp <= 0)
+				{
+					//ダウンステートに移行する
+					m_speedEnemyState = enSpeedEnemyState_Down;
+				}
+				//HPが0ではなかったら
+				else
+				{
+					//被ダメージステートに移行する
+					m_speedEnemyState = enSpeedEnemyState_ReceiveDamage;
+				}
 			}
+
+			return;
 		}
 	}
 }
@@ -426,109 +460,64 @@ void SpeedEnemy::Attack()
 	}
 }
 
+void SpeedEnemy::SearchPlayer()
+{
+	m_isSearchPlayer = false;
+
+	m_forward = Vector3::AxisZ;
+	m_rotation.Apply(m_forward);
+
+	Vector3 playerPosition = m_player->GetPosition();
+	Vector3 diff = playerPosition - m_position;
+
+	diff.Normalize();
+	float angle = acosf(diff.Dot(m_forward));
+
+	//プレイヤーが視界内に居なかったら。
+	if (Math::PI * m_angl <= fabsf(angle))
+	{
+		//プレイヤーは見つかっていない。
+		return;
+	}
+
+	btTransform start, end;
+	start.setIdentity();
+	end.setIdentity();
+	//始点はエネミーの座標。
+	start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
+	//終点はプレイヤーの座標。
+	end.setOrigin(btVector3(playerPosition.x, playerPosition.y + 70.0f, playerPosition.z));
+
+	SweepResultWall callback;
+	//コライダーを始点から終点まで動かして。
+	//衝突するかどうかを調べる。
+	PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
+	//壁と衝突した！
+	if (callback.isHit == true)
+	{
+		//プレイヤーは見つかっていない。
+		return;
+	}
+
+	//壁と衝突してない！！
+	//プレイヤー見つけたフラグをtrueに。
+	m_isSearchPlayer = true;
+}
+
 void SpeedEnemy::MakeAttackCollision()
 {
 	//コリジョンオブジェクトを作成する。
 	auto collisionObject = NewGO<CollisionObject>(0);
-
-	Vector3 collisionPosition = m_position;
-	//座標をプレイヤーの少し前に設定する。
-	collisionPosition += m_forward * 100.0f;
-	collisionPosition.y += 100.0f;
 	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateBox(collisionPosition,				  //座標。
+	collisionObject->CreateBox(m_position,						  //座標。
 		Quaternion::Identity,                                     //回転。
 		Vector3(30.0f, 30.0f, 30.0f)                              //大きさ。
 	);
 
 	Matrix matrix = m_modelRender.GetBone(m_punchBoneId)->GetWorldMatrix();
 	//剣のボーンのワールド行列をコリジョンに適用させる
-	collisionObject->SetName("Speedenemy_attack");
 	collisionObject->SetWorldMatrix(matrix);
-}
-
-void SpeedEnemy::PlayAnimation()
-{
-	switch (m_speedEnemyState)
-	{
-		//待機ステートの時
-	case SpeedEnemy::enSpeedEnemyState_Idle:
-		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.3f);
-		m_modelRender.SetAnimationSpeed(1.6f);
-		break;
-		//追跡ステートの時
-	case SpeedEnemy::enSpeedEnemyState_Chase:
-		m_modelRender.PlayAnimation(enAnimClip_Run, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.6f);
-		break;
-		//攻撃ステートの時
-	case SpeedEnemy::enSpeedEnemyState_Attack:
-		m_modelRender.PlayAnimation(enAnimClip_Attack, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.6f);
-		break;
-		//叫びステートの時
-	case SpeedEnemy::enSpeedEnemyState_Shout:
-		m_modelRender.PlayAnimation(enAnimClip_Shout, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.3f);
-		break;
-		//被ダメージステートの時
-	case SpeedEnemy::enSpeedEnemyState_ReceiveDamage:
-		m_modelRender.PlayAnimation(enAnimClip_ReceiveDamage, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.3f);
-		break;
-		//ダウンステートの時
-	case SpeedEnemy::enSpeedEnemyState_Down:
-		m_modelRender.PlayAnimation(enAnimClip_Down, 0.2f);
-		m_modelRender.SetAnimationSpeed(1.5f);
-		break;
-		//警戒ステートの時。
-	case SpeedEnemy::enSpeedEnemyState_alert:
-		//警戒アニメーションを再生。
-		m_modelRender.PlayAnimation(enAnimationClip_alert, 0.1f);
-		m_modelRender.SetAnimationSpeed(1.0f);
-		break;
-		//それ以外の時
-	default:
-		break;
-	}
-}
-
-void SpeedEnemy::ManageState()
-{
-	switch (m_speedEnemyState)
-	{
-		//待機ステートの時
-	case SpeedEnemy::enSpeedEnemyState_Idle:
-		ProcessIdleStateTransition();
-		break;
-		//追跡ステートの時
-	case SpeedEnemy::enSpeedEnemyState_Chase:
-		ProcessChaseStateTransition();
-		break;
-		//攻撃ステートの時
-	case SpeedEnemy::enSpeedEnemyState_Attack:
-		ProcessAttackStateTransition();
-		break;
-		//叫びステートの時
-	case SpeedEnemy::enSpeedEnemyState_Shout:
-		ProcessShoutStateTransition();
-		break;
-		//被ダメージステートの時
-	case SpeedEnemy::enSpeedEnemyState_ReceiveDamage:
-		ProcessReceiveDamageStateTransition();
-		break;
-		//ダウンステートの時
-	case SpeedEnemy::enSpeedEnemyState_Down:
-		ProcessDownStateTransition();
-		break;
-		//警戒ステートの時。
-	case SpeedEnemy::enSpeedEnemyState_alert:
-		//警戒ステートのステート遷移処理。
-		alertTransition();
-		//それ以外の時
-	default:
-		break;
-	}
+	collisionObject->SetName("Speedenemy_attack");
 }
 
 void SpeedEnemy::ProcessCommonStateTransition()
@@ -544,6 +533,17 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	if (m_isSearchPlayer == true && diff.LengthSq() <= m_range * m_range)
 	{
 		m_box->m_extract = 1;
+
+		if (hakken == 0 && m_player->m_hp > 0) {
+			SoundSource* SE;
+			SE = NewGO<SoundSource>(0);
+			SE->Init(16);
+			SE->Play(false);
+			SE->SetVolume(0.8f);
+			hakken = 1;
+		}
+
+		m_game->Bgmspeed = true;
 		state = 0;
 		m_timer = 0.0f;
 		alertTimet = 0.0f;
@@ -562,23 +562,23 @@ void SpeedEnemy::ProcessCommonStateTransition()
 		m_rotation.SetRotationY(atan2(m_forward.x, m_forward.z));
 		m_modelRender.SetRotation(m_rotation);
 
+		if (fasthakkenn == 0) {
+			SoundSource* SE;
+			SE = NewGO<SoundSource>(0);
+			SE->Init(10);
+			SE->SetVolume(1.5f);
+			SE->Play(false);
+			SE->SetFrequencyRatio(0.7);
+			m_speedEnemyState = enSpeedEnemyState_Shout;
+			return;
+		}
+
 		//攻撃できるなら
 		if (IsCanAttack() == true)
 		{
-			int ram = rand() % 100;
-			if (ram >= ATTACK_PROBABILITY)
-			{
 				//攻撃ステートに移行する
 				m_speedEnemyState = enSpeedEnemyState_Attack;
-				//m_isUnderAttack = false;
 				return;
-			}
-			else
-			{
-				//待機ステートに移行する
-				m_speedEnemyState = enSpeedEnemyState_Attack;
-				return;
-			}
 		}
 		//攻撃できないなら
 		else
@@ -598,8 +598,8 @@ void SpeedEnemy::ProcessCommonStateTransition()
 
 		//エネミーからプレイヤーに向かうベクトルを計算する。
 		Vector3 diff1 = targetpos - m_position;
-	//	huntertimer += g_gameTime->GetFrameDeltaTime();
-		//ベクトルを正規化する。
+		//	huntertimer += g_gameTime->GetFrameDeltaTime();
+			//ベクトルを正規化する。
 		diff1.Normalize();
 		//移動速度を設定する。
 		m_moveSpeed = diff1 * 200.0f;
@@ -613,8 +613,12 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	//プレイヤーを見つけられなければ。
 	else
 	{
+		ab = 1;
 		m_box->m_extract = 0;
 		m_box->m_extractanim = 0;
+
+		m_game->Bgmspeed = false;
+		hakken = 0;
 		if (alertLevel == 2)
 		{
 			alertLevel = 3;
@@ -667,22 +671,12 @@ void SpeedEnemy::ProcessAttackStateTransition()
 	//アニメーションの再生が終わっていたら
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		//共通のステートの遷移処理に移行する
-		ProcessCommonStateTransition();
-		return;
+		if (m_player->m_hp >= 1) {
+			m_speedEnemyState = enSpeedEnemyState_Chase;
+		}
 	}
 }
 
-void SpeedEnemy::ProcessShoutStateTransition()
-{
-	//アニメーションの再生が終わっていたら
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		//共通のステートの遷移処理に移行する
-		ProcessCommonStateTransition();
-		return;
-	}
-}
 
 void SpeedEnemy::ProcessReceiveDamageStateTransition()
 {
@@ -710,6 +704,27 @@ void SpeedEnemy::ProcessDownStateTransition()
 	}
 }
 
+void SpeedEnemy::ProcessShoutStateTransition()
+{
+	fasthakkenn = 1;
+	//if (ab == 0) {
+	//	SoundSource* SE;
+	//	SE = NewGO<SoundSource>(0);
+	//	SE->Init(10);
+	//	SE->SetVolume(1.5f);
+	//	SE->Play(false);
+	//	SE->SetFrequencyRatio(0.5);
+	//	ab = 1;
+	//}
+	//警報アニメーションの再生が終わったら。
+	if (m_modelRender.IsPlayingAnimation() == false)
+	{
+		//ab = 0;
+		//他のステートに遷移する。
+		ProcessCommonStateTransition();
+	}
+}
+
 void SpeedEnemy::alertTransition()
 {
 	if (m_modelRender.IsPlayingAnimation() == true)
@@ -725,70 +740,106 @@ void SpeedEnemy::alertTransition()
 	//警報アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		if (alertLevel == 1) {
+		//if (alertLevel == 1) {
 			alertLevel = 0;
-		}
+		//}
 		//他のステートに遷移する。
 		ProcessCommonStateTransition();
 	}
 }
 
-void SpeedEnemy::SearchPlayer()
+void SpeedEnemy::PlayAnimation()
 {
-	m_isSearchPlayer = false;
-
-	m_forward = Vector3::AxisZ;
-	m_rotation.Apply(m_forward);
-
-	Vector3 playerPosition = m_player->GetPosition();
-	Vector3 diff = playerPosition - m_position;
-
-	diff.Normalize();
-	float angle = acosf(diff.Dot(m_forward));
-
-	//プレイヤーが視界内に居なかったら。
-	if (Math::PI * m_angl <= fabsf(angle))
+	switch (m_speedEnemyState)
 	{
-		//プレイヤーは見つかっていない。
-		return;
+		//待機ステートの時
+	case SpeedEnemy::enSpeedEnemyState_Idle:
+		m_modelRender.PlayAnimation(enAnimClip_Idle, 0.3f);
+		m_modelRender.SetAnimationSpeed(1.6f);
+		break;
+		//追跡ステートの時
+	case SpeedEnemy::enSpeedEnemyState_Chase:
+		m_modelRender.PlayAnimation(enAnimClip_Run, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.6f);
+		break;
+		//攻撃ステートの時
+	case SpeedEnemy::enSpeedEnemyState_Attack:
+		m_modelRender.PlayAnimation(enAnimClip_Attack, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.6f);
+		break;
+		//叫びステートの時
+	case SpeedEnemy::enSpeedEnemyState_Shout:
+		m_modelRender.PlayAnimation(enAnimClip_Shout, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.3f);
+		break;
+		//被ダメージステートの時
+	case SpeedEnemy::enSpeedEnemyState_ReceiveDamage:
+		m_modelRender.PlayAnimation(enAnimClip_ReceiveDamage, 0.2f);
+		m_modelRender.SetAnimationSpeed(1.3f);
+		break;
+	case SpeedEnemy::enSpeedEnemyState_Death:
+		//ダウンアニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Death, 0.1f);
+		m_modelRender.SetAnimationSpeed(1.2f);
+		break;
+		//ダウンステートの時
+	case SpeedEnemy::enSpeedEnemyState_Down:
+		m_modelRender.PlayAnimation(enAnimClip_Down, 0.2f);
+		m_modelRender.SetAnimationSpeed(0.8f);
+		break;
+		//警戒ステートの時。
+	case SpeedEnemy::enSpeedEnemyState_alert:
+		//警戒アニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_alert, 0.1f);
+		m_modelRender.SetAnimationSpeed(1.0f);
+		break;
+		//それ以外の時
+	default:
+		break;
 	}
-
-	btTransform start, end;
-	start.setIdentity();
-	end.setIdentity();
-	//始点はエネミーの座標。
-	start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-	//終点はプレイヤーの座標。
-	end.setOrigin(btVector3(playerPosition.x, playerPosition.y + 70.0f, playerPosition.z));
-
-	SweepResultWall callback;
-	//コライダーを始点から終点まで動かして。
-	//衝突するかどうかを調べる。
-	PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-	//壁と衝突した！
-	if (callback.isHit == true)
-	{
-		//プレイヤーは見つかっていない。
-		return;
-	}
-
-	//壁と衝突してない！！
-	//プレイヤー見つけたフラグをtrueに。
-	m_isSearchPlayer = true;
 }
 
-const bool SpeedEnemy::IsCanAttack() const
+void SpeedEnemy::ManageState()
 {
-	//プレイヤーに向かうベクトル
-	Vector3 diff = m_player->GetPosition() - m_position;
-	//エネミーとプレイヤーの距離が近かったら。
-	if (diff.LengthSq() <= ATTACK_RANGE * ATTACK_RANGE)
+	switch (m_speedEnemyState)
 	{
-		//攻撃できる！
-		return true;
+		//待機ステートの時
+	case SpeedEnemy::enSpeedEnemyState_Idle:
+		ProcessIdleStateTransition();
+		break;
+		//追跡ステートの時
+	case SpeedEnemy::enSpeedEnemyState_Chase:
+		ProcessChaseStateTransition();
+		break;
+		//攻撃ステートの時
+	case SpeedEnemy::enSpeedEnemyState_Attack:
+		ProcessAttackStateTransition();
+		break;
+		//叫びステートの時
+	case SpeedEnemy::enSpeedEnemyState_Shout:
+		ProcessShoutStateTransition();
+		break;
+		//被ダメージステートの時
+	case SpeedEnemy::enSpeedEnemyState_ReceiveDamage:
+		ProcessReceiveDamageStateTransition();
+		break;
+		//即死ステートの時。
+	case SpeedEnemy::enSpeedEnemyState_Death:
+		//ダウンステートのステート遷移処理。
+		ProcessDownStateTransition();
+		break;
+		//ダウンステートの時
+	case SpeedEnemy::enSpeedEnemyState_Down:
+		ProcessDownStateTransition();
+		break;
+		//警戒ステートの時。
+	case SpeedEnemy::enSpeedEnemyState_alert:
+		//警戒ステートのステート遷移処理。
+		alertTransition();
+		//それ以外の時
+	default:
+		break;
 	}
-	//攻撃できない。
-	return false;
 }
 
 void SpeedEnemy::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
@@ -806,6 +857,19 @@ void SpeedEnemy::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventN
 	}
 }
 
+const bool SpeedEnemy::IsCanAttack() const
+{
+	//プレイヤーに向かうベクトル
+	Vector3 diff = m_player->GetPosition() - m_position;
+	//エネミーとプレイヤーの距離が近かったら。
+	if (diff.LengthSq() <= ATTACK_RANGE * ATTACK_RANGE)
+	{
+		//攻撃できる！
+		return true;
+	}
+	//攻撃できない。
+	return false;
+}
 
 ///経路
 void SpeedEnemy::Aroute()

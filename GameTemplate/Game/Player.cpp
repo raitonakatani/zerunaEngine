@@ -587,32 +587,9 @@ void Player::ProcessCommonStateTransition()
 	//RB1ボタンが押されたら＆攻撃ステート１だったら
 	if (g_pad[0]->IsTrigger(enButtonRB1))
 	{
-
-		//コリジョンオブジェクトを作成する。
-		auto collisionObject = NewGO<CollisionObject>(0);
-
-		Vector3 collisionPosition =m_position;
-		collisionPosition += m_forward * 100.0f;
-		collisionPosition.y += 100.0f;
-		//ボックス状のコリジョンを作成する。
-		collisionObject->CreateBox(collisionPosition,				   //座標。
-			m_rotation,                                      //回転。
-			Vector3(60.0f, 30.0f, 180.0f)                              //大きさ。
-		);
-		collisionObject->SetName("player");
-
-
-		if (critical == 1)
-		{
-			//突き攻撃ステートに移行する
-			m_playerState = enPlayerState_PokeAttack;
-		}
-		else {
-			//攻撃ステートに移行する
-			m_playerState = enPlayerState_FirstAttack;
-			m_isUnderAttack = false;
-		}
-
+		//攻撃ステートに移行する
+		m_playerState = enPlayerState_FirstAttack;
+		m_isUnderAttack = false;
 		return;
 	}
 
@@ -630,11 +607,6 @@ void Player::ProcessCommonStateTransition()
 			Vector3(60.0f, 30.0f, 180.0f)                              //大きさ。
 		);
 		collisionObject->SetName("player");
-
-		/*camera = FindGO<GameCamera>("gameCamera");
-		camera->m_camera = 1;*/
-
-		//prok = true;
 
 		//突き攻撃ステートに移行する
 		m_playerState = enPlayerState_PokeAttack;

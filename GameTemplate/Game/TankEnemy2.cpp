@@ -106,9 +106,9 @@ bool TankEnemy2::Start()
 		tankPosi = m_position;
 	}
 
-	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
+//	alertSprite.Init("Assets/sprite/alert.dds", 64, 64);
 	//表示する座標を設定する。
-	alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
+//	alertSprite.SetPosition({ 0.0f,0.0f ,0.0f });
 
 
 	m_box = NewGO<box>(0, "box");
@@ -148,28 +148,6 @@ void TankEnemy2::Update()
 		return;
 	}
 
-	//if (g_pad[0]->IsPress(enButtonY))
-	//{
-	//	g_Light.SetLigPoint({ m_position.x,100.0f,m_position.z });
-	//	g_Light.SetPointRange(300.0f);
-	//	g_Light.SetLigPointColor({ 10.0f,0.0f,0.0f });
-	//}
-	//else {
-	//	g_Light.SetLigPointColor({ 0.0f,0.0f,0.0f });
-	//}
-
-
-	//Vector3 range = m_tank->GetPosition() - m_position;
-
-	//if (range.Length() <= 300.0f)
-	//{
-
-	//	if (m_tank->m_hp <= 0)
-	//	{
-	//		m_EnemyState = enEnemyState_look;
-	//	}
-	//}
-
 	//追跡処理。
 	Chase();
 	//回転処理。
@@ -190,27 +168,27 @@ void TankEnemy2::Update()
 
 	if (alertLevel == 0)
 	{
-		alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//	alertSprite.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		m_angl = 0.40f;
-		m_range = 1000.0f;
+		m_range = 1200.0f;
 	}
 	if (alertLevel == 1)
 	{
-		alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	//	alertSprite.SetMulColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		m_angl = 0.45f;
-		m_range = 1200.0f;
+		m_range = 1500.0f;
 	}
 	if (alertLevel == 2)
 	{
-		alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	//	alertSprite.SetMulColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 		m_angl = 0.50f;
-		m_range = 1500.0f;
+		m_range = 1800.0f;
 	}
 	if (alertLevel == 3)
 	{
-		alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+//		alertSprite.SetMulColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 		m_angl = 0.5f;
-		m_range = 1500.0f;
+		m_range = 1800.0f;
 	}
 
 	if (m_EnemyState == enEnemyState_alert)
@@ -259,12 +237,12 @@ void TankEnemy2::Update()
 		worldPos.y *= FRAME_BUFFER_H / 2;
 
 		//ポジションの設定。
-		alertSprite.SetPosition(Vector3(worldPos.x, worldPos.y, 0.0f));
+	//	alertSprite.SetPosition(Vector3(worldPos.x, worldPos.y, 0.0f));
 	}
 	else {
-		alertSprite.SetPosition({ 2000.0f,2000.0f,0.0f });
+	//	alertSprite.SetPosition({ 2000.0f,2000.0f,0.0f });
 	}
-	alertSprite.Update();
+//	alertSprite.Update();
 	//モデルの更新。
 	m_modelRender.Update();
 }
