@@ -585,7 +585,7 @@ void Player::ProcessCommonStateTransition()
 {
 
 	//RB1ボタンが押されたら＆攻撃ステート１だったら
-	if (g_pad[0]->IsPress(enButtonRB1))
+	if (g_pad[0]->IsTrigger(enButtonRB1))
 	{
 
 		//コリジョンオブジェクトを作成する。
@@ -616,7 +616,7 @@ void Player::ProcessCommonStateTransition()
 		return;
 	}
 
-	if (g_pad[0]->IsPress(enButtonRB2))
+	if (m_playerState != enPlayerState_PokeAttack && g_pad[0]->IsTrigger(enButtonRB2))
 	{
 		//コリジョンオブジェクトを作成する。
 		auto collisionObject = NewGO<CollisionObject>(0);

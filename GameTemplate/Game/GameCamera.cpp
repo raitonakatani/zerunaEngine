@@ -101,9 +101,13 @@ void GameCamera::Update()
 	if (m_camera == 1 || m_player->prok == true)
 	{
 		pos2 = target + m_toCameraPos;
+		m_camera = 1;
 		
-		if (m_timer >= 2.5f) {
+		if (m_timer >= 1.0f) {
 			m_player->prok = false;
+		}
+		if (m_timer >= 2.5f) {
+			m_camera = 0;
 		}
 //		Vector3 position = pos2;
 //		g_camera3D->SetPosition(position);

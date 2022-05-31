@@ -119,6 +119,8 @@ bool TankEnemy2::Start()
 
 void TankEnemy2::Update()
 {
+
+
 	if (m_hp > 0) {
 		m_box->m_position = { m_position.x,250.0f ,m_position.z };
 
@@ -135,7 +137,7 @@ void TankEnemy2::Update()
 		tankPosi = m_position;
 	}
 
-	if (m_player->m_down == true)
+	if (m_player->m_down == true && m_hp >= 1)
 	{
 		m_EnemyState = enEnemyState_look;
 	}
@@ -354,6 +356,9 @@ void TankEnemy2::Chase()
 
 void TankEnemy2::Collision()
 {
+	if (m_hp <= 0) {
+		return;
+	}
 	//被ダメージ、あるいはダウンステートの時は。
 	//当たり判定処理はしない。
 	if (m_EnemyState == enEnemyState_ReceiveDamage ||
@@ -383,7 +388,7 @@ void TankEnemy2::Collision()
 			m_player->prok = true;
 			m_player->m_prokcamera = 1;
 			state = 2;
-
+			m_hp = 0;
 
 			//m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
@@ -680,12 +685,8 @@ void TankEnemy2::ProcessAttackStateTransition()
 	//攻撃アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		m_idleTimer += g_gameTime->GetFrameDeltaTime();
-		//待機時間がある程度経過したら。
-		if (m_idleTimer >= 0.3f)
-		{
-			//他のステートに遷移する。
-			ProcessCommonStateTransition();
+		if (m_player->m_hp >= 1) {
+			m_EnemyState = enEnemyState_Chase;
 		}
 	}
 }

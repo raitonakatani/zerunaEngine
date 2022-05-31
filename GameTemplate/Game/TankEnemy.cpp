@@ -135,6 +135,8 @@ bool TankEnemy::Start()
 
 void TankEnemy::Update()
 {
+
+
 	if (m_hp > 0) {
 		m_box->m_position = { m_position.x,250.0f ,m_position.z };
 
@@ -151,7 +153,7 @@ void TankEnemy::Update()
 		tankPosi = m_position;
 	}
 
-	if (m_player->m_down == true)
+	if (m_player->m_down == true && m_hp >= 1 )
 	{
 		m_EnemyState = enEnemyState_look;
 	}
@@ -370,6 +372,9 @@ void TankEnemy::Chase()
 
 void TankEnemy::Collision()
 {
+	if (m_hp <= 0) {
+		return;
+	}
 	//被ダメージ、あるいはダウンステートの時は。
 	//当たり判定処理はしない。
 	if (m_EnemyState == enEnemyState_ReceiveDamage ||
@@ -377,16 +382,15 @@ void TankEnemy::Collision()
 	{
 		return;
 	}
-
-	//攻撃当たり判定用のコリジョンオブジェクトを作成する。
-	auto collisionObject = NewGO<CollisionObject>(0);
-	//剣のボーンのワールド行列を取得する。
-	Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
-	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(80.0f, 80.0f, 80.0f));
-	collisionObject->SetWorldMatrix(matrix);
-	collisionObject->SetName("enemy");
-
+		//攻撃当たり判定用のコリジョンオブジェクトを作成する。
+		auto collisionObject = NewGO<CollisionObject>(0);
+		//剣のボーンのワールド行列を取得する。
+		Matrix matrix = m_modelRender.GetBone(m_weakness)->GetWorldMatrix();
+		//ボックス状のコリジョンを作成する。
+		collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(80.0f, 80.0f, 80.0f));
+		collisionObject->SetWorldMatrix(matrix);
+		collisionObject->SetName("enemy");
+	
 
 	//プレイヤーの攻撃用のコリジョンを取得する。
 	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_porkattack");
@@ -400,7 +404,7 @@ void TankEnemy::Collision()
 
 			m_player->m_prokcamera = 1;
 			state = 2;
-
+			m_hp = 0;
 
 			//m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
@@ -652,12 +656,6 @@ void TankEnemy::ProcessCommonStateTransition()
 		else {
 			alertLevel = 0;
 		}
-	//	alertLevel = 0;
-	//	alertTimet += g_gameTime->GetFrameDeltaTime();
-	//	if (alertTimet >= 10.0f)
-	//	{
-	//		alertLevel = 0;
-	//	}
 		return;
 	}
 }
@@ -704,12 +702,8 @@ void TankEnemy::ProcessAttackStateTransition()
 	//攻撃アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		m_idleTimer += g_gameTime->GetFrameDeltaTime();
-		//待機時間がある程度経過したら。
-		if (m_idleTimer >= 0.3f)
-		{
-			//他のステートに遷移する。
-			ProcessCommonStateTransition();
+		if (m_player->m_hp >= 1) {
+			m_EnemyState = enEnemyState_Chase;
 		}
 	}
 }
@@ -734,22 +728,10 @@ void TankEnemy::ProcessDownStateTransition()
 	m_modelRender.SetPosition(m_position);
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		/*if (m_player->prok == true) {
-			m_player->prok = false;
-		}*/
 		m_hp = 0;
 		state = 3;
 		m_charaCon.RemoveRigidBoby();
 	}
-/*	//ダウンアニメーションの再生が終わったら。
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		state = 0;
-		m_camera->m_camera = 0;
-		//自身を削除する。
-	//	DeleteGO(this);
-	}
-	*/
 }
 
 void TankEnemy::lookTransition()
