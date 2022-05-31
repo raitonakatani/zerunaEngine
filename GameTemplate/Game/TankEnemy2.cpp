@@ -101,7 +101,6 @@ bool TankEnemy2::Start()
 
 	m_timer = 0.0f;
 
-	g_soundEngine->ResistWaveFileBank(10, "Assets/sound/10houkou.wav");
 
 	if (m_tankNumber == 4) {
 		tankPosi = m_position;
@@ -158,16 +157,16 @@ void TankEnemy2::Update()
 	//}
 
 
-	Vector3 range = m_tank->GetPosition() - m_position;
+	//Vector3 range = m_tank->GetPosition() - m_position;
 
-	if (range.Length() <= 300.0f)
-	{
+	//if (range.Length() <= 300.0f)
+	//{
 
-		if (m_tank->m_hp <= 0)
-		{
-			m_EnemyState = enEnemyState_look;
-		}
-	}
+	//	if (m_tank->m_hp <= 0)
+	//	{
+	//		m_EnemyState = enEnemyState_look;
+	//	}
+	//}
 
 	//追跡処理。
 	Chase();
@@ -732,7 +731,7 @@ void TankEnemy2::ProcessDownStateTransition()
 void TankEnemy2::lookTransition()
 {
 	fasthakkenn = 1;
-	if (ab == 0) {
+	/*if (ab == 0) {
 		SoundSource* SE;
 		SE = NewGO<SoundSource>(0);
 		SE->Init(10);
@@ -740,7 +739,7 @@ void TankEnemy2::lookTransition()
 		SE->Play(false);
 		SE->SetFrequencyRatio(0.5);
 		ab = 1;
-	}
+	}*/
 	//警報アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
@@ -766,7 +765,7 @@ void TankEnemy2::alertTransition()
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
 		//if (alertLevel == 1) {
-		alertLevel = 0;
+	//	alertLevel = 0;
 		//}
 			//他のステートに遷移する。
 		ProcessCommonStateTransition();
@@ -954,7 +953,7 @@ void TankEnemy2::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 120.0f;
+				m_moveSpeed = diff * 150.0f;
 				//Y座標の移動速度を0にする
 			//	m_moveSpeed.y = 0.0f;
 			}
@@ -1007,7 +1006,7 @@ void TankEnemy2::Aroute()
 				//正規化
 				diff.Normalize();
 				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * 120.0f;
+				m_moveSpeed = diff * 150.0f;
 				//Y座標の移動速度を0にする
 			//	m_moveSpeed.y = 0.0f;
 			}

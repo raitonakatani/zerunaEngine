@@ -35,7 +35,7 @@ void Player::InitAnimation()
 	m_animationClipArray[enAnimClip_StealthySteps].SetLoopFlag(true);
 	m_animationClipArray[enAnimClip_FirstAttack].Load("Assets/animData/player2/slashattack.tka");
 	m_animationClipArray[enAnimClip_FirstAttack].SetLoopFlag(false);
-	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player2/pokeattack.tka");
+	m_animationClipArray[enAnimClip_PokeAttack].Load("Assets/animData/player2/pokeattack2.tka");
 	m_animationClipArray[enAnimClip_PokeAttack].SetLoopFlag(false);
 	m_animationClipArray[enAnimClip_ReceiveDamage].Load("Assets/animData/player2/damage.tka");
 	m_animationClipArray[enAnimClip_ReceiveDamage].SetLoopFlag(false);
@@ -62,6 +62,7 @@ bool Player::Start()
 
 	//「Sword」ボーンのID(番号)を取得する。
 	m_sword_jointBoneId = m_modelRender.FindBoneID(L"Sword_joint");
+	m_swordBoneId = m_modelRender.FindBoneID(L"sword");
 
 
 	//サウンドを読み込む。
@@ -109,7 +110,14 @@ bool Player::Start()
 	m_senseRender.SetPosition({ 0.0f,0.0f ,0.0f });
 	m_senseRender.Update();
 
-	EffectEngine::GetInstance()->ResistEffect(2, u"Assets/effect/efk/blood2.efk");
+
+	m_spriteRender3.Init("Assets/sprite/syutyu3.dds", 1600, 900);
+	m_spriteRender3.SetScale({ criticalscale,criticalscale,0.0f });
+	m_spriteRender3.Update();
+
+
+	EffectEngine::GetInstance()->ResistEffect(3, u"Assets/effect/efk/blood2.efk");
+	EffectEngine::GetInstance()->ResistEffect(2, u"Assets/effect/efk/star.efk");
 
 	m_game = FindGO<Game>("game");
 	//m_title = FindGO<Title>("title");
@@ -724,12 +732,23 @@ void Player::ProcessStealthyStepsStateTransition()
 
 void Player::ProcessAttackStateTransition()
 {
+	if (m_playerState == enPlayerState_PokeAttack) {
+
+		//Matrix matrix = m_modelRender.GetBone(m_sword_jointBoneId)->GetWorldMatrix();
+		//Vector3 m_effectPosition = m_position;
+		//m_effectPosition.y += 100.0f;
+		////エフェクトのオブジェクトを作成する。
+		//m_effectEmitter = NewGO <EffectEmitter>(0);
+		//m_effectEmitter->Init(2);
+		//m_effectEmitter->SetPosition(m_effectPosition);
+		////エフェクトの大きさを設定する。
+		//m_effectEmitter->SetScale(m_scale * 5.0f);
+		//m_effectEmitter->Play();
+		//m_effectEmitter->SetWorldMatrix(matrix);
+	}
 	//アニメーションの再生が終わったら
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-	/*	if (prok == true) {
-			prok = false;
-		}*/
 		//他のステートに遷移する
 		ProcessCommonStateTransition();
 	}
@@ -813,6 +832,22 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 
 	if (wcscmp(eventName, L"porkattack_start") == 0)
 	{
+		if (critical == 1) {
+			Matrix matrix = m_modelRender.GetBone(m_swordBoneId)->GetWorldMatrix();
+			Vector3 m_effectPosition = m_position;
+			m_effectPosition.y += 100.0f;
+			//エフェクトのオブジェクトを作成する。
+			m_effectEmitter = NewGO <EffectEmitter>(0);
+			m_effectEmitter->Init(2);
+			m_effectEmitter->SetPosition(m_effectPosition);
+			//エフェクトの大きさを設定する。
+			m_effectEmitter->SetScale(m_scale * 5.0f);
+			m_effectEmitter->Play();
+			m_effectEmitter->SetWorldMatrix(matrix);
+		}
+	}
+	else if (wcscmp(eventName, L"porkattack") == 0)
+	{
 		SoundSource* slashse = NewGO<SoundSource>(0);
 		slashse->Init(12);
 		slashse->Play(false);
@@ -828,13 +863,14 @@ void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 			m_effectPosition.y += 100.0f;
 			//エフェクトのオブジェクトを作成する。
 			m_effectEmitter = NewGO <EffectEmitter>(0);
-			m_effectEmitter->Init(2);
+			m_effectEmitter->Init(3);
 			m_effectEmitter->SetPosition(m_effectPosition);
 			//エフェクトの大きさを設定する。
 			m_effectEmitter->SetScale(m_scale * 50.0f);
 			m_effectEmitter->Play();
 			m_effectEmitter->SetWorldMatrix(matrix);
 		}
+		critical = 0;
 		//攻撃フラグをfalseにする
 		m_isUnderAttack = false;
 	}
@@ -898,6 +934,35 @@ void Player::Render(RenderContext& rc)
 			m_senseberRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
 			m_senseRender.Draw(rc);
 			m_senseberRender.Draw(rc);
+
+			if (critical == 1) {
+				if (criticalAlpha <= 1.0f) {
+					criticalAlpha += 0.005;
+
+					if (criticalAlpha >= 0.4f && criticalAlpha <= 0.5f) {
+						criticalscale -= 0.05;
+						m_spriteRender3.SetScale({ criticalscale ,criticalscale ,0.0f });
+						m_spriteRender3.Update();
+						m_spriteRender3.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(criticalAlpha))));
+						m_spriteRender3.Draw(rc);
+					}
+				}
+			}
+			else {
+				if (criticalAlpha >= 0.0f) {
+					criticalAlpha -= 0.005;
+
+						m_spriteRender3.SetScale({ criticalscale ,criticalscale ,0.0f });
+						m_spriteRender3.Update();
+						m_spriteRender3.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(criticalAlpha))));
+						m_spriteRender3.Draw(rc);
+					
+				}
+				if (criticalscale <= 1.995f) {
+					criticalscale += 0.005;
+				}
+			}
+
 		}
 	}
 	//ドロー。

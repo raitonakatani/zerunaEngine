@@ -44,7 +44,7 @@ void Background::Update()
 	if (m_player->prok == true && m_player->index == 0)
 	{
 		g_Light.SetLigSpot({ m_player->GetPosition().x,300.0f ,m_player->GetPosition().z });
-		g_Light.SetLigSpotColor({ 15.0f,15.0f,15.0f });
+		g_Light.SetLigSpotColor({ 10.0f,10.0f,10.0f });
 
 
 		g_Light.SetAmbientLight({ .15f,.15f,.15f });

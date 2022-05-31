@@ -23,7 +23,7 @@ Title::~Title()
 bool Title::Start()
 {
 	//画像を読み込む。
-	m_spriteRender.Init("Assets/sprite/Title/kuro.dds", 1600, 900);
+	m_spriteRender.Init("Assets/sprite/Title/title.dds", 1600, 900);
 	m_senseRender.Init("Assets/sprite/Title/sense.dds", 1600, 900);
 	m_criticalRender.Init("Assets/sprite/Title/critical.dds", 1600, 900);
 	m_pressButton.Init("Assets/sprite/Title/button2.dds", 800, 400);
@@ -59,9 +59,17 @@ void Title::Update()
 		m_timer += 0.04f;
 	}
 
-	if (retryCounter->retryCounter == 2)
+	if (retryCounter->retryCounter == 1)
 	{
 		retryCounter->retryCounter = 0;
+		m_gameStart->gameStart = 0;
+		m_sense = 0;
+	}
+
+	if (retryCounter->retryCounter == 2)
+	{
+		m_timer += 8.0f;
+		m_gameStart->gameStart = 0;
 		m_sense = 2;
 		//自身を削除する。
 //		DeleteGO(this);
@@ -101,21 +109,24 @@ void Title::Update()
 
 	if (m_sense == 2) {
 		if (m_isWaitFadeout && m_timer >= 1.0f) {
+			retryCounter->retryCounter = 0;
 			m_gameStart->gameStart = 1;
 			//自身を削除する。
 			DeleteGO(this);
 		}
 		else {
 			if (m_timer >= 10.0f && m_senseB<0.1f) {
-				m_timer = 0.0f;
 				m_isWaitFadeout = true;
-				//音を読み込む。
-				g_soundEngine->ResistWaveFileBank(0, "Assets/sound/0titlebutton.wav");
-				//効果音を再生する。
-				SoundSource* se = NewGO<SoundSource>(0);
-				se->Init(0);
-				se->Play(false);
-				se->SetVolume(0.5f);
+				if (retryCounter->retryCounter == 0) {
+					m_timer = 0.0f;
+					//音を読み込む。
+					g_soundEngine->ResistWaveFileBank(0, "Assets/sound/0titlebutton.wav");
+					//効果音を再生する。
+					SoundSource* se = NewGO<SoundSource>(0);
+					se->Init(0);
+					se->Play(false);
+					se->SetVolume(0.5f);
+				}
 			}
 		}
 
@@ -130,14 +141,16 @@ void Title::Update()
 		m_critical += 0.01f;
 	}
 
-	//α値を変化させる。
-	if (m_isWaitFadeout)
-	{
-		m_alpha += g_gameTime->GetFrameDeltaTime() * 20.5f;
-	}
-	else
-	{
-		m_alpha += g_gameTime->GetFrameDeltaTime() * 1.2f;
+	if (retryCounter->retryCounter == 0) {
+		//α値を変化させる。
+		if (m_isWaitFadeout)
+		{
+			m_alpha += g_gameTime->GetFrameDeltaTime() * 20.5f;
+		}
+		else
+		{
+			m_alpha += g_gameTime->GetFrameDeltaTime() * 1.2f;
+		}
 	}
 
 	m_criticalRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_critical))));
@@ -149,11 +162,22 @@ void Title::Update()
 
 void Title::Render(RenderContext& rc)
 {
-	//画像の描画。
-	//m_criticalRender.Draw(rc);
-	//m_senseRender.Draw(rc);
-	m_spriteRender.Draw(rc);
-	if (m_sense == 0) {
-		//m_pressButton.Draw(rc);
+	if (retryCounter->retryCounter == 0) {
+		//画像の描画。
+		m_criticalRender.Draw(rc);
+		m_senseRender.Draw(rc);
+		m_spriteRender.Draw(rc);
+		if (m_sense == 0) {
+			m_pressButton.Draw(rc);
+		}
+	}
+
+	if (retryCounter->retryCounter == 2) {
+
+		m_spriteRender.Init("Assets/sprite/fade4.dds", 1600, 900);
+		m_alpha += g_gameTime->GetFrameDeltaTime() * 5.2f;
+		m_spriteRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+		m_spriteRender.Draw(rc);
+
 	}
 }

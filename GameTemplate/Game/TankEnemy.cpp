@@ -117,7 +117,6 @@ bool TankEnemy::Start()
 
 	m_timer = 0.0f;
 
-	g_soundEngine->ResistWaveFileBank(10, "Assets/sound/10houkou.wav");
 
 	if (m_tankNumber == 4) {
 		tankPosi = m_position;
@@ -562,7 +561,7 @@ void TankEnemy::ProcessCommonStateTransition()
 	{
 		m_box->m_extract = 1;
 
-		if (hakken == 0) {
+		if (hakken == 0 && m_player->m_hp > 0) {
 			SoundSource* SE;
 			SE = NewGO<SoundSource>(0);
 			SE->Init(16);
@@ -591,6 +590,12 @@ void TankEnemy::ProcessCommonStateTransition()
 		m_modelRender.SetRotation(m_rotation);
 
 		if (fasthakkenn == 0) {
+			SoundSource* SE;
+			SE = NewGO<SoundSource>(0);
+			SE->Init(10);
+			SE->SetVolume(1.5f);
+			SE->Play(false);
+			SE->SetFrequencyRatio(0.7);
 			m_EnemyState = enEnemyState_look;
 			return;
 		}
@@ -750,15 +755,15 @@ void TankEnemy::ProcessDownStateTransition()
 void TankEnemy::lookTransition()
 {
 	fasthakkenn = 1;
-	if (ab == 0) {
-			SoundSource* SE;
-				SE = NewGO<SoundSource>(0);
-				SE->Init(10);
-				SE->SetVolume(1.5f);	
-				SE->Play(false);
-				SE->SetFrequencyRatio(0.5);
-				ab = 1;
-	}
+	//if (ab == 0) {
+	//	SoundSource* SE;
+	//	SE = NewGO<SoundSource>(0);
+	//	SE->Init(10);
+	//	SE->SetVolume(1.5f);
+	//	SE->Play(false);
+	//	SE->SetFrequencyRatio(0.5);
+	//	ab = 1;
+	//}
 	//警報アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{

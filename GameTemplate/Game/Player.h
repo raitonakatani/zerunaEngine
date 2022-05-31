@@ -177,6 +177,7 @@ public:
 
 
 	int                     m_sword_jointBoneId = -1;                   //「Sword」ボーンのID。
+	int                     m_swordBoneId = -1;                   //「Sword」ボーンのID。
 	ModelRender				m_modelRender;                              //モデルレンダー
 	EnPlayerState           m_playerState = enPlayerState_Idle;         //プレイヤーステート
 	int st = 0;
@@ -191,6 +192,7 @@ public:
 	CharacterController     m_charaCon;	                                //キャラコン
 	bool                    m_isUnderAttack = false;                    //攻撃中か？
 	EffectEmitter*			m_effectEmitter = nullptr;					//エフェクト。
+	EffectEmitter*			m_effectEmitter2 = nullptr;					//エフェクト。
 	PAUSE*					m_pause = nullptr;
 	Game* m_game;
 //	Title* m_title;
@@ -200,6 +202,7 @@ public:
 	SpriteRender			m_HPberRender;						        //画像。
 	SpriteRender			m_stmnberRender;
 	SpriteRender			m_senseberRender;
+	SpriteRender			m_spriteRender3;
 	float					life = 100.0f;								//フルHPバー
 	float					m_sutamina = 200.0f;						//スタミナ。
 	float					m_hurusutamina = 200.0f;					//フルスタミナ。
@@ -209,7 +212,9 @@ public:
 	bool					m_menu = false;
 	bool					COOLtime = false;
 	int						index = 0;
-	float					m_alpha = 0.0f;								//pressbuttonのα値。
+	float					m_alpha = 0.0f;								//pressbuttonのα値。]
+	float					criticalAlpha = 0.0f;
+	float					criticalscale = 2.0f;
 	bool					m_down = false;
 	float					m_downtimer = 0.0f;
 	int						m_Hitse = 0;

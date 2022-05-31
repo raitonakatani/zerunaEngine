@@ -40,6 +40,7 @@ private:
 	SoundSource*				GameBGM;
 	SpriteRender				m_spriteRender;
 	SpriteRender				m_spriteRender2;				//スプライトレンダ―。
+	SpriteRender				m_spriteRender3;				//スプライトレンダ―。
 	SpriteRender				m_pressButton;
 	float						m_alpha = 0.0f;					//pressbuttonのα値。
 	SpriteRender				m_targetRender;
@@ -65,5 +66,5 @@ private:
 	SoundSource*				m_SE;
 	LevelRender					m_levelRender;				//レベルレンダー。 
 	float				m_currentAlpha = 1.0f;		//現在のα値。ここを変更すると画像が透明になる。
-
+	int gameover = 0;
 };

@@ -76,6 +76,7 @@ bool Game::Start()
 	m_floor->SetScale({ 1.0f,1.0f,1.0f });
 
 	g_soundEngine->ResistWaveFileBank(6, "Assets/sound/6GameBGM.wav");
+	g_soundEngine->ResistWaveFileBank(10, "Assets/sound/10houkou.wav");
 	g_soundEngine->ResistWaveFileBank(16, "Assets/sound/16mituketa.wav");
 
 	//ƒŒƒxƒ‹‚ð\’z‚·‚éB
@@ -172,6 +173,7 @@ bool Game::Start()
 
 void Game::Update()
 {
+
 	if (m_gameStart->gameStart == 0) {
 		return;
 	}
@@ -220,7 +222,7 @@ void Game::Update()
 	if (retryCounter->retryCounter == 1)
 	{
 		m_player->m_down = true;
-		retryCounter->retryCounter = 0;
+		//retryCounter->retryCounter = 0;
 		siboutimer += 2.0f;
 	}
 	if (retryCounter->retryCounter == 2)
@@ -235,6 +237,16 @@ void Game::Update()
 		if (retryCounter->retryCounter == 0) {
 			retryCounter->retryCounter = 2;
 		}
+		if (gameover ==0) {
+			gameover = 1;
+			SoundSource* SE;
+			SE = NewGO<SoundSource>(0);
+			SE->Init(10);
+			SE->SetVolume(1.5f);
+			SE->Play(false);
+			SE->SetFrequencyRatio(0.5);
+		}
+
 	}
 	else {
 		m_fade->StartFadeIn();
@@ -273,14 +285,9 @@ void Game::Render(RenderContext& rc)
 {
 	if (m_gameStart->gameStart == 2) {
 
-			m_currentAlpha -= 0.2f * g_gameTime->GetFrameDeltaTime();
-			m_spriteRender2.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
-			m_spriteRender2.Draw(rc);
-		if (m_currentAlpha > 0.2f) {
-			m_alpha += g_gameTime->GetFrameDeltaTime() * 5.2f;
-			m_spriteRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
-			m_spriteRender.Draw(rc);
-		}
+		m_currentAlpha -= 0.2f * g_gameTime->GetFrameDeltaTime();
+		m_spriteRender2.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
+		m_spriteRender2.Draw(rc);
 	}
 	if (m_deathse == true) {
 		m_pressButton.Draw(rc);
