@@ -226,7 +226,6 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="box.cpp" />
     <ClCompile Include="ClearCounter.cpp" />
-    <ClCompile Include="Enemy3.cpp" />
     <ClCompile Include="EnemyPath.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Floor.cpp" />
@@ -248,14 +247,12 @@
     </ClCompile>
     <ClCompile Include="system\system.cpp" />
     <ClCompile Include="TankEnemy.cpp" />
-    <ClCompile Include="TankEnemy2.cpp" />
     <ClCompile Include="Title.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="ClearCounter.h" />
-    <ClInclude Include="Enemy3.h" />
     <ClInclude Include="EnemyPath.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="Floor.h" />
@@ -272,7 +269,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
     <ClInclude Include="TankEnemy.h" />
-    <ClInclude Include="TankEnemy2.h" />
     <ClInclude Include="Title.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

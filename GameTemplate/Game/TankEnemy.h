@@ -10,13 +10,12 @@
 class Player;
 class Game;
 class GameCamera;
-class TankEnemy2;
 class EnemyPath;
 class box;
 
-	/// <summary>
-	/// エネミー。
-	/// </summary>
+/// <summary>
+/// エネミー。
+/// </summary>
 class TankEnemy : public IGameObject
 {
 public:
@@ -87,7 +86,7 @@ public:
 		return m_tankNumber;
 	}
 
-	
+
 	float					m_hp = 20;									//HP。
 
 
@@ -199,16 +198,17 @@ private:
 	Vector3					m_scale = Vector3::One;						//大きさ。
 	CharacterController		m_charaCon;									//キャラコン。
 	EnEnemyState			m_EnemyState = enEnemyState_Idle;			//エネミーステート。
-	EffectEmitter*			m_effectEmitter = nullptr;					//エフェクト。
+	EffectEmitter* m_effectEmitter = nullptr;					//エフェクト。
 	bool					m_isUnderAttack = false;					//攻撃中か？
 	bool					m_isSearchPlayer = false;					//見るけているか？
-	Player*					m_player = nullptr;							//プレイヤー。
-	TankEnemy2*				m_tank2 = nullptr;							//タンク
-	Game*					m_game = nullptr;							//ゲーム
-	GameCamera*				m_camera;									//カメラ
-	box*					m_box;										//警戒、模様
+	Player* m_player = nullptr;							//プレイヤー。
+	Game* m_game = nullptr;							//ゲーム
+	GameCamera* m_camera;									//カメラ
+	box* m_box;										//警戒、模様
 	EnemyPath				m_enemypath;								//パス
+	EnemyPath				m_enemypath2;								//パス
 	EnemyPath				m_enemypath3;								//パス
+	EnemyPath				m_enemypath4;								//パス
 	EnemyPath				m_enemypath5;								//パス
 	EnemyPath				m_enemypath6;								//パス
 	EnemyPath				m_enemypath7;								//パス
@@ -217,16 +217,18 @@ private:
 	EnemyPath				m_enemypath10;								//パス
 	EnemyPath				m_enemypath11;								//パス
 	EnemyPath				m_enemypath12;								//パス
-	Point*					m_point;									//ポイント
-	Point*					m_point3;									//ポイント
-	Point*					m_point5;									//ポイント
-	Point*					m_point6;									//ポイント
-	Point*					m_point7;									//ポイント
-	Point*					m_point8;									//ポイント
-	Point*					m_point9;									//ポイント
-	Point*					m_point10;									//ポイント
-	Point*					m_point11;									//ポイント
-	Point*					m_point12;									//ポイント
+	Point* m_point;									//ポイント
+	Point* m_point2;									//ポイント
+	Point* m_point3;									//ポイント
+	Point* m_point4;									//ポイント
+	Point* m_point5;									//ポイント
+	Point* m_point6;									//ポイント
+	Point* m_point7;									//ポイント
+	Point* m_point8;									//ポイント
+	Point* m_point9;									//ポイント
+	Point* m_point10;									//ポイント
+	Point* m_point11;									//ポイント
+	Point* m_point12;									//ポイント
 	SpriteRender			alertSprite;								//警戒レベル
 	float					m_chaseTimer = 0.0f;						//追跡タイマー。
 	float					m_idleTimer = 0.0f;							//待機タイマー。
@@ -240,8 +242,8 @@ private:
 	float					m_timer = 0.0f;								//タイマー
 	Vector3					Weak;										//プレイヤーとの距離
 	int						ab;											//咆哮回数
-	float					m_angl =0.40f;								//視野角
-	float					m_range =1000.0f;							//視力（見える距離）
+	float					m_angl = 0.40f;								//視野角
+	float					m_range = 1000.0f;							//視力（見える距離）
 	Vector3					targetpos;									//最後に見たプレイヤーのポジション
 	bool					mikke = false;								//見失った敵を追いかける。
 	int						hakken = 0;									//プレイヤーを見つけた時のサウンド

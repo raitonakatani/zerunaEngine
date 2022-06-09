@@ -7,7 +7,6 @@
 #include "Floor.h"
 
 #include "TankEnemy.h"
-#include "TankEnemy2.h"
 #include "SpeedEnemy.h"
 
 #include "Fade.h"
@@ -38,11 +37,6 @@ Game::~Game()
 	for (auto enemy : enemys)
 	{
 		DeleteGO(enemy);
-	}
-	const auto& tkenemys = FindGOs<TankEnemy2>("TankEnemy2");
-	for (auto tkenemy : tkenemys)
-	{
-		DeleteGO(tkenemy);
 	}
 	const auto& enemy2s = FindGOs<SpeedEnemy>("m_enemy2");
 	for (auto enemy2 : enemy2s)
@@ -106,12 +100,12 @@ bool Game::Start()
 
 		if (objData.ForwardMatchName(L"secondtank") == true) {
 			//エネミーのインスタンスを生成する。
-			m_tank2 = NewGO<TankEnemy2>(0, "TankEnemy2");
-			m_tank2->SetPosition({  objData.position});
-			m_tank2->SetRotation(objData.rotation);
-			m_tank2->SetScale(objData.scale);
+			m_tank = NewGO<TankEnemy>(0, "TankEnemy");
+			m_tank->SetPosition({ objData.position });
+			m_tank->SetRotation(objData.rotation);
+			m_tank->SetScale(objData.scale);
 			//番号を設定する。
-			m_tank2->SettankNumber(objData.number);
+			m_tank->SettankNumber(objData.number);
 			//falseにすると、レベルの方でモデルが読み込まれない。
 			return true;
 		}

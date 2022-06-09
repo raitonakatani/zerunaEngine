@@ -14,7 +14,6 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Background.cpp" />
-    <ClCompile Include="Enemy3.cpp" />
     <ClCompile Include="TankEnemy.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="Title.cpp" />
@@ -24,7 +23,6 @@
     <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="index.cpp" />
     <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="TankEnemy2.cpp" />
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="PAUSE.cpp" />
     <ClCompile Include="Retry.cpp" />
@@ -40,7 +38,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Background.h" />
-    <ClInclude Include="Enemy3.h" />
     <ClInclude Include="TankEnemy.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="Title.h" />
@@ -50,7 +47,6 @@
     <ClInclude Include="GameClear.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="Menu.h" />
-    <ClInclude Include="TankEnemy2.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="PAUSE.h" />
     <ClInclude Include="Retry.h" />

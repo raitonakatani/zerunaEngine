@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "TankEnemy.h"
-#include "TankEnemy2.h"
 
 #include "Game.h"
 #include "Player.h"
@@ -82,12 +81,13 @@ bool TankEnemy::Start()
 
 	m_player = FindGO<Player>("player");
 	m_game = FindGO<Game>("game");
-	m_tank2 = FindGO<TankEnemy2>("TankEnemy2");
 
 
 	//パス
 	m_enemypath.Init("Assets/path/tank/enemypath1.tkl");
+	m_enemypath2.Init("Assets/path/tank/enemypath2.tkl");
 	m_enemypath3.Init("Assets/path/tank/enemypath3.tkl");
+	m_enemypath4.Init("Assets/path/tank/enemypath4.tkl");
 	m_enemypath5.Init("Assets/path/tank/enemypath5.tkl");
 	m_enemypath6.Init("Assets/path/tank/enemypath6.tkl");
 	m_enemypath7.Init("Assets/path/tank/enemypath7.tkl");
@@ -98,7 +98,9 @@ bool TankEnemy::Start()
 	m_enemypath12.Init("Assets/path/tank/enemypath12.tkl");
 	//ポイント
 	m_point = m_enemypath.GetFirstPoint();
+	m_point2 = m_enemypath2.GetFirstPoint();
 	m_point3 = m_enemypath3.GetFirstPoint();
+	m_point4 = m_enemypath4.GetFirstPoint();
 	m_point5 = m_enemypath5.GetFirstPoint();
 	m_point6 = m_enemypath6.GetFirstPoint();
 	m_point7 = m_enemypath7.GetFirstPoint();
@@ -929,6 +931,58 @@ void TankEnemy::Aroute()
 			}
 
 	}
+	if (m_tankNumber == 1)
+	{
+		//目標地点までのベクトル
+		Vector3 diff = m_point2->s_position - m_position;
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
+				m_point2 = m_enemypath2.GetFirstPoint();
+			}
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
+				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
+			}
+		}
+		//目標地点に近くなかったら
+		else
+		{
+			btTransform start, end;
+			start.setIdentity();
+			end.setIdentity();
+			//始点はエネミーの座標。
+			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
+			//終点は次のパスの座標。
+			end.setOrigin(btVector3(m_point2->s_position.x, m_point2->s_position.y + 70.0f, m_point2->s_position.z));
+
+			SweepResultWall callback;
+			//コライダーを始点から終点まで動かして。
+			//衝突するかどうかを調べる。
+			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
+			//壁と衝突した！
+			if (callback.isHit == true)
+			{
+				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
+				return;
+			}
+			else {
+				//正規化
+				diff.Normalize();
+				//目標地点に向かうベクトル×移動速度
+				m_moveSpeed = diff * 150.0f;
+				//Y座標の移動速度を0にする
+			}
+
+		}
+
+	}
 	if (m_tankNumber == 2)
 	{
 		//目標地点までのベクトル
@@ -980,6 +1034,58 @@ void TankEnemy::Aroute()
 			}
 
 		}
+	}
+	if (m_tankNumber == 3)
+	{
+		//目標地点までのベクトル
+		Vector3 diff = m_point4->s_position - m_position;
+		//目標地点に近かったら
+		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
+		{
+			//最後の目標地点だったら
+			if (m_point4->s_number == m_enemypath4.GetPointListSize() - 1)
+			{
+				//最初の目標地点へ
+				m_point4 = m_enemypath4.GetFirstPoint();
+			}
+			//最後の目標地点ではなかったら
+			else
+			{
+				//次の目標地点へ
+				m_point4 = m_enemypath4.GetNextPoint(m_point4->s_number);
+			}
+		}
+		//目標地点に近くなかったら
+		else
+		{
+			btTransform start, end;
+			start.setIdentity();
+			end.setIdentity();
+			//始点はエネミーの座標。
+			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
+			//終点は次のパスの座標。
+			end.setOrigin(btVector3(m_point4->s_position.x, m_point4->s_position.y + 70.0f, m_point4->s_position.z));
+
+			SweepResultWall callback;
+			//コライダーを始点から終点まで動かして。
+			//衝突するかどうかを調べる。
+			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
+			//壁と衝突した！
+			if (callback.isHit == true)
+			{
+				m_point4 = m_enemypath4.GetNextPoint(m_point->s_number);
+				return;
+			}
+			else {
+				//正規化
+				diff.Normalize();
+				//目標地点に向かうベクトル×移動速度
+				m_moveSpeed = diff * 150.0f;
+				//Y座標の移動速度を0にする
+			}
+
+		}
+
 	}
 	if (m_tankNumber == 4)
 	{
