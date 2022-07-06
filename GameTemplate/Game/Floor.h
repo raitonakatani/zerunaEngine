@@ -31,16 +31,10 @@ class Floor : public IGameObject
 			m_scale = scale;
 		}
 	private:
-		ModelRender m_modelRender;					//モデル
-		Model m_model;
-		PhysicsStaticObject m_physicsStaticObject;	//静的物理オブジェクト・
-	//	BoxCollider m_boxCollider;
-	//	RigidBody m_rigidBody;
-	//	ModelInitData initData;
-		Vector3						m_position;							//座標。
-		Quaternion					m_rotation;
-		Vector3						m_scale;
-
-
+		ModelRender					m_modelRender;					//モデル。
+		PhysicsStaticObject			m_physicsStaticObject;			//静的物理オブジェクト。
+		Vector3						m_position;						//座標。
+		Quaternion					m_rotation;						//回転。
+		Vector3						m_scale;						//大きさ。
 };
 

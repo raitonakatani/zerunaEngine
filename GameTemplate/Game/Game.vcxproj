@@ -248,6 +248,7 @@
     <ClCompile Include="system\system.cpp" />
     <ClCompile Include="TankEnemy.cpp" />
     <ClCompile Include="Title.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
@@ -270,6 +271,7 @@
     <ClInclude Include="system\system.h" />
     <ClInclude Include="TankEnemy.h" />
     <ClInclude Include="Title.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

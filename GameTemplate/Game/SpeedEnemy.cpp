@@ -17,7 +17,7 @@ namespace
 	const float GRAVITY = 1000.0f;                  //重力
 	const float IDLETIMER_MAX = 0.3f;               //待機タイマーの最大値
 	const float IDLETIMER_DEFAULT = 0.0f;           //待機タイマーの初期値
-	const float CHASETIMER_MAX = 0.8f;              //追跡タイマーの最大値
+	const float CHASETIMER_MAX = 0.3f;              //追跡タイマーの最大値
 	const float CHASETIMER_DEFAULT = 0.0f;          //追跡タイマーの初期値
 	const float SEARCH_RANGE = 300.0f;              //プレイヤーを発見できる距離
 	const float SEARCH_ANGLE = 130.0f;              //プレイヤーを発見できる角度
@@ -96,33 +96,33 @@ bool SpeedEnemy::Start()
 	m_game = FindGO<Game>("game");
 
 	//パス
-	m_enemypath.Init("Assets/path/speed/enemypath1.tkl");
-	m_enemypath2.Init("Assets/path/speed/enemypath2.tkl");
-	m_enemypath3.Init("Assets/path/speed/enemypath3.tkl");
-	m_enemypath4.Init("Assets/path/speed/enemypath4.tkl");
-	m_enemypath5.Init("Assets/path/speed/enemypath5.tkl");
-	m_enemypath6.Init("Assets/path/speed/enemypath6.tkl");
-	m_enemypath7.Init("Assets/path/speed/enemypath7.tkl");
-	m_enemypath8.Init("Assets/path/speed/enemypath8.tkl");
-	m_enemypath9.Init("Assets/path/speed/enemypath9.tkl");
-	m_enemypath10.Init("Assets/path/speed/enemypath10.tkl");
-	m_enemypath11.Init("Assets/path/speed/enemypath11.tkl");
-	m_enemypath12.Init("Assets/path/speed/enemypath12.tkl");
-	m_enemypath13.Init("Assets/path/speed/enemypath13.tkl");
+	m_enemypath[1].Init("Assets/path/speed/enemypath1.tkl");
+	m_enemypath[2].Init("Assets/path/speed/enemypath2.tkl");
+	m_enemypath[3].Init("Assets/path/speed/enemypath3.tkl");
+	m_enemypath[4].Init("Assets/path/speed/enemypath4.tkl");
+	m_enemypath[5].Init("Assets/path/speed/enemypath5.tkl");
+	m_enemypath[6].Init("Assets/path/speed/enemypath6.tkl");
+	m_enemypath[7].Init("Assets/path/speed/enemypath7.tkl");
+	m_enemypath[8].Init("Assets/path/speed/enemypath8.tkl");
+	m_enemypath[9].Init("Assets/path/speed/enemypath9.tkl");
+	m_enemypath[10].Init("Assets/path/speed/enemypath10.tkl");
+	m_enemypath[11].Init("Assets/path/speed/enemypath11.tkl");
+	m_enemypath[12].Init("Assets/path/speed/enemypath12.tkl");
+	m_enemypath[13].Init("Assets/path/speed/enemypath13.tkl");
 	
-	m_point = m_enemypath.GetFirstPoint();
-	m_point2 = m_enemypath2.GetFirstPoint();
-	m_point3 = m_enemypath3.GetFirstPoint();
-	m_point4 = m_enemypath4.GetFirstPoint();
-	m_point5 = m_enemypath5.GetFirstPoint();
-	m_point6 = m_enemypath6.GetFirstPoint();
-	m_point7 = m_enemypath7.GetFirstPoint();
-	m_point8 = m_enemypath8.GetFirstPoint();
-	m_point9 = m_enemypath9.GetFirstPoint();
-	m_point10 = m_enemypath10.GetFirstPoint();
-	m_point11 = m_enemypath11.GetFirstPoint();
-	m_point12 = m_enemypath12.GetFirstPoint();
-	m_point13 = m_enemypath13.GetFirstPoint();
+	m_point[1] = m_enemypath[1].GetFirstPoint();
+	m_point[2] = m_enemypath[2].GetFirstPoint();
+	m_point[3] = m_enemypath[3].GetFirstPoint();
+	m_point[4] = m_enemypath[4].GetFirstPoint();
+	m_point[5] = m_enemypath[5].GetFirstPoint();
+	m_point[6] = m_enemypath[6].GetFirstPoint();
+	m_point[7] = m_enemypath[7].GetFirstPoint();
+	m_point[8] = m_enemypath[8].GetFirstPoint();
+	m_point[9] = m_enemypath[9].GetFirstPoint();
+	m_point[10] = m_enemypath[10].GetFirstPoint();
+	m_point[11] = m_enemypath[11].GetFirstPoint();
+	m_point[12] = m_enemypath[12].GetFirstPoint();
+	m_point[13] = m_enemypath[13].GetFirstPoint();
 
 	//スフィアコライダーを初期化。
 	m_sphereCollider.Create(1.0f);
@@ -141,6 +141,10 @@ bool SpeedEnemy::Start()
 
 void SpeedEnemy::Update()
 {
+	if (m_player->GetPlayerHaveIndex() >= 1)
+	{
+		m_isSearchPlayer = false;
+	}
 	if (m_hp > 0) {
 		m_box->m_position = { m_position.x,250.0f ,m_position.z };
 
@@ -287,7 +291,7 @@ void SpeedEnemy::Chase()
 	//プレイヤーを見つけていなかったら。
 	if (state == 1 && alertLevel != 2)
 	{
-		if (Weak.Length() <= 800.0f && m_player->st == 1 || Weak.Length() <= 800.0f && m_player->st == 2)
+		if (Weak.Length() <= 800.0f && m_player->st == 1)
 		{
 			m_speedEnemyState = enSpeedEnemyState_alert;
 
@@ -371,12 +375,8 @@ void SpeedEnemy::Collision()
 		if (collision->IsHit(collisionObject))
 		{
 			m_player->prok = true;
-
-			m_player->m_prokcamera = 1;
 			state = 2;
 			m_hp = 0;
-
-			//m_camera->m_camera = 0;
 			//ダウンステートに遷移する。
 			m_speedEnemyState = enSpeedEnemyState_Death;
 			return;
@@ -393,7 +393,7 @@ void SpeedEnemy::Collision()
 		{
 			m_box->m_extract = 0;
 			m_box->m_question = 0;
-			m_player->critical = 1;
+			m_player->SetHitCritical(1);
 			m_speedEnemyState = enSpeedEnemyState_Idle;
 			return;
 		}
@@ -534,7 +534,7 @@ void SpeedEnemy::ProcessCommonStateTransition()
 	{
 		m_box->m_extract = 1;
 
-		if (hakken == 0 && m_player->m_hp > 0) {
+		if (hakken == 0 && m_player->GetHP() > 0) {
 			SoundSource* SE;
 			SE = NewGO<SoundSource>(0);
 			SE->Init(16);
@@ -636,7 +636,7 @@ void SpeedEnemy::ProcessIdleStateTransition()
 	m_idleTimer += g_gameTime->GetFrameDeltaTime();
 
 	//待機タイマーが0.3fより大きかったら
-	if (m_idleTimer >= IDLETIMER_MAX && m_player->critical == 0)
+	if (m_idleTimer >= IDLETIMER_MAX && m_player->GetHitCritical() == 0)
 	{
 		//共通のステートの遷移処理に移行する
 		ProcessCommonStateTransition();
@@ -671,7 +671,7 @@ void SpeedEnemy::ProcessAttackStateTransition()
 	//アニメーションの再生が終わっていたら
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		if (m_player->m_hp >= 1) {
+		if (m_player->GetHP() >= 1) {
 			m_speedEnemyState = enSpeedEnemyState_Chase;
 		}
 	}
@@ -875,231 +875,38 @@ const bool SpeedEnemy::IsCanAttack() const
 void SpeedEnemy::Aroute()
 {
 
-	if (m_speedNumber == 0)
+	for (int i = 0; i <= 12; i++)
 	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point->s_number == m_enemypath.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point = m_enemypath.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point = m_enemypath.GetNextPoint(m_point->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point->s_position.x, m_point->s_position.y + 70.0f, m_point->s_position.z));
+		if (m_speedNumber== i) {
 
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point = m_enemypath.GetNextPoint(m_point->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-
-	if (m_speedNumber == 1)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point2->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point2->s_number == m_enemypath2.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point2 = m_enemypath2.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point2->s_position.x, m_point2->s_position.y + 70.0f, m_point2->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point2 = m_enemypath2.GetNextPoint(m_point2->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 2)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point3->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point3->s_number == m_enemypath3.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point3 = m_enemypath3.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point3 = m_enemypath3.GetNextPoint(m_point3->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point3->s_position.x, m_point3->s_position.y + 70.0f, m_point3->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point3 = m_enemypath3.GetNextPoint(m_point3->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 3)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point4->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point4->s_number == m_enemypath4.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point4 = m_enemypath4.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point4 = m_enemypath4.GetNextPoint(m_point4->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point4->s_position.x, m_point4->s_position.y + 70.0f, m_point4->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point4 = m_enemypath4.GetNextPoint(m_point4->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-		if (m_speedNumber == 4)
-		{
 			//目標地点までのベクトル
-			Vector3 diff = m_point5->s_position - m_position;
+			Vector3 diff = m_point[i + 1]->s_position - m_position;
 			//目標地点に近かったら
 			if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
 			{
 				//最後の目標地点だったら
-				if (m_point5->s_number == m_enemypath5.GetPointListSize() - 1)
+				if (m_point[i + 1]->s_number == m_enemypath[i + 1].GetPointListSize() - 1)
 				{
 					//最初の目標地点へ
-					m_point5 = m_enemypath5.GetFirstPoint();
+					m_point[i + 1] = m_enemypath[i + 1].GetFirstPoint();
 				}
 				//最後の目標地点ではなかったら
 				else
 				{
 					//次の目標地点へ
-					m_point5 = m_enemypath5.GetNextPoint(m_point5->s_number);
+					m_point[i + 1] = m_enemypath[i + 1].GetNextPoint(m_point[i + 1]->s_number);
 				}
 			}
-			else {
+			//目標地点に近くなかったら
+			else
+			{
 				btTransform start, end;
 				start.setIdentity();
 				end.setIdentity();
 				//始点はエネミーの座標。
 				start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
 				//終点は次のパスの座標。
-				end.setOrigin(btVector3(m_point5->s_position.x, m_point5->s_position.y + 70.0f, m_point5->s_position.z));
+				end.setOrigin(btVector3(m_point[i + 1]->s_position.x, m_point[i + 1]->s_position.y + 70.0f, m_point[i + 1]->s_position.z));
 
 				SweepResultWall callback;
 				//コライダーを始点から終点まで動かして。
@@ -1108,7 +915,7 @@ void SpeedEnemy::Aroute()
 				//壁と衝突した！
 				if (callback.isHit == true)
 				{
-					m_point5 = m_enemypath5.GetNextPoint(m_point5->s_number);
+					m_point[i + 1] = m_enemypath[i + 1].GetNextPoint(m_point[i + 1]->s_number);
 					return;
 				}
 				else {
@@ -1116,439 +923,19 @@ void SpeedEnemy::Aroute()
 					diff.Normalize();
 					//目標地点に向かうベクトル×移動速度
 					m_moveSpeed = diff * MOVESPEED;
-					//Y座標の移動速度を0にする
-					m_moveSpeed.y = 0.0f;
 				}
-			}
-		}
-	if (m_speedNumber == 5)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point6->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point6->s_number == m_enemypath6.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point6 = m_enemypath6.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point6 = m_enemypath6.GetNextPoint(m_point6->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point6->s_position.x, m_point6->s_position.y + 70.0f, m_point6->s_position.z));
 
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point6 = m_enemypath6.GetNextPoint(m_point6->s_number);
-				return;
 			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
+
 		}
 	}
-	if (m_speedNumber == 6)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point7->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point7->s_number == m_enemypath7.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point7 = m_enemypath7.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point7 = m_enemypath7.GetNextPoint(m_point7->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point7->s_position.x, m_point7->s_position.y + 70.0f, m_point7->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point7 = m_enemypath7.GetNextPoint(m_point7->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 7)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point8->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point8->s_number == m_enemypath8.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point8 = m_enemypath8.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point8 = m_enemypath8.GetNextPoint(m_point8->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point8->s_position.x, m_point8->s_position.y + 70.0f, m_point8->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point8 = m_enemypath8.GetNextPoint(m_point8->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 8)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point9->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point9->s_number == m_enemypath9.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point9 = m_enemypath9.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point9 = m_enemypath9.GetNextPoint(m_point9->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point9->s_position.x, m_point9->s_position.y + 70.0f, m_point9->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point9 = m_enemypath9.GetNextPoint(m_point9->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 9)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point10->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point10->s_number == m_enemypath10.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point10 = m_enemypath10.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point10 = m_enemypath10.GetNextPoint(m_point10->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point10->s_position.x, m_point10->s_position.y + 70.0f, m_point10->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point10 = m_enemypath10.GetNextPoint(m_point10->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 10)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point11->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point11->s_number == m_enemypath11.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point11 = m_enemypath11.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point11 = m_enemypath11.GetNextPoint(m_point11->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point11->s_position.x, m_point11->s_position.y + 70.0f, m_point11->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point11 = m_enemypath11.GetNextPoint(m_point11->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-			//	m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 11)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point12->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point12->s_number == m_enemypath12.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point12 = m_enemypath12.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point12 = m_enemypath12.GetNextPoint(m_point12->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point12->s_position.x, m_point12->s_position.y + 70.0f, m_point12->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point12 = m_enemypath12.GetNextPoint(m_point12->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-	if (m_speedNumber == 12)
-	{
-		//目標地点までのベクトル
-		Vector3 diff = m_point13->s_position - m_position;
-		//目標地点に近かったら
-		if (diff.LengthSq() <= 100.0f * 100.0f * g_gameTime->GetFrameDeltaTime())
-		{
-			//最後の目標地点だったら
-			if (m_point13->s_number == m_enemypath13.GetPointListSize() - 1)
-			{
-				//最初の目標地点へ
-				m_point13 = m_enemypath13.GetFirstPoint();
-			}
-			//最後の目標地点ではなかったら
-			else
-			{
-				//次の目標地点へ
-				m_point13 = m_enemypath13.GetNextPoint(m_point13->s_number);
-			}
-		}
-		else {
-			btTransform start, end;
-			start.setIdentity();
-			end.setIdentity();
-			//始点はエネミーの座標。
-			start.setOrigin(btVector3(m_position.x, m_position.y + 70.0f, m_position.z));
-			//終点は次のパスの座標。
-			end.setOrigin(btVector3(m_point13->s_position.x, m_point13->s_position.y + 70.0f, m_point13->s_position.z));
-
-			SweepResultWall callback;
-			//コライダーを始点から終点まで動かして。
-			//衝突するかどうかを調べる。
-			PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-			//壁と衝突した！
-			if (callback.isHit == true)
-			{
-				m_point13 = m_enemypath13.GetNextPoint(m_point13->s_number);
-				return;
-			}
-			else {
-				//正規化
-				diff.Normalize();
-				//目標地点に向かうベクトル×移動速度
-				m_moveSpeed = diff * MOVESPEED;
-				//Y座標の移動速度を0にする
-				//m_moveSpeed.y = 0.0f;
-			}
-		}
-	}
-
 }
 
 void SpeedEnemy::Render(RenderContext& rc)
 {
-	if (Weak.Length() <=2500.0f)
+	if (Weak.Length() <=3000.0f)
 	{
 		//モデルの描画
 		m_modelRender.Draw(rc);
-	}
-
-	Vector3 playerPosition = m_player->GetPosition();
-	Vector3 diff = playerPosition - m_position;
-	btTransform start, end;
-	start.setIdentity();
-	end.setIdentity();
-	//始点はエネミーの座標。
-	start.setOrigin(btVector3(m_position.x, m_position.y + 150.0f, m_position.z));
-	//終点はプレイヤーの座標。
-	end.setOrigin(btVector3(playerPosition.x, playerPosition.y + 150.0f, playerPosition.z));
-
-	SweepResultWall callback;
-	//コライダーを始点から終点まで動かして。
-	//衝突するかどうかを調べる。
-	PhysicsWorld::GetInstance()->ConvexSweepTest((const btConvexShape*)m_sphereCollider.GetBody(), start, end, callback);
-	//壁と衝突した！
-	if (callback.isHit == true)
-	{
-		//プレイヤーは見つかっていない。
-		return;
-	}
-	else {
-
-		if (Weak.Length() <= 1500.0f)
-		{
-		//	alertSprite.Draw(rc);
-		}
 	}
 }

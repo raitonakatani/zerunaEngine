@@ -1,9 +1,7 @@
 #pragma once
 
-class GameCamera;
 class PAUSE;
 class Game;
-//class Title;
 
 // プレイヤークラス。
 class Player : public IGameObject
@@ -14,26 +12,16 @@ public:
 	/// </summary>
 	enum EnPlayerState
 	{
-		enPlayerState_Idle,                //待機ステート
-		enPlayerState_Walk,                //歩きステート
-		enPlayerState_Run,                 //走りステート
-		enPlayerState_snake,
-		enPlayerState_StealthySteps,       //忍び足ステート
-		enPlayerState_ReceiveDamage,       //被ダメージステート
-		enPlayerState_Down,                //ダウンステート
-		enPlayerState_FirstAttack,         //１撃目の攻撃ステート
-		enPlayerState_PokeAttack,           //突き攻撃ステート
-		enPlayerState_Win
-	};
-public:
-	/// <summary>
-	/// 攻撃ステート
-	/// </summary>
-	enum EnAttackState
-	{
-		enAttackState_FirstAttack,        //１撃目
-		enAttackState_SecondAttack,       //２撃目
-		enAttackState_ThirdAttack         //３撃目
+		enPlayerState_Idle,					//待機ステート
+		enPlayerState_Walk,					//歩きステート
+		enPlayerState_Run,					//走りステート
+		enPlayerState_snake,				//しゃがみステート
+		enPlayerState_StealthySteps,		//忍び足ステート
+		enPlayerState_ReceiveDamage,		//被ダメージステート
+		enPlayerState_Down,					//ダウンステート
+		enPlayerState_FirstAttack,			//切り攻撃ステート
+		enPlayerState_PokeAttack,			//突き攻撃ステート
+		enPlayerState_Win					//クリアステート
 	};
 public:
 	bool Start();
@@ -56,31 +44,100 @@ public:
 	{
 		return m_position;
 	}
-
 	/// <summary>
-	/// indexをプラスする。
-	/// </summary>
-	void Plusindex()
+	/// 宝箱取得数を設定する。
+	/// <param name="index">宝箱所持数。</param>
+	void SetPlayerHaveIndex(const int& index)
 	{
-		index++;
+		m_index = index;
 	}
 	/// <summary>
-	/// indexを取得する。
+	/// 宝箱所持数を取得する。
 	/// </summary>
-	/// <returns>ポーション。</returns>
-	int Getindex()
+	/// <returns>宝箱所持数。</returns>
+	int GetPlayerHaveIndex()
 	{
-		return index;
+		return m_index;
+	}
+	/// <summary>
+	///	ヒットポイントの最大値を取得する。
+	/// </summary>
+	/// <returns>ヒットポイント。</returns>
+	float GetMaxHP()
+	{
+		return m_maxHP;
+	}
+	/// <summary>
+	/// スタミナポイントの最大値を取得する。
+	/// </summary>
+	/// <returns>スタミナポイント。</returns>
+	float GetMaxStamina()
+	{
+		return m_maxStamina;
+	}
+	/// <summary>
+	/// スキルポイントの最大値を取得する。
+	/// </summary>
+	/// <returns>スキルポイント。</returns>
+	float GetMaxSP()
+	{
+		return m_maxSP;
+	}
+	/// <summary>
+	/// スタートタイマーを取得する。
+	/// </summary>
+	/// <returns>スタートタイマー。</returns>
+	float GetStartTimer()
+	{
+		return m_startTimer;
+	}
+	/// <summary>
+	/// クリティカル攻撃のヒット数を取得する。
+	/// </summary>
+	/// <returns>クリティカル。</returns>
+	int GetHitCritical()
+	{
+		return m_critical;
+	}
+	/// <summary>
+	/// クリティカル攻撃のヒット数を設定する。
+	/// </summary>
+	/// <param name="critical">クリティカルのヒット数。</param>
+	void SetHitCritical(const int& critical)
+	{
+		m_critical = critical;
+	}
+	/// <summary>
+	/// メニュー画面の状態を設定する。
+	/// </summary>
+	/// <returns>メニュー。</returns>
+	bool IsOpenMenu()
+	{
+		return m_menu;
+	}
+	/// <summary>
+	/// 現在のHPを取得する。
+	/// </summary>
+	/// <returns>現在のヒットポイント。</returns>
+	float GetHP()
+	{
+		return m_hp;
+	}
+	/// <summary>
+	/// 現在のSPを取得する。
+	/// </summary>
+	/// <returns>現在のスキルポイント。</returns>
+	float GetSP()
+	{
+		return m_sp;
 	}
 
-	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
-	float m_hp = 100.0f;
-	float					m_sp = 150.0f;						//sp。
 
-	int critical = 0;
-	bool prok = false;
-	int m_prokcamera = 0;
+	bool					prok = false;						//クリティカル攻撃の処理判定。
+	bool					m_down = false;								//死亡判定。
+	int						st = 0;										//プレイヤーステート
 
+private:
 	/// <summary>
 	/// アニメーションの初期化
 	/// </summary>
@@ -162,64 +219,51 @@ public:
 
 	// アニメーションクリップの番号を表す列挙型。
 	enum EnAnimationClip {
-		enAnimClip_Idle,	       //待機アニメーション
-		enAnimClip_Walk,           //歩きアニメーション
-		enAnimClip_Run,		       //走りアニメーション
-		enAnimClip_snake,
-		enAnimClip_StealthySteps,  //忍び足アニメーション
-		enAnimClip_FirstAttack,    //１撃目の攻撃アニメーション
-		enAnimClip_PokeAttack,     //突き攻撃アニメーション
-		enAnimClip_ReceiveDamage,  //被ダメージアニメーション
-		enAnimClip_Down,           //ダウンアニメーション
-		enAnimClip_Win,
-		enAnimClip_Num,		       //アニメーションの数
+		enAnimClip_Idle,			//待機アニメーション
+		enAnimClip_Walk,			//歩きアニメーション
+		enAnimClip_Run,				//走りアニメーション
+		enAnimClip_snake,			//しゃがみアニメーション
+		enAnimClip_StealthySteps,	//忍び足アニメーション
+		enAnimClip_FirstAttack,		//切り攻撃アニメーション
+		enAnimClip_PokeAttack,		//突き攻撃アニメーション
+		enAnimClip_ReceiveDamage,	//被ダメージアニメーション
+		enAnimClip_Down,			//ダウンアニメーション
+		enAnimClip_Win,				//クリアアニメーション
+		enAnimClip_Num,				//アニメーションの数
 	};
 
-
-	int                     m_sword_jointBoneId = -1;                   //「Sword」ボーンのID。
-	int                     m_swordBoneId = -1;                   //「Sword」ボーンのID。
-	ModelRender				m_modelRender;                              //モデルレンダー
-	EnPlayerState           m_playerState = enPlayerState_Idle;         //プレイヤーステート
-	int st = 0;
-	EnAttackState           m_attackState = enAttackState_FirstAttack;  //攻撃ステート
-	Vector3					m_position;					                //座標
-	Vector3                 m_moveSpeed;                                //移動速度
-	Skeleton                m_skeleton;	                                //スケルトン
-	Quaternion				m_rotation;					                //回転
-	Vector3					m_scale = g_vec3One;		                //拡大率
-	Animation				m_animation;				                //アニメーション
-	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
-	CharacterController     m_charaCon;	                                //キャラコン
-	bool                    m_isUnderAttack = false;                    //攻撃中か？
-	EffectEmitter*			m_effectEmitter = nullptr;					//エフェクト。
-	EffectEmitter*			m_effectEmitter2 = nullptr;					//エフェクト。
-	PAUSE*					m_pause = nullptr;
-	Game* m_game;
-//	Title* m_title;
-	SpriteRender			m_HPRender;							        //画像。
-	SpriteRender			m_staminaRender;
-	SpriteRender			m_senseRender;
-	SpriteRender			m_HPberRender;						        //画像。
-	SpriteRender			m_stmnberRender;
-	SpriteRender			m_senseberRender;
-	SpriteRender			m_spriteRender3;
-	float					life = 100.0f;								//フルHPバー
-	float					m_sutamina = 200.0f;						//スタミナ。
-	float					m_hurusutamina = 200.0f;					//フルスタミナ。
-//	float					m_sp = 500.0f;								//sp。
-	float					m_hurusp = 700.0f;							//フルsp。
-	float					cooltime = 0.0f;
-	bool					m_menu = false;
-	bool					COOLtime = false;
-	int						index = 0;
-	float					m_alpha = 0.0f;								//pressbuttonのα値。]
-	float					criticalAlpha = 0.0f;
-	float					criticalscale = 2.0f;
-	bool					m_down = false;
-	float					m_downtimer = 0.0f;
-	int						m_Hitse = 0;
-	int						m_deathse = 0;
-	float					m_startwalk = 0.0f;
-
+	// クラス IGameObject
+	Game*					m_game = nullptr;							// ゲーム。
+	PAUSE*					m_pause = nullptr;							// ポーズ。
+	// クラス Engine
+	EffectEmitter*			m_effectEmitter = nullptr;					// エフェクト。
+	EffectEmitter*			m_effectEmitter2 = nullptr;					// エフェクト。
+	ModelRender				m_modelRender;                              // モデルレンダー
+	CharacterController     m_charaCon;	                                // キャラコン
+	AnimationClip           m_animationClipArray[enAnimClip_Num];	    // アニメーションクリップ
+	// enum
+	EnPlayerState           m_playerState = enPlayerState_Idle;         // プレイヤーステート
+	// 関数
+	Vector3                 m_forward = Vector3::AxisZ;                 // 前方向のベクトル
+	Vector3					m_position;					                // 座標
+	Vector3                 m_moveSpeed;                                // 移動速度
+	Vector3					m_scale = g_vec3One;		                // 拡大率
+	Quaternion				m_rotation;					                // 回転
+	int                     m_swordJointBoneId = -1;					//「Sword」ボーンのID。
+	int                     m_swordBoneId = -1;							//「Sword」ボーンのID。
+	int						m_hitSE = 0;								// 被ダメージの効果音。
+	int						m_deathSE = 0;								// ダウン時の効果音。
+	int						m_critical = 0;								// クリティカル攻撃の処理判定。
+	int						m_index = 0;								// 宝箱。
+	bool					m_menu = false;								// メニュー
+	bool					m_cooltime = false;							// クールタイム。
+	bool                    m_isUnderAttack = false;                    // 攻撃中か？
+	float					m_hp = 100.0f;								// HP。
+	float					m_stamina = 200.0f;							// スタミナ。
+	float					m_sp = 200.0f;								// SP。
+	float					m_maxHP = 100.0f;							// フルHP
+	float					m_maxStamina = 200.0f;						// フルスタミナ。
+	float					m_maxSP = 700.0f;							// フルSP。
+	float					m_downTimer = 0.0f;							// 死亡してからの時間。
+	float					m_startTimer = 0.0f;						// ゲーム開始時の処理。
 };
-

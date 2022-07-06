@@ -32,7 +32,7 @@ public:
 	/// <param name="position">座標。</param>
 	void SetPosition(const Vector3& position)
 	{
-		point.s_position = position;
+		m_point.s_position = position;
 	}
 	/// <summary>
 	/// 座標を取得する。
@@ -40,16 +40,11 @@ public:
 	/// <returns>座標。</returns>
 	const Vector3& GetPosition()
 	{
-		return point.s_position;
+		return m_point.s_position;
 	}
 
 	void Init(const char* filePath);
-	std::map<int, Point> m_pointlist;
-	LevelRender m_level;
-	LevelRender m_level2;
-
-	Point point;
-	Vector3 posi;
-private:
-//	Point m_point;
+	std::map<int, Point>	m_pointlist;		//ポイントリスト。
+	LevelRender				m_level;			//レベル。
+	Point					m_point;			//ポイント。
 };

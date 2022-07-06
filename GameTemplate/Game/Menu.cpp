@@ -4,26 +4,34 @@
 
 bool Menu::Start()
 {
+	//画像を読み込む。
 
+	//スキルの画像。
 	m_skillRender.Init("Assets/sprite/OPTION/2_SKILL/SKILL.dds", 1600.0f, 900.0f);
+
+	//操作方法の画像。
 	m_configRender.Init("Assets/sprite/OPTION/3_CONFIG/CONFIG.dds", 1600.0f, 900.0f);
+
+	//音声の画像。
 	m_audioRender.Init("Assets/sprite/OPTION/4_AUDIO/AUDIO_01.dds", 1600.0f, 900.0f);
 	m_audioRender2.Init("Assets/sprite/OPTION/4_AUDIO/AUDIO_02.dds", 1600.0f, 900.0f);
+	//SE画像。
 	m_seRender.Init("Assets/sprite/OPTION/4_AUDIO/AUDIO.dds", 585.0f, 40.0f);
 	m_seRender.SetPivot({ 0.0f,0.5f });
-	m_seRender.SetPosition({-530.0f,199.0f,0.0f});
+	m_seRender.SetPosition({ -530.0f,199.0f,0.0f });
 	m_seRender.Update();
+	//BGM画像。
 	m_BGMRender.Init("Assets/sprite/OPTION/4_AUDIO/AUDIO.dds", 585.0f, 40.0f);
 	m_BGMRender.SetPivot({ 0.0f,0.5f });
 	m_BGMRender.SetPosition({ -530.0f,131.0f,0.0f });
 	m_BGMRender.Update();
-
 
 	return true;
 }
 
 void Menu::Update()
 {
+	//メニュー画面の処理。
 	if (g_pad[0]->IsTrigger(enButtonB)) {		//Startボタンが押された。
 		m_pause = NewGO<PAUSE>(0, "PAUSE");
 		DeleteGO(this);
@@ -33,7 +41,8 @@ void Menu::Update()
 
 void Menu::Render(RenderContext& rc)
 {
-	
+	//メニュー画面の処理。
+	//画像を描画する。
 	if (m_menu == 0 && m_timer >= 0.001f) {
 		m_skillRender.Draw(rc);
 		if (g_pad[0]->IsTrigger(enButtonRight))
@@ -71,6 +80,12 @@ void Menu::Render(RenderContext& rc)
 			{
 				m_se += 0.05f;
 			}
+			if (m_se <= 0.0f) {
+				m_se = 0.0f;
+			}
+			if (m_se >= 1.0f) {
+				m_se = 1.0f;
+			}
 		}
 		else if (m_audio == 1) {
 			m_audioRender2.Draw(rc);
@@ -86,6 +101,15 @@ void Menu::Render(RenderContext& rc)
 			{
 				m_bgm += 0.05f;
 			}
+
+			if (m_bgm <= 0.0f)
+			{
+				m_bgm = 0.0f;
+			}
+			if (m_bgm >= 1.0f) {
+				m_bgm = 1.0f;
+			}
+
 		}
 
 		m_seRender.SetScale({ m_se,1.0f,0.0f });

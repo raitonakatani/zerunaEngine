@@ -29,6 +29,7 @@
     <ClCompile Include="box.cpp" />
     <ClCompile Include="ClearCounter.cpp" />
     <ClCompile Include="GameStart.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -53,5 +54,6 @@
     <ClInclude Include="box.h" />
     <ClInclude Include="ClearCounter.h" />
     <ClInclude Include="GameStart.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
 </Project>

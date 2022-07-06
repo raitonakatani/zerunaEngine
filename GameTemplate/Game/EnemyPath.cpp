@@ -7,12 +7,11 @@ void EnemyPath::Init(const char* filePath)
 		{
 			if (objData.ForwardMatchName(L"path") == true)
 			{
-				
-				point.s_number = objData.number;
-				point.s_position = objData.position;
-				//posi = objData.position;
+
+				m_point.s_number = objData.number;
+				m_point.s_position = objData.position;
 				int number = objData.number;
-				m_pointlist.emplace(number, point);
+				m_pointlist.emplace(number, m_point);
 				return true;
 			}
 			return true;

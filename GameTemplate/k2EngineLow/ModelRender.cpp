@@ -88,19 +88,20 @@ namespace nsK2EngineLow {
 
 	void ModelRender::InitModel(const char* filePath)
 	{
-		// step-1 半透明の球体モデルを初期化
+		// step-1 半透明のモデルを初期化
 		transModelInitData.m_tkmFilePath = filePath;
 		transModelInitData.m_fxFilePath = "Assets/shader/model.fx";
-		//半透明モデルはモデルを描くときにライティングを行うので、ライトの情報を渡す。
+		// 半透明モデルはモデルを描くときにライティングを行うので、ライトの情報を渡す。
 		transModelInitData.m_expandConstantBuffer = &g_Light.GetLight();
 		transModelInitData.m_expandConstantBufferSize = sizeof(g_Light.GetLight());
-		//ピクセルシェーダのエントリーポイントが不透明モデルとは異なる。
-		//不透明モデルはPSMain、半透明モデルはPSMainTransを使用する。
-		//ピクセルシェーダの実装は後で確認。
+		// ピクセルシェーダのエントリーポイントが不透明モデルとは異なる。
+		// 不透明モデルはPSMain、半透明モデルはPSMainTransを使用する。
+		// ピクセルシェーダの実装は後で確認。
 //		transModelInitData.m_psEntryPointFunc = "PSMainTrans";
 
+		//【重要】半透明合成。
 		transModelInitData.m_alphaBlendMode = AlphaBlendMode_Trans;
-		//半透明の球体モデルを初期化。
+		// 半透明の球体モデルを初期化。
 		sphereModel.Init(transModelInitData);
 	}
 

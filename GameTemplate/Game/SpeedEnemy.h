@@ -195,68 +195,41 @@ private:
 		enAnimClip_Num             //アニメーションの数
 	};
 	
-	Game* m_game;
-	box* m_box;										//警戒、模様
-	ModelRender             m_modelRender;                              //モデルレンダー
-	CharacterController     m_charaCon;                                 //キャラコン
-	EnSpeedEnemyState       m_speedEnemyState = enSpeedEnemyState_Idle; //スピードエネミーステート
+	Game*					m_game;										//ゲーム
+	box*					m_box;										//警戒、模様
+	Player*					m_player = nullptr;                         //プレイヤー
+	Point*					m_point[14];								//ポイント
 	Animation				m_animation;				                //アニメーション
 	AnimationClip           m_animationClipArray[enAnimClip_Num];	    //アニメーションクリップ
+	CharacterController     m_charaCon;                                 //キャラコン
+	EnemyPath				m_enemypath[14];							//パス
+	EnSpeedEnemyState       m_speedEnemyState = enSpeedEnemyState_Idle; //スピードエネミーステート
+	ModelRender             m_modelRender;                              //モデルレンダー
+	SphereCollider			m_sphereCollider;
 	Vector3                 m_position;                                 //座標
 	Vector3                 m_scale = Vector3::One;                     //拡大率
 	Vector3                 m_forward = Vector3::AxisZ;                 //前方向のベクトル
 	Vector3                 m_moveSpeed;                                //移動速度
+	Vector3					Weak;
+	Vector3					targetpos;
 	Quaternion              m_rotation;                                 //回転
-	Player* m_player = nullptr;                         //プレイヤー
-	int state = 0;
-	bool					m_isSearchPlayer = false;
-	Vector3						Weak;
-	SphereCollider			m_sphereCollider;
-	float                   m_idleTimer = 0.0f;                         //待機タイマー
-	float                   m_chaseTimer = 0.0f;                        //追跡タイマー
+	int						state = 0;
 	int                     m_hp = 100;                                 //HP
 	int                     m_punchBoneId = -1;                         //パンチのボーン
-	int							alertLevel = 0; //警戒
-	int							m_weakness = -1;			//「m_weakness」ボーンのID。
-	bool                    m_isUnderAttack = false;                    //攻撃中か？
-	int m_speedNumber = 0;
-	float m_angl = 0.40f;
-	float m_range = 1000.0f;
-	float						m_timer = 0.0f;
-	float						alertTimet = 0.0f;					//拡大率
-	bool mikke = false;
-	Vector3 targetpos;
+	int						alertLevel = 0;								//警戒
+	int						m_weakness = -1;							//「m_weakness」ボーンのID。
+	int						m_speedNumber = 0;
 	int						ab;											//咆哮回数
 	int						hakken = 0;									//プレイヤーを見つけた時のサウンド
-	int						fasthakkenn = 0;							//最初に見つけた時の処理
-
-
-	EnemyPath m_enemypath;
-	EnemyPath m_enemypath2;
-	EnemyPath m_enemypath3;
-	EnemyPath m_enemypath4;
-	EnemyPath m_enemypath5;
-	EnemyPath m_enemypath6;
-	EnemyPath m_enemypath7;
-	EnemyPath m_enemypath8;
-	EnemyPath m_enemypath9;
-	EnemyPath m_enemypath10;
-	EnemyPath m_enemypath11;
-	EnemyPath m_enemypath12;
-	EnemyPath m_enemypath13;
-	Point* m_point;
-	Point* m_point2;
-	Point* m_point3;
-	Point* m_point4;
-	Point* m_point5;
-	Point* m_point6;
-	Point* m_point7;
-	Point* m_point8;
-	Point* m_point9;
-	Point* m_point10;
-	Point* m_point11;
-	Point* m_point12;
-	Point* m_point13;
-	SpriteRender				alertSprite;				//警戒レベル
+	int						fasthakkenn = 0;							//最初に見つけた時の処理				
+	bool					m_isSearchPlayer = false;
+	bool					mikke = false;
+	bool                    m_isUnderAttack = false;					//攻撃中か？
+	float                   m_idleTimer = 0.0f;                         //待機タイマー
+	float                   m_chaseTimer = 0.0f;                        //追跡タイマー
+	float					m_angl = 0.40f;
+	float					m_range = 1000.0f;
+	float					m_timer = 0.0f;
+	float					alertTimet = 0.0f;							//拡大率
 };
 

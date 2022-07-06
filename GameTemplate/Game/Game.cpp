@@ -1,24 +1,25 @@
 #include "stdafx.h"
 #include "Game.h"
 #include "GameCamera.h"
-#include "Player.h"
 #include "Title.h"
 #include "Background.h"
 #include "Floor.h"
-
+#include "Player.h"
 #include "TankEnemy.h"
 #include "SpeedEnemy.h"
-
-#include "Fade.h"
 #include "index.h"
 #include "GameClear.h"
-#include "Retry.h"
 #include "GameStart.h"
+#include "Retry.h"
+#include "Fade.h"
+#include "UI.h"
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 
+namespace
+{
 
-#include "box.h"
+}
 
 Game::~Game()
 {
@@ -45,6 +46,7 @@ Game::~Game()
 	}
 
 
+	DeleteGO(m_ui);
 	DeleteGO(m_player);
 	DeleteGO(m_background);
 	DeleteGO(m_floor);
@@ -52,15 +54,10 @@ Game::~Game()
 }
 bool Game::Start()
 {
-//	g_camera3D->SetPosition({ 0.0f, 100.0f, -600.0f });
-
-	//NewGO<box>(0);
-	
-//	m_bgModelRendedr.Init("Assets/modelData/karisute/stage.yuka.tkm");
-//	m_bgObject.CreateFromModel(m_bgModelRendedr.GetModel(), m_bgModelRendedr.GetWorldMatrix(0));
-
 	m_player = NewGO<Player>(0, "player");
 	m_player->SetPosition({ 0.0f,0.0f,-400.0f });
+
+	m_ui = NewGO<UI>(0, "ui");
 
 	m_gameCamera = NewGO<GameCamera>(0, "gameCamera");
 
@@ -92,6 +89,7 @@ bool Game::Start()
 			m_tank->SetPosition({ objData.position });
 			m_tank->SetRotation(objData.rotation);
 			m_tank->SetScale(objData.scale);
+			PlustankSize();
 			//番号を設定する。
 			m_tank->SettankNumber(objData.number);	
 			//falseにすると、レベルの方でモデルが読み込まれない。
@@ -104,6 +102,7 @@ bool Game::Start()
 			m_tank->SetPosition({ objData.position });
 			m_tank->SetRotation(objData.rotation);
 			m_tank->SetScale(objData.scale);
+			PlustankSize();
 			//番号を設定する。
 			m_tank->SettankNumber(objData.number);
 			//falseにすると、レベルの方でモデルが読み込まれない。
@@ -138,13 +137,8 @@ bool Game::Start()
 
 	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
-//	SkyCube* sky = NewGO<SkyCube>(0);
-//	sky->SetLuminance(0.2f);
-
-
-	m_pressButton.Init("Assets/sprite/RETIRE/Gameover.dds", 1600, 900);
-	m_spriteRender.Init("Assets/sprite/fade4.dds", 1600, 900);
-	m_spriteRender2.Init("Assets/sprite/kuro.dds", 1600, 900);
+	m_gameoverRender.Init("Assets/sprite/RETIRE/Gameover.dds");
+	m_spriteRender.Init("Assets/sprite/kuro.dds");
 
 	//効果音を再生する。
 	GameBGM = NewGO<SoundSource>(0);
@@ -152,10 +146,7 @@ bool Game::Start()
 
 
 	m_fade = FindGO<Fade>("fade");
-	m_title = FindGO<Title>("title");
 	m_gameStart = FindGO<GameStart>("gameStart");
-
-//	m_fade->StartFadeIn();
 
 	return true;
 }
@@ -168,32 +159,21 @@ void Game::Update()
 	}
 
 	if (m_gameStart->gameStart == 1) {
-	/*	GameBGM->Play(true);
-		GameBGM->SetVolume(0.5f);*/
+		GameBGM->Play(true);
+		GameBGM->SetVolume(0.5f);
 		start = 1;
 		m_gameStart->gameStart = 2;
 	}
 
-	if (m_player->index == 4) {
+	if (m_player->GetPlayerHaveIndex() == 4) {
 		m_Ambient += 0.015f;
 		m_Direction += 0.015f;
 		g_Light.SetAmbientLight({m_Ambient,m_Ambient ,m_Ambient });
 		g_Light.SetLigColor({m_Direction,m_Direction ,m_Direction });
 	}
 	
-	/*	if (Bgmspeed == true)
-		{
-			GameBGM->SetVolume(0.5f);
-			GameBGM->SetFrequencyRatio(4);
-		}
-		else
-		{
-			GameBGM->SetVolume(0.5f);
-			GameBGM->SetFrequencyRatio(1);
-		}*/
-	
 
-	if (m_isWaitFadeout && m_player->index == 4) {
+	if (m_isWaitFadeout && m_player->GetPlayerHaveIndex() == 4) {
 		if (!m_fade->IsFade()) {
 			NewGO<GameClear>(0, "gameclear");
 			DeleteGO(this);
@@ -211,23 +191,20 @@ void Game::Update()
 	if (retryCounter->retryCounter == 1)
 	{
 		m_player->m_down = true;
-		//retryCounter->retryCounter = 0;
 		siboutimer += 2.0f;
 	}
 	if (retryCounter->retryCounter == 2)
 	{
 		m_player->m_down = true;
-	//	retryCounter->retryCounter = 2;
 		siboutimer += 2.0f;
 	}
 	if (m_player->m_down == true)
 	{
-		m_deathse = true;
 		if (retryCounter->retryCounter == 0) {
 			retryCounter->retryCounter = 2;
 		}
-		if (gameover ==0) {
-			gameover = 1;
+		if (m_deathse == false) {
+			m_deathse = true;
 			SoundSource* SE;
 			SE = NewGO<SoundSource>(0);
 			SE->Init(10);
@@ -267,7 +244,7 @@ void Game::Update()
 		return;
 	}
 
-	m_pressButton.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+	m_gameoverRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
 }
 
 void Game::Render(RenderContext& rc)
@@ -275,10 +252,10 @@ void Game::Render(RenderContext& rc)
 	if (m_gameStart->gameStart == 2) {
 
 		m_currentAlpha -= 0.2f * g_gameTime->GetFrameDeltaTime();
-		m_spriteRender2.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
-		m_spriteRender2.Draw(rc);
+		m_spriteRender.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
+		m_spriteRender.Draw(rc);
 	}
 	if (m_deathse == true) {
-		m_pressButton.Draw(rc);
+		m_gameoverRender.Draw(rc);
 	}
 }

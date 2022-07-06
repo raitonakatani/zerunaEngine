@@ -39,26 +39,16 @@ public:
 		m_scale = scale;
 	}
 
-
-	int win = 0;
-
 private:
 	//ここからメンバ変数。
-	ModelRender m_modelRender;            //モデルレンダー。
-	Vector3						m_position;							//座標。
-	Quaternion					m_rotation;
-	Vector3						m_scale;
-	Vector3 m_firstPosition;             //最初の座標。
-	int moveState = 0;                   //上に移動か下に移動か。
-	Quaternion rotation;                //クォータニオン。
-	Player* m_player;                   //プレイヤー。
-	SoundSource* se;                    //se
-
-	float light = 0.4f;
-	float light2 = 0.6f;
-	float light3 = 0.0f;
-	FontRender m_font;
-	SpriteRender m_sprite;
-	PhysicsStaticObject m_physicsStaticObject;	//静的物理オブジェクト・
+	ModelRender					m_modelRender;				//モデルレンダー。
+	Vector3						m_position;					//座標。
+	Quaternion					m_rotation;					//回転。
+	Vector3						m_scale;					//大きさ。
+	Player*						m_player;                   //プレイヤー。
+	float						light = 0.4f;				//ライト。
+	float						light2 = 0.6f;				//ライト。
+	float						light3 = 0.0f;				//ライト。
+	PhysicsStaticObject			m_physicsStaticObject;		//静的物理オブジェクト。
 };
 

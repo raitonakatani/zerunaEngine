@@ -22,10 +22,6 @@ bool Floor::Start()
 }
 void Floor::Update()
 {
-
-	//	ModelInitData m_model;
-	//	m_model.m_alphaBlendMode = AlphaBlendMode_Trans;
-
 }
 void Floor::Render(RenderContext& rc)
 {

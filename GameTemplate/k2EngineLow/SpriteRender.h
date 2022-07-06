@@ -14,7 +14,10 @@ namespace nsK2EngineLow {
 		/// <param name="w">画像の横幅。</param>
 		/// <param name="h">画像の縦幅。</param>
 		/// <param name="alphaBlendMode">デフォルトは半透明合成。</param>
-		void Init(const char* filePath, const float w, const float h, AlphaBlendMode alphaBlendMode = AlphaBlendMode_Trans);
+		void Init(const char* filePath,
+			const float w = 1600.0f,
+			const float h = 900.0f,
+			AlphaBlendMode alphaBlendMode = AlphaBlendMode_Trans);
 
 		void Draw(RenderContext& rc);
 

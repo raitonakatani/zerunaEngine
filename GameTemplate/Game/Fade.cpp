@@ -4,8 +4,7 @@
 
 namespace
 {
-	const Vector3	SCALE = Vector3(1.9f, 2.4f, 1.0f);
-	const Vector3	POSITIOIN = Vector3(-10.0f, 80.0, 0.0f);
+	const float PLUSALPHA = 5.2f;			//乗算されるα値
 }
 
 Fade::Fade()
@@ -19,16 +18,11 @@ Fade::~Fade()
 
 bool Fade::Start()
 {
-	m_spriteRender.Init("Assets/sprite/fade4.dds", 1600, 900);
-	//m_spriteRender.SetScale(SCALE);
-	m_spriteRender.SetPosition(POSITIOIN);
-	m_spriteRender2.Init("Assets/sprite/kuro.dds", 1600, 900);
-	//m_spriteRender.SetScale(SCALE);
-	m_spriteRender2.SetPosition(POSITIOIN);
-	//m_spriteRender.Update();
+	//画像の読み込み。
+	m_spriteRender.Init("Assets/sprite/fade4.dds");
+	m_spriteRender2.Init("Assets/sprite/kuro.dds");
 
-	m_clearRender.Init("Assets/sprite/alert.dds", 1600, 900);
-	//clearCounter = FindGO<ClearCounter>("clear");
+	m_clearRender.Init("Assets/sprite/alert.dds");
 	return true;
 }
 
@@ -56,13 +50,13 @@ void Fade::Update()
 
 
 	//α値を変化させる。
-	if (m_state== enState_FadeOut)
+	if (m_state == enState_FadeOut)
 	{
-		m_alpha += g_gameTime->GetFrameDeltaTime() * 5.5f;
+		m_alpha += g_gameTime->GetFrameDeltaTime() * PLUSALPHA;
 	}
 	else
 	{
-		m_alpha += g_gameTime->GetFrameDeltaTime() * 5.2f;
+		m_alpha += g_gameTime->GetFrameDeltaTime() * PLUSALPHA;
 	}
 
 	m_spriteRender.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
@@ -70,12 +64,12 @@ void Fade::Update()
 
 void Fade::Render(RenderContext& rc)
 {
+	//画像の切り替え。
+	//モデルの描画。
 	if (m_clear == 0) {
 		if (m_currentAlpha > 0.0f) {
-			//	m_spriteRender.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
 			m_spriteRender2.SetMulColor({ 1.0f, 1.0f, 1.0f, m_currentAlpha });
 			m_spriteRender2.Draw(rc);
-	//		m_spriteRender.Draw(rc);
 		}
 	}
 	if (m_clear == 1) {

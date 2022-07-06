@@ -1,7 +1,5 @@
 #pragma once
 
-class ClearCounter;
-
 /// <summary>
 /// フェード。
 /// </summary>
@@ -46,7 +44,7 @@ public:
 
 	int m_clear = 0;
 
-//private:
+	//private:
 	enum EnState {
 		enState_FadeIn,			//フェードイン中。
 		enState_FadeOut,		//フェードアウト中。
@@ -54,11 +52,8 @@ public:
 	};
 	SpriteRender		m_clearRender;				//スプライトレンダ―。
 	SpriteRender		m_spriteRender;				//スプライトレンダ―。
-	SpriteRender		m_spriteRender2;				//スプライトレンダ―。
+	SpriteRender		m_spriteRender2;			//スプライトレンダ―。
 	EnState				m_state = enState_Idle;		//状態。
-	float					m_alpha = 0.0f;					//pressbuttonのα値。
+	float				m_alpha = 0.0f;				//pressbuttonのα値。
 	float				m_currentAlpha = 1.0f;		//現在のα値。ここを変更すると画像が透明になる。
-	ClearCounter* clearCounter = nullptr;
 };
-
-

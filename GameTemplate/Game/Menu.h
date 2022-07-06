@@ -15,17 +15,19 @@ public:
 	void Render(RenderContext& rc);
 
 private:
-	int m_menu = 0;
-	int m_audio = 0;
-	SpriteRender m_skillRender;
-	SpriteRender m_configRender;
-	SpriteRender m_audioRender;
-	SpriteRender m_audioRender2;
-	SpriteRender m_seRender;
-	SpriteRender m_BGMRender;
-	PAUSE* m_pause;
-	float m_timer = 0.0f;
-	float m_se = 1.0f;
-	float m_bgm = 1.0f;
+
+	int					m_menu = 0;				//メニュー画面の判定。
+	int					m_audio = 0;			//音声の処理。
+	//画像。
+	SpriteRender		m_skillRender;			//スキル。
+	SpriteRender		m_configRender;			//操作方法。
+	SpriteRender		m_audioRender;			//音声。
+	SpriteRender		m_audioRender2;			//音声。
+	SpriteRender		m_seRender;				//SE。
+	SpriteRender		m_BGMRender;			//BGM。
+	PAUSE* m_pause;				//ポーズクラス。
+	float				m_timer = 0.0f;			//タイマー。
+	float				m_se = 1.0f;			//SE。
+	float				m_bgm = 1.0f;			//BGM。
 };
 

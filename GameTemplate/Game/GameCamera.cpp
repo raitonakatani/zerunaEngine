@@ -10,6 +10,7 @@ GameCamera::GameCamera()
 
 GameCamera::~GameCamera()
 {
+	//インスタンスを削除する。
 	DeleteGO(this);
 }
 bool GameCamera::Start()
@@ -33,8 +34,8 @@ void GameCamera::Update()
 {
 
 	//演出カメラ
-		//カメラを更新。
-		//注視点を計算する。
+	//カメラを更新。
+	//注視点を計算する。
 	Vector3 target = m_player->GetPosition();
 	//プレイヤの足元からちょっと上を注視点とする。
 	target.y += 150.0f;
@@ -85,70 +86,33 @@ void GameCamera::Update()
 		m_toCameraPos2 = toCameraPosOld2;
 	}
 
-
-	//if (g_pad[0]->IsPress(enButtonA)) {
-	//	m_camera = 1;
-	//	m_player->prok = true;
-	//	m_player->m_prokcamera = 1;
-	//}
-	//else {
-	//	m_camera = 0;
-	//	m_player->prok = false;
-	//	m_player->m_prokcamera = 0;
-	//}
 	m_timer += 0.01f;
 
+	//クリティカル攻撃時のカメラの処理。
 	if (m_camera == 1 || m_player->prok == true)
 	{
 		pos2 = target + m_toCameraPos;
 		m_camera = 1;
-		
-		if (m_timer >= 1.0f) {
+
+		if (m_timer >= 1.5f) {
 			m_player->prok = false;
-		}
-		if (m_timer >= 2.5f) {
 			m_camera = 0;
 		}
-//		Vector3 position = pos2;
-//		g_camera3D->SetPosition(position);
 	}
 	else {
 		m_timer = 0.0f;
 		//視点を計算する。
 		pos2 = target2 + m_toCameraPos2;
-//		g_camera3D->SetPosition(pos2);
 	}
 	//メインカメラに注視点と視点を設定する。
-
-		//視点を計算する。
-
 	g_camera3D->SetPosition(pos2);
 	g_camera3D->SetTarget(target2);
 
 	//カメラの更新。
 	g_camera3D->Update();
-
-
-	Vector3 pos = target2 + m_toCameraPos2;
-	m_forward = Vector3::AxisZ;
-	m_rotation.Apply(m_forward);
-	Vector3 playerPosition = m_player->GetPosition();
-	playerPosition.y += 200.0f;
-	Vector3 diff = playerPosition - pos;
-	diff.Normalize();
-	float angle = acosf(diff.Dot(m_forward));
-
-	//プレイヤーが視界内に居なかったら。
-	if (Math::PI * 1.0f >= fabsf(angle))
-	{
-		drow = 1;
-	}
-	else {
-		drow = 0;
-	}
 }
 
 void GameCamera::Render(RenderContext& rc)
 {
-	
+
 }

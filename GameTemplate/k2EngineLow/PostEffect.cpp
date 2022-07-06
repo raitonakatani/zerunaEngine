@@ -18,7 +18,7 @@ namespace nsK2EngineLow {
 			1,													//Mipmapレベル。
 			1,													//テクスチャ配列のサイズ。
 			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			DXGI_FORMAT_D32_FLOAT				//デプスステンシルバッファのフォーマット。
+			DXGI_FORMAT_D32_FLOAT								//デプスステンシルバッファのフォーマット。
 		);
 
 		//解像度、ミップマップレベル

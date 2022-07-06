@@ -21,14 +21,14 @@ class TankEnemy : public IGameObject
 public:
 	//エネミーステート。
 	enum EnEnemyState {
-		enEnemyState_Idle,					//待機。
+		enEnemyState_Idle,				//待機。
 		enEnemyState_Chase,				//追跡。
-		enEnemyState_Attack,				//攻撃。
+		enEnemyState_Attack,			//攻撃。
 		enEnemyState_ReceiveDamage,		//被ダメージ。
 		enEnemyState_Down,
-		enEnemyState_Death,//ダウン。
-		enEnemyState_look,//警報。
-		enEnemyState_alert,//警戒。
+		enEnemyState_Death,				//ダウン。
+		enEnemyState_look,				//警報。
+		enEnemyState_alert,				//警戒。
 		enEnemyState_model
 	};
 public:
@@ -85,10 +85,6 @@ public:
 	{
 		return m_tankNumber;
 	}
-
-
-	float					m_hp = 20;									//HP。
-
 
 private:
 	/// <summary>
@@ -157,11 +153,14 @@ private:
 	/// ダウンステートの遷移処理。
 	/// </summary>
 	void ProcessDownStateTransition();
-
+	/// <summary>
+	/// 咆哮ステートの遷移処理。
+	/// </summary>
 	void lookTransition();
-
+	/// <summary>
+	/// 警報ステートの遷移処理。
+	/// </summary>
 	void alertTransition();
-
 	/// <summary>
 	/// 攻撃できる距離かどうか調べる。
 	/// </summary>
@@ -173,10 +172,6 @@ private:
 	/// 経路A
 	/// </summary>
 	void Aroute();
-	/// <summary>
-	/// 経路B
-	/// </summary>
-	void Broute();
 
 	enum EnAnimationClip {						//アニメーション。
 		enAnimationClip_Idle,					//待機アニメーション。
@@ -189,63 +184,44 @@ private:
 		enAnimationClip_alert,					//警戒アニメーション
 		enAnimationClip_Num,					//アニメーションの数。
 	};
-	AnimationClip			m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。
+
+	// クラス
+	Game*					m_game = nullptr;							//ゲーム
+	Player*					m_player = nullptr;							//プレイヤー。
+	box*					m_box;										//警戒、模様
+	GameCamera*				m_camera;									//カメラ
+	EffectEmitter*			m_effectEmitter = nullptr;					//エフェクト。
+	// パス.ポイント
+	Point*					m_point[13];								//ポイント
+	EnemyPath				m_enemypath[13];							//パス
+	// enum
+	EnEnemyState			m_EnemyState = enEnemyState_Idle;			//エネミーステート。
+	// クラス Engine
 	ModelRender				m_modelRender;								//モデルレンダー。
+	CharacterController		m_charaCon;									//キャラコン。
+	AnimationClip			m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。
+	SphereCollider			m_sphereCollider;							//スフィアコライダー
 	Vector3					m_position;									//座標。
 	Vector3					m_moveSpeed;								//移動速度。
 	Vector3					m_forward = Vector3::AxisZ;					//エネミーの正面ベクトル。
-	Quaternion				m_rotation;									//回転。
+	Vector3					Weak;										//プレイヤーとの距離
+	Vector3					targetpos;									//最後に見たプレイヤーのポジション
 	Vector3					m_scale = Vector3::One;						//大きさ。
-	CharacterController		m_charaCon;									//キャラコン。
-	EnEnemyState			m_EnemyState = enEnemyState_Idle;			//エネミーステート。
-	EffectEmitter* m_effectEmitter = nullptr;					//エフェクト。
-	bool					m_isUnderAttack = false;					//攻撃中か？
-	bool					m_isSearchPlayer = false;					//見るけているか？
-	Player* m_player = nullptr;							//プレイヤー。
-	Game* m_game = nullptr;							//ゲーム
-	GameCamera* m_camera;									//カメラ
-	box* m_box;										//警戒、模様
-	EnemyPath				m_enemypath;								//パス
-	EnemyPath				m_enemypath2;								//パス
-	EnemyPath				m_enemypath3;								//パス
-	EnemyPath				m_enemypath4;								//パス
-	EnemyPath				m_enemypath5;								//パス
-	EnemyPath				m_enemypath6;								//パス
-	EnemyPath				m_enemypath7;								//パス
-	EnemyPath				m_enemypath8;								//パス
-	EnemyPath				m_enemypath9;								//パス
-	EnemyPath				m_enemypath10;								//パス
-	EnemyPath				m_enemypath11;								//パス
-	EnemyPath				m_enemypath12;								//パス
-	Point* m_point;									//ポイント
-	Point* m_point2;									//ポイント
-	Point* m_point3;									//ポイント
-	Point* m_point4;									//ポイント
-	Point* m_point5;									//ポイント
-	Point* m_point6;									//ポイント
-	Point* m_point7;									//ポイント
-	Point* m_point8;									//ポイント
-	Point* m_point9;									//ポイント
-	Point* m_point10;									//ポイント
-	Point* m_point11;									//ポイント
-	Point* m_point12;									//ポイント
-	SpriteRender			alertSprite;								//警戒レベル
-	float					m_chaseTimer = 0.0f;						//追跡タイマー。
-	float					m_idleTimer = 0.0f;							//待機タイマー。
-	float					alertTimet = 0.0f;							//拡大率
+	Quaternion				m_rotation;									//回転。
+	// 関数
 	int						m_tankNumber = 0;							//「タンク」ナンバー
 	int						m_Hand = -1;								//「Hand」ボーンのID。
 	int						m_weakness = -1;							//「m_weakness」ボーンのID。
-	SphereCollider			m_sphereCollider;							//スフィアコライダー
 	int						state = 0;									//警戒ステート
 	int						alertLevel = 0;								//警戒レベル
+	int						hakken = 0;									//プレイヤーを見つけた時のサウンド
+	int						firstlook = 0;								//最初に見つけた時の処理
+	bool					mikke = false;								//見失った敵を追いかける。
+	bool					m_isUnderAttack = false;					//攻撃中か？
+	bool					m_isSearchPlayer = false;					//見るけているか？
 	float					m_timer = 0.0f;								//タイマー
-	Vector3					Weak;										//プレイヤーとの距離
-	int						ab;											//咆哮回数
 	float					m_angl = 0.40f;								//視野角
 	float					m_range = 1000.0f;							//視力（見える距離）
-	Vector3					targetpos;									//最後に見たプレイヤーのポジション
-	bool					mikke = false;								//見失った敵を追いかける。
-	int						hakken = 0;									//プレイヤーを見つけた時のサウンド
-	int						fasthakkenn = 0;							//最初に見つけた時の処理
+	float					m_chaseTimer = 0.0f;						//追跡タイマー。
+	float					m_hp = 20;									//HP。
 };

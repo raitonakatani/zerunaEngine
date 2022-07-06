@@ -2,6 +2,14 @@
 #include "box.h"
 
 
+namespace
+{
+	//const int END_STATE = 0;							//処理終わり
+	const int START_STATE = 1;							//処理開始
+	const float ANIMATION_SPEED = 1.0f;					//アニメーションスピード
+}
+
+
 bool box::Start()
 {
 	//アニメーションクリップのロード。
@@ -18,13 +26,13 @@ bool box::Start()
 
 	//モデルを読み込む。
 	m_modelRender.Init("Assets/modelData/alert/exclamation.tkm", true, m_animClips, enAnimationClip_Num);
-	m_modelRender.SetScale({ 1.0f,1.0f,1.0f });
+	m_modelRender.SetScale(Vector3::One);
 	m_modelRender.SetPosition(m_position);
 	//モデルの更新。
 	m_modelRender.Update();
 
 	m_modelRender2.Init("Assets/modelData/alert/question.tkm", true, m_animClips, enAnimationClip_Num);
-	m_modelRender2.SetScale({ 1.0f,1.0f,1.0f });
+	m_modelRender2.SetScale(Vector3::One);
 	m_modelRender2.SetPosition(m_position);
 	//モデルの更新。
 	m_modelRender2.Update();
@@ -36,34 +44,15 @@ bool box::Start()
 void box::Update()
 {
 	//アニメーションを再生する。
-	if (m_extract==1) {
-	
+	if (m_extract== START_STATE) {
 		//エクスクラメーションマーク(!)
-		if (m_extract == 1 && m_extractanim == 0) {
 			m_modelRender.PlayAnimation(enAnimationClip_extract);
-			m_modelRender.SetAnimationSpeed(0.8f);
-			if (m_modelRender.IsPlayingAnimation() == false) {
-				m_extractanim = 1;
-			}
-		}
-		 if (m_extractanim == 1) {
-			m_modelRender.PlayAnimation(enAnimationClip_extractidle);
-			m_modelRender.SetAnimationSpeed(0.8f);
-		}
+			m_modelRender.SetAnimationSpeed(ANIMATION_SPEED);
 	}
-	else if (m_question == 1 && m_questionanim ==0) {
+	else if (m_question == START_STATE) {
 		//クエスチョンマーク(?)
-		if (m_question == 1) {
 			m_modelRender2.PlayAnimation(enAnimationClip_question);
-			m_modelRender2.SetAnimationSpeed(0.8f);
-			if (m_modelRender2.IsPlayingAnimation() == false) {
-				m_questionanim= 1;
-			}
-		}
-		 if (m_questionanim == 1) {
-			m_modelRender2.PlayAnimation(enAnimationClip_questionidle);
-			m_modelRender2.SetAnimationSpeed(0.8f);
-		}
+			m_modelRender2.SetAnimationSpeed(ANIMATION_SPEED);
 	}
 
 
@@ -79,10 +68,10 @@ void box::Update()
 void box::Render(RenderContext& rc)
 {
 	//モデルの描画。
-	if (m_extract == 1) {
+	if (m_extract == START_STATE) {
 		m_modelRender.Draw(rc);
 	}
-	if (m_question == 1) {
+	if (m_question == START_STATE) {
 		m_modelRender2.Draw(rc);
 	}
 }
